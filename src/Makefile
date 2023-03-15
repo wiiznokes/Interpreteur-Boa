@@ -1,14 +1,20 @@
 CC=gcc
+CFLAGS = -g -Wall
 
 
-all: essai_ast exec
+all: essai_ast exec buildO
 
 exec:
 	echo "Projet INF404"
 	./essai_ast
 
+build:
+	mkdir build
+	mv -u *.o build
+	mv -u essai_ast build
+
 essai_ast:essai_ast.o ast_construction.o ast_parcours.o analyse_lexical.o analyse_syntaxique.o lecture_caracteres.o
-	gcc $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 %.o:%.c
 	$(CC) -c $<
@@ -24,3 +30,6 @@ ast_parcours.o: ast_parcours.c
 essai_ast.o: essai_ast.c ast_construction.h ast_parcours.h
 
 lecture_caracteres.o: lecture_caracteres.c lecture_caracteres.h
+
+clean:
+	rm -rf build
