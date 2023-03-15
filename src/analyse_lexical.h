@@ -1,6 +1,6 @@
 #ifndef ANALYSE_LEXICAL_H
 #define ANALYSE_LEXICAL_H
-
+#include "stdbool.h"
 
 typedef enum
 {
@@ -13,43 +13,41 @@ typedef enum
 
 
 
+
+
 typedef enum
 {
+    // sequence of number
+    INT,
+    // symbol
     INIT,
-    AFFEC
-} Symbole;
-
-
-typedef enum
-{
-    INT,       // sequence de chiffres
-    Symbole,
-    SYM_
+    AFFEC,
+    SYM_,
     END_SEQ, // pseudo lexeme ajoute en fin de sequence
     VAR_NAME
-} Nature_Lexeme;
+} NatureLexeme;
 
 
 typedef struct
 {
-    Nature_Lexeme nature; // nature du lexeme
-    unsigned int lign;   // numero de ligne
-    unsigned int colonne; // numero de colonne
-    char chaine[256];     // chaine de caracteres
-    int valeur;           // valeur d'un entier
+    NatureLexeme nature; // nature du lexeme
+    unsigned int line;   // numero de ligne
+    unsigned int column; // numero de colonne
+    char chain[256];     // chaine de caracteres
+    int value;           // valeur d'un entier
 } Lexeme;
 
 
 
 
-void start();
+void start(char *fileName);
 
 void advance();
 
 
-Lexeme current_lexeme();
+Lexeme getLexeme();
 
-int seq_end();
+bool isEnd();
 
 void stop();
 
