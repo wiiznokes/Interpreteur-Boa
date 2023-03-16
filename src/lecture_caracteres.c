@@ -24,7 +24,7 @@
 
    /* --------------------------------------------------------------------- */
 
-   void demarrer_car(char *nom_fichier) { 
+   void demarrer_car(char *nom_fichier) {
       if (strlen(nom_fichier) == 0) {
          File = stdin ;
       } else {

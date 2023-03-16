@@ -10,7 +10,7 @@
 
 // private
 
-Lexeme currentLexeme;
+Lexeme current_lexeme;
 
 void next_char();
 
@@ -22,15 +22,19 @@ void init_lexical_analyse(char *fileName) {
 }
 
 void next_lexeme() {
+    next_char();
 
+    if (fin_de_sequence_car()) {
+        current_lexeme.nature = END_FILE;
+    }
 }
 
 Lexeme getLexeme() {
-    return currentLexeme;
+    return current_lexeme;
 }
 
 bool is_end() {
-    return currentLexeme.nature == END_FILE;
+    return current_lexeme.nature == END_FILE;
 }
 
 void stop_lexical_analyse() {
@@ -40,5 +44,8 @@ void stop_lexical_analyse() {
 
 
 void next_char() {
+    avancer_car();
 
+    current_lexeme.line = numero_ligne();
+    current_lexeme.column = numero_colonne();
 }
