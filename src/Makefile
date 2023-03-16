@@ -1,17 +1,15 @@
 CC = clang
-DEBUG_FLAGS = -g -Wall
-RELEASE_FLAGS = -02
+FLAGS = -g -Wall
 EXE = Boa
 
 
 
+build:interprete.o lexical_analyse.o lecture_caracteres.o
+	$(CC) $(FLAGS) $^ -o $(EXE)
 
-debug:interprete.o lexical_analyse.o lecture_caracteres.o
-	$(CC) $(DEBUG_FLAGS) $^ -o $(EXE)
 
-release:interprete.o lexical_analyse.o lecture_caracteres.o
-	$(CC) $(RELEASE_FLAGS) $^ -o $(EXE)
-
+%.o:%.c
+	$(CC) $(FLAGS) -c $<
 
 clean:
 	rm -rf *.o $(EXE)
