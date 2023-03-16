@@ -36,7 +36,7 @@ typedef struct
     unsigned int column;
 
 
-    char chain[256];
+    char string[256];
     int integer;
 } Lexeme;
 
