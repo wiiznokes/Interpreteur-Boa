@@ -2,4 +2,4 @@ int entier <- 8;
 
 char chaine <- "hello";
 
-chaine = "world"
+chaine = "world";
