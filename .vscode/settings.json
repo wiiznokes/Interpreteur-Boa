@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "lecture_caracteres.h": "c",
+        "analyse_lexicale.h": "c",
+        "analyse_syntaxique.h": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c",
+        "stdbool.h": "c"
+    }
+}
