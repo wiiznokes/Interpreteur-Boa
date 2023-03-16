@@ -12,7 +12,7 @@ Dans l'analyse syntaxique, on doit construire un arbre
 ## Process
 
 - start analyse syntaxique
-- découvrir le premier lexeme -> Donc return si une erreur syntaxique est découverte
+- découvrir le premier lexeme -> Donc return si une erreur lexicale est découverte
 dans le premier lexeme
 - créer une node en fonction du lexeme trouvé, découvrir d'autre si besoin
 - construire l'arbre tant que tous les lexemes non pas été découvert
