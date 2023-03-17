@@ -1,4 +1,5 @@
 *.o
 Boa
+a.out
 
 cmake-build-debug
