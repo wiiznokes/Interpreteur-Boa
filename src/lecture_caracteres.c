@@ -31,7 +31,6 @@
 	 File = fopen(nom_fichier, "r") ;
       } ;
       LigneCour = 1 ; ColonneCour = 0 ;
-      avancer_car () ;
    } 
 
    /* --------------------------------------------------------------------- */

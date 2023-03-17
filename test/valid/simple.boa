@@ -1,5 +1,7 @@
-int entier <- 8;
+int entier <- 8 ;
 
-char chaine <- "hello";
+char chaine <- "hello" ;
 
-chaine = "world";
+chaine = "world" ;
+
+chaine "world" ;

@@ -3,29 +3,23 @@
 
 #include "stdbool.h"
 
-
-
-
 typedef enum
 {
     // data type
     INT,
     CHAR,
-
     // symbol
     INIT,
     ASSIGN,
 
     NAME,
-
+    STRING,
+    NUMBER,
     END_INSTRUCTION,
+    END_FILE,
 
-    END_FILE
+    ERROR
 } NatureLexeme;
-
-
-
-
 
 typedef struct
 {
@@ -35,22 +29,19 @@ typedef struct
     unsigned int line;
     unsigned int column;
 
+    char char_tab[256];
 
-    char string[256];
-    int integer;
 } Lexeme;
-
-
-
 
 void init_lexical_analyse(char *fileName);
 
 void next_lexeme();
 Lexeme get_lexeme();
 
-bool is_end();
+bool check_end();
 
 void stop_lexical_analyse();
 
+char* nature_to_text(NatureLexeme nature);
 
 #endif
