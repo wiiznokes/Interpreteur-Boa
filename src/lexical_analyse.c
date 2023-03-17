@@ -49,7 +49,7 @@ typedef enum
 Lexeme current_lexeme;
 State current_state;
 
-// return true
+
 void next_char();
 // return true si on doit refaire une itération
 bool transition(char c);
@@ -377,22 +377,22 @@ void proccess_end()
         current_lexeme.nature = END_FILE;
         break;
     case S_I:
-        current_lexeme.nature = CHAR;
+        current_lexeme.nature = NAME;
         break;
     case S_IN:
-        current_lexeme.nature = CHAR;
+        current_lexeme.nature = NAME;
         break;
     case S_INT:
         current_lexeme.nature = INT;
         break;
     case S_C:
-        current_lexeme.nature = CHAR;
+        current_lexeme.nature = NAME;
         break;
     case S_CH:
-        current_lexeme.nature = CHAR;
+        current_lexeme.nature = NAME;
         break;
     case S_CHA:
-        current_lexeme.nature = CHAR;
+        current_lexeme.nature = NAME;
         break;
     case S_CHAR:
         current_lexeme.nature = CHAR;
