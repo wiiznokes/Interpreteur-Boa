@@ -22,6 +22,8 @@ void clear_list(list *l)
         l->head = l->head->right;
         free_node(tmp);
     }
+    l->tail = NULL;
+    
     l->size = 0;
 }
 
