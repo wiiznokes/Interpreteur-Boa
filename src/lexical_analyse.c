@@ -57,8 +57,7 @@ void proccess_end();
 bool is_number(char c);
 bool is_letter(char c);
 bool is_separator(char c);
-// cette fonction ajoute le caractere c a la fin de la chaine s
-void ajouter_caractere(char *s, char c);
+void add_char(char *s, char c);
 void handle_error(char* message);
 
 /*
@@ -104,7 +103,7 @@ void next_lexeme()
             handle_error(log_message);
             return;
         }
-        ajouter_caractere(current_lexeme.char_tab, caractere_courant());
+        add_char(current_lexeme.char_tab, caractere_courant());
         next_char();
         counter++;
     }
@@ -436,7 +435,7 @@ void handle_error(char* message)
            current_lexeme.line, current_lexeme.column, caractere_courant(), message);
 }
 
-void ajouter_caractere(char *s, char c)
+void add_char(char *s, char c)
 {
     int l;
 

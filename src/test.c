@@ -2,18 +2,68 @@
 #include <stdlib.h>
 
 #include "list.h"
+#include "tree.h"
 
 int main(int argc, char **argv)
 {
-	list l;
-    l.tete = NULL;
 
-    add_tete(&l, "hello");
-    add_tete(&l, "world");
+    node *n1 = new_node();
+    n1->val = "1";
 
-    
-    printf("%s\n", l.tete->val);
-    printf("%s\n", l.tete->next->val);
+    node *n2 = new_node();
+    n2->val = "2";
 
-	return 0;
+    node *n3 = new_node();
+    n3->val = "3";
+
+    node *n4 = new_node();
+    n4->val = "4";
+
+    node *n5 = new_node();
+    n5->val = "5";
+
+    node *n6 = new_node();
+    n6->val = "6";
+
+    /*
+
+    list *l = new_list();
+
+    add_head(l, n1);
+    add_tail(l, n2);
+    add_tail(l, n3);
+    add_tail(l, n5);
+    add_index(l, n4, 3);
+
+    print_list(l);
+
+    remove_index(l, 0);
+
+    print_list(l);
+
+    clear_list(l);
+    print_list(l);
+
+    printf("cleared\n");
+*/
+
+    tree t = NULL;
+
+    t = n1;
+
+    t->right = n2;
+
+    t->right->left = n3;
+
+    t->left = n4;
+
+
+
+    print_tree(t);
+
+    free_tree(t);
+
+
+
+    return 0;
 }

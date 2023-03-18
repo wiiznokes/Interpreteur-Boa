@@ -1,28 +1,30 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "node.h"
 #include "stdbool.h"
 
-
-typedef struct _node_ {
-	char *val;
-	struct _node_ *next;
-} node;
-
-
-typedef struct _list_ {
-	node *tete;
+typedef struct list
+{
+	int size;
+	node *head;
+	node *tail;
 } list;
 
+list *new_list(void);
+void clear_list(list *l);
+void free_list(list *l);
 
+bool remove_head(list *l);
+bool remove_tail(list *l);
+bool remove_index(list *l, int index);
 
-void free_list(list* l);
+bool add_head(list *l, node *n);
+bool add_tail(list *l, node *n);
+bool add_index(list *l, node *n, int index);
 
+node *get_node(list *l, int index);
 
-
-void add_tete(list* l, char *c);
-
+void print_list(list *l);
 
 #endif
-
-

@@ -12,6 +12,8 @@
         "type_traits": "c",
         "utility": "c",
         "variant": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "list.h": "c",
+        "stdio.h": "c"
     }
 }
