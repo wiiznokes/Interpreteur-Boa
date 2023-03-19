@@ -1,0 +1,19 @@
+int entier <- 8;
+
+char chaine <- "hello";
+
+chaine = "world";
+
+
+fun ddd (int a) : int { 
+
+    int b <- 7;
+
+    int c <- a + b;
+
+    return c;
+
+}
+
+
+print(ddd(entier));

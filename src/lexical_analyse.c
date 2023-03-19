@@ -67,14 +67,14 @@ void handle_error(char* message);
 void init_lexical_analyse(char *fileName)
 {
     demarrer_car(fileName);
+    next_char();
 }
 
 void next_lexeme()
 {
     current_state = S_START;
     current_lexeme.char_tab[0] = '\0';
-
-    next_char();
+   
 
     if (check_end())
     {
@@ -365,11 +365,7 @@ bool transition(char c)
 
 void proccess_end()
 {
-    if (!is_separator(caractere_courant()))
-    {
-        return handle_error("");
-    }
-
+    
     switch (current_state)
     {
     case S_START:
