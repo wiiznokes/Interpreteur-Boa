@@ -9,16 +9,18 @@ node *new_node()
     n->left = NULL;
     n->right = NULL;
 
-    n->val = "\0";
+    n->type = UN_DEFINED;
     return n;
 }
 
 void free_node(node *n)
 {
+    // il faudra libered *prt en fonction de sa stucture
     free(n);
 }
 
 void print_node(node *n)
 {
-    printf("val = %s\n", n->val);
+    // todo: creer un fonction qui affiche le type
+    printf("val = %s\n", n->type);
 }

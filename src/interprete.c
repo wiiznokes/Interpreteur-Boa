@@ -2,6 +2,15 @@
 #include <stdlib.h>
 
 #include "lexical_analyse.h"
+#include "syntax_analyse.h"
+
+/*
+    list de node qui representera soit des variables,
+    soit des functions, puisque qu'on en aura besoin constament,
+    pour la construction de l'arbre, ainsi que pour l'evaluation
+*/
+list variables;
+
 
 int main(int argc, char **argv)
 {
