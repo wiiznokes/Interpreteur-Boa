@@ -40,7 +40,7 @@ typedef struct
 
 
     initialisation: type name <- operation
-    assignation: type name <- operation
+    assignation: name = operation
 
     operation: name
     operation: valeur
