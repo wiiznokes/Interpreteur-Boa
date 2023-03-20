@@ -3,13 +3,13 @@
 
 #include "node.h"
 
-node *new_node()
+node *new_node(node_type type)
 {
     node *n = malloc(sizeof(node));
     n->left = NULL;
     n->right = NULL;
 
-    n->type = UN_DEFINED;
+    n->type = type;
     return n;
 }
 

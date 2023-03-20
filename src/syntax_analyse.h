@@ -65,6 +65,24 @@ typedef struct
 
     for_loop: for ( operation ) { instructions }
 
+
+
+    grammaire calculette
+
+    eag → seq terme
+    seq terme → terme suite seq terme
+    suite seq terme → op1 terme suite seq terme
+    suite seq terme → ε
+    terme → seq facteur
+    seq facteur → facteur suite seq facteur
+    suite seq facteur → op2 facteur suite seq facteur
+    suite seq facteur → ε
+    facteur → ENTIER
+    facteur → PARO eag PARF
+    op1 → PLUS
+    op1 → MOINS
+    op2 → MUL
+
 */
 
 #endif

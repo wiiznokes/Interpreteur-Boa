@@ -4,3 +4,6 @@ test.bin
 
 cmake-build-debug
 .kdev4
+
+test_lexeme
+calculette
