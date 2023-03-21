@@ -258,7 +258,7 @@ bool add_index(list *l, node *n, int index)
     if (head_iteration <= tail_iteration)
     {
         node_to_add = l->head;
-        for (int i = 0; i <= head_iteration; i++)
+        for (int i = 1; i <= head_iteration; i++)
         {
             node_to_add = node_to_add->right;
         }
@@ -349,15 +349,29 @@ void print_list(list *l)
         return;
     }
 
+    if (l->size == 0) {
+        printf("list empty\n");
+
+        if (l->head != NULL || l->tail != NULL) {
+            printf("error: print_list, empty list must have tail/head = null\n");
+            exit(1);
+        }
+        return;
+    }
+
     node *n = l->head;
 
     int i = 0;
 
     while (n != NULL)
     {
-        printf("index = %d\n", i);
+        printf("%d[", i);
         print_node(n);
+        printf("], ");
+
         n = n->right;
         i++;
     }
+
+    printf("\n");
 }

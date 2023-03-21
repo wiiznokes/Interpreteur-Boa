@@ -7,37 +7,37 @@
 int main(int argc, char **argv)
 {
 
-    node *n1 = new_node(OPERATEUR);
+    node *n1 = new_node(VALEUR);
     node *n2 = new_node(VALEUR);
     node *n3 = new_node(VALEUR);
-    node *n4 = new_node(OPERATEUR);
-    node *n5 = new_node(VALEUR);
-    node *n6 = new_node(VALEUR);
+    node *n4 = new_node(VALEUR);
+    node *n5 = new_node(OPERATEUR);
+    node *n6 = new_node(OPERATEUR);
 
-    /*
+/*
 
     list *l = new_list();
 
     add_head(l, n1);
     add_tail(l, n2);
     add_tail(l, n3);
-    add_tail(l, n5);
-    add_index(l, n4, 3);
-
+    add_tail(l, n4);
+    add_index(l, n5, 3);
     print_list(l);
 
-    remove_index(l, 0);
-
+    add_index(l, n6, 1);
     print_list(l);
+
+    remove_index(l, 1);
+    print_list(l);
+
 
     clear_list(l);
     print_list(l);
 
     free_list(l);
 
-    printf("cleared\n");
 */
-
     tree t = NULL;
 
     t = n1;

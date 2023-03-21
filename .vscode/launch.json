@@ -4,7 +4,7 @@
             "name": "debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/Boa",
+            "program": "${workspaceFolder}/src/test.bin",
             "args": [
                 "test/valid/simple.boa"
             ],

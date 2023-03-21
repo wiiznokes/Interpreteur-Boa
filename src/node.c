@@ -34,6 +34,6 @@ char *node_type_to_text(node_type type)
 }
 void print_node(node *n)
 {
-    // todo: creer un fonction qui affiche le type
-    printf("val = %s\n", node_type_to_text(n->type));
+    
+    printf("%s", node_type_to_text(n->type));
 }

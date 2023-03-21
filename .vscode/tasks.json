@@ -5,7 +5,7 @@
             "label": "build",
             "command": "make",
             "args": [
-                "build"
+                "test"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"

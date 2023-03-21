@@ -50,6 +50,7 @@ static void print_tree_helper(tree t, int depth, int type)
         exit(1);
     }
     print_node(t);
+    printf("\n");
     print_tree_helper(t->right, depth + 1, 2);
 }
 
