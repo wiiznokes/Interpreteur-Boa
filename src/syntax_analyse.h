@@ -46,13 +46,12 @@ typedef struct
     operation: valeur
     operation: la même que la calculette
 
-
-    operation_or_nothing: operation
-    operation_or_nothing:
+    operations: operation operations
+    operations:
 
     fonction: fun name ( args ) : type { instructions }
 
-    args: operation_or_nothing
+    args: operations
 
     if_statement: if_block else_block
     if_statement: if_block

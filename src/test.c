@@ -7,23 +7,12 @@
 int main(int argc, char **argv)
 {
 
-    node *n1 = new_node();
-    n1->val = "1";
-
-    node *n2 = new_node();
-    n2->val = "2";
-
-    node *n3 = new_node();
-    n3->val = "3";
-
-    node *n4 = new_node();
-    n4->val = "4";
-
-    node *n5 = new_node();
-    n5->val = "5";
-
-    node *n6 = new_node();
-    n6->val = "6";
+    node *n1 = new_node(OPERATEUR);
+    node *n2 = new_node(VALEUR);
+    node *n3 = new_node(VALEUR);
+    node *n4 = new_node(OPERATEUR);
+    node *n5 = new_node(VALEUR);
+    node *n6 = new_node(VALEUR);
 
     /*
 
@@ -43,6 +32,8 @@ int main(int argc, char **argv)
 
     clear_list(l);
     print_list(l);
+
+    free_list(l);
 
     printf("cleared\n");
 */

@@ -15,6 +15,7 @@
         "stdbool.h": "c",
         "list.h": "c",
         "stdio.h": "c",
-        "type_ast.h": "c"
+        "type_ast.h": "c",
+        "node.h": "c"
     }
 }

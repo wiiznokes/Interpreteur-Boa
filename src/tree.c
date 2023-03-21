@@ -22,13 +22,13 @@ static void print_tree_helper(tree t, int depth)
     {
         return;
     }
-    print_tree_helper(t->right, depth + 1);
+    print_tree_helper(t->left, depth + 1);
     for (int i = 0; i < depth; i++)
     {
         printf("  ");
     }
     print_node(t);
-    print_tree_helper(t->left, depth + 1);
+    print_tree_helper(t->right, depth + 1);
 }
 
 void print_tree(tree t)

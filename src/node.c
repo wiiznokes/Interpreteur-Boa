@@ -19,8 +19,21 @@ void free_node(node *n)
     free(n);
 }
 
+
+
+
+char *node_type_to_text(node_type type)
+{
+    switch (type)
+    {
+    case OPERATEUR:
+        return "OPERATEUR";
+    case VALEUR:
+        return "VALEUR";
+    }
+}
 void print_node(node *n)
 {
     // todo: creer un fonction qui affiche le type
-    printf("val = %s\n", n->type);
+    printf("val = %s\n", node_type_to_text(n->type));
 }
