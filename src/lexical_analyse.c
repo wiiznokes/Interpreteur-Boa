@@ -76,7 +76,7 @@ void next_lexeme()
     current_lexeme.char_tab[0] = '\0';
    
 
-    if (check_end())
+    if (fin_de_sequence_car())
     {
         proccess_end();
         return;
@@ -85,7 +85,7 @@ void next_lexeme()
     while (is_separator(caractere_courant()))
     {
         next_char();
-        if (check_end())
+        if (fin_de_sequence_car())
         {
             proccess_end();
             return;
@@ -124,16 +124,6 @@ void next_lexeme()
 
 Lexeme get_lexeme() { return current_lexeme; }
 
-bool check_end()
-{
-
-    if (fin_de_sequence_car())
-    {
-        current_lexeme.nature = END_FILE;
-        return true;
-    }
-    return false;
-}
 
 void stop_lexical_analyse() { arreter_car(); }
 

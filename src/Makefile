@@ -4,7 +4,7 @@ EXE = Boa
 
 
 
-build:interprete.o lexical_analyse.o lecture_caracteres.o
+build:interprete.o syntax_analyse.o lexical_analyse.o lecture_caracteres.o
 	$(CC) $(FLAGS) $^ -o $(EXE)
 
 run: build

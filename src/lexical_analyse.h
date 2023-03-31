@@ -38,7 +38,6 @@ void init_lexical_analyse(char *fileName);
 void next_lexeme();
 Lexeme get_lexeme();
 
-bool check_end();
 
 void stop_lexical_analyse();
 

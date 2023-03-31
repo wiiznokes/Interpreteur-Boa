@@ -11,28 +11,28 @@
 */
 list variables;
 
+tree ast;
 
 int main(int argc, char **argv)
-{
+{	
+	char *fileName;
 	switch (argc)
 	{
+	case 1:
+		fileName = "";
+		break;
 	case 2:
-		init_lexical_analyse(argv[1]);
+		fileName = argv[1];
 		break;
 	default:
 		printf("number of args incorrect\n");
 		exit(1);
 	}
 
-	while (!check_end())
-	{
-		next_lexeme();
 
-		
-		if (get_lexeme().nature == ERROR) {
-			break;
-		}
-	}
+
+	fill_ast(fileName, &ast);
+
 
 	stop_lexical_analyse();
 

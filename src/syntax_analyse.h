@@ -17,17 +17,17 @@ typedef struct
 
     char *string;
     int integer;
-} variable;
+} variable_t;
 
 typedef struct
 {
     list args;            // list de variables
     list local_variables; // list de variables locale
-} function;
+} function_t;
 
 
 
-void create_ast(tree *ast);
+void fill_ast(char *fileName, tree *ast);
 
 
 /*
