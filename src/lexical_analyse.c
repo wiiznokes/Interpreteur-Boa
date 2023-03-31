@@ -92,7 +92,15 @@ void next_lexeme()
         }
     }
 
-    int counter = 0;
+
+    if (!transition(caractere_courant())) {
+        handle_error("");
+        return;
+    }
+
+    add_char(current_lexeme.char_tab, caractere_courant());
+    next_char();
+    int counter = 1;
 
     while (transition(caractere_courant()))
     {
@@ -109,6 +117,9 @@ void next_lexeme()
     }
 
     proccess_end();
+
+    printf("Lexeme de nature %s = \"%s\"\n",
+			   nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
 }
 
 Lexeme get_lexeme() { return current_lexeme; }

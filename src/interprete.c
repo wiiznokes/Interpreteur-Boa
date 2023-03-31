@@ -28,8 +28,6 @@ int main(int argc, char **argv)
 	{
 		next_lexeme();
 
-		printf("Lexeme de nature %s = \"%s\"\n",
-			   nature_to_text(get_lexeme().nature), get_lexeme().char_tab);
 		
 		if (get_lexeme().nature == ERROR) {
 			break;

@@ -16,6 +16,9 @@
         "list.h": "c",
         "stdio.h": "c",
         "type_ast.h": "c",
-        "node.h": "c"
+        "node.h": "c",
+        "tree.h": "c",
+        "lexical_analyse.h": "c",
+        "syntax_analyse.h": "c"
     }
 }

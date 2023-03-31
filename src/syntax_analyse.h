@@ -3,6 +3,8 @@
 
 #include "stdbool.h"
 #include "list.h"
+#include "tree.h"
+
 typedef enum
 {
     D_INT,
@@ -23,6 +25,9 @@ typedef struct
     list local_variables; // list de variables locale
 } function;
 
+
+
+void create_ast(tree *ast);
 
 
 /*
