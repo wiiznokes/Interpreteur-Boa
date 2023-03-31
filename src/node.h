@@ -1,9 +1,18 @@
 #ifndef NODE_H
 #define NODE_H
 
+
+#include "variable.h"
+
 typedef enum
 {
-    // il en manque bcp
+    INITIALISATION,
+    AFFECTATION,
+    IF,
+    ELSE,
+    WHILE,
+    FOR,
+    FUN,
     
     OPERATEUR,
     VALEUR
@@ -39,5 +48,18 @@ node *new_node(node_type type);
 void free_node(node *n);
 
 void print_node(node *n);
+
+
+
+
+typedef struct init_t
+{
+    Data_type type;
+} init_t;
+
+
+
+
+
 
 #endif

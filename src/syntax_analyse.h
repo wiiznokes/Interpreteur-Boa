@@ -4,26 +4,9 @@
 #include "stdbool.h"
 #include "list.h"
 #include "tree.h"
+#include "variable.h"
 
-typedef enum
-{
-    D_INT,
-    D_CHAR
-} Data_type;
 
-typedef struct
-{
-    Data_type type;
-
-    char *string;
-    int integer;
-} variable_t;
-
-typedef struct
-{
-    list args;            // list de variables
-    list local_variables; // list de variables locale
-} function_t;
 
 
 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "lexical_analyse.h"
 #include "syntax_analyse.h"
@@ -10,24 +11,24 @@
 
 */
 
-void instructions (node *ast);
-void instruction (node *ast);
-void initialisation(node *ast, Data_type type);
-void assignation(node *ast);
-void function(node *ast);
-void if_statement(node *ast);
-void while_loop(node *ast);
-void for_loop(node *ast);
-void operations(node *ast);
-void operation(node *ast);
-void args(node *ast);
+void instructions (node *a);
+void instruction (node *a);
+void initialisation(node *a, Data_type type);
+void assignation(node *a);
+void function(node *a);
+void if_statement(node *a);
+void while_loop(node *a);
+void for_loop(node *a);
+void operations(node *a);
+void operation(node *a);
+void args(node *a);
 
-void if_block(node *ast);
-void else_block(node *ast);
-void args(node *ast);
-void operations(node *ast);
-void operation(node *ast);
-void args(node *ast);
+void if_block(node *a);
+void else_block(node *a);
+void args(node *a);
+void operations(node *a);
+void operation(node *a);
+void args(node *a);
 
 
 void exit_analyse(char *msg);
@@ -36,16 +37,16 @@ void exit_analyse(char *msg);
 
 /* *************** */
 
-void fill_ast(char *fileName, tree *ast) {
+void fill_ast(char *fileName, tree *a) {
 
     init_lexical_analyse(fileName);
 
-    instructions(ast);
+    instructions(a);
 }
 
 
 
-void instructions (node *ast) {
+void instructions (node *a) {
 
     next_lexeme();
 
@@ -57,8 +58,8 @@ void instructions (node *ast) {
     case INT:
     case CHAR:
     case NAME:
-        instruction(ast);
-        instructions(ast);
+        instruction(a);
+        instructions(a);
         break;
 
     default:
@@ -67,19 +68,19 @@ void instructions (node *ast) {
 
 }
 
-void instruction (node *ast) {
+void instruction (node *a) {
 
     switch (get_lexeme().nature)
     {
     
     case INT:
-        initialisation(ast, D_INT);
+        initialisation(a, D_INT);
         break;
     case CHAR:
-        initialisation(ast, D_CHAR);
+        initialisation(a, D_CHAR);
         break;
     case NAME:
-        assignation(ast);
+        assignation(a);
         break;
 
     default:
@@ -88,12 +89,36 @@ void instruction (node *ast) {
 
 }
 
-void initialisation(node *ast, Data_type type) {
+void initialisation(node *a, Data_type type) {
+
+    node* n_init = new_node();
+    init_t init_stuct;
+    init_stuct.type = type;
+    n_init->ptr = &init_stuct;
+
+    n_init->type = INITIALISATION;
+
+    next_lexeme();
+
+    if (get_lexeme().nature != NAME) {
+        exit_analyse("");
+    }
+
+
+    // add name to list of variable
+
+    strcpy(n_init->key, get_lexeme().char_tab);
+
+
+    
+
+
+
 
 }
 
 
-void assignation(node *ast) {
+void assignation(node *a) {
 
 }
 

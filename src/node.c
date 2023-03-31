@@ -15,7 +15,10 @@ node *new_node(node_type type)
 
 void free_node(node *n)
 {
-    // il faudra libered *prt en fonction de sa stucture
+    // il faudra libérer *prt en fonction de sa stucture
+
+    free(n->ptr);
+
     free(n);
 }
 
