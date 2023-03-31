@@ -7,6 +7,10 @@ EXE = Boa
 build:interprete.o lexical_analyse.o lecture_caracteres.o
 	$(CC) $(FLAGS) $^ -o $(EXE)
 
+run: build
+	clear
+	./Boa ./../test/valid/simple.boa
+
 
 test: test.o list.o node.o tree.o
 	$(CC) $(FLAGS) $^ -o test.bin
