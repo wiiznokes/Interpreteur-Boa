@@ -19,16 +19,17 @@ char log_message[200];
 
 bool add_global(node *n) {
 
-    if(globals.size == 0) {
-        add_tail(&globals, n);
-        return true;
+    if (n == NULL) {
+        exit(1);
     }
 
+    if (n->type != N_VARIABLE && n->type != N_FUN) {
+        exit (1);
+    }
 
     node *tmp = globals.head;
 
-    while(tmp != NULL) {
-
+    while(tmp) {
         if (!strcmp(tmp->name, n->name)) {
             snprintf(log_message, 200, "variable %s already defined",
                 n->name);
@@ -38,32 +39,55 @@ bool add_global(node *n) {
         tmp = tmp->right;
     }
 
+
     add_tail(&globals, n);
     return true;
 }
 
 
+bool add_local(node *n) {
+    if (n == NULL) {
+        exit(1);
+    }
+
+    if (n->type != N_VARIABLE) {
+        exit (1);
+    }
+
+    if(!get_by_name(n->name)) {
+        add_tail(&locals, n);
+        return true;
+    }
+
+    return false;
+    
+}
+
+
+void clear_local() {
+    clear_list(&locals);
+}
 
 
 
 node *get_by_name(char *name) {
-
-    if(globals.size == 0) {
-        return NULL;
-    }
-
-
+   
     node *tmp = globals.head;
 
-    while(tmp != NULL) {
-
-        if (!strcmp(tmp->name, name)) {
-            return tmp;
-        }
-
+    while(tmp) {
+        if (!strcmp(tmp->name, name)) return tmp;
         tmp = tmp->right;
     }
 
+
+
+    tmp = locals.head;
+
+    while(tmp) {
+        if (!strcmp(tmp->name, name)) return tmp;
+        tmp = tmp->right;
+    }
+    
     return NULL;
 }
 

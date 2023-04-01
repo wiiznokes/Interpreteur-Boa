@@ -18,14 +18,14 @@ tree ast;
 
 void instructions (node *a);
 void instruction (node *a);
-void initialisation(node *a, DataType type);
+void initialisation(node *a, DataType data_type);
 void assignation(node *a);
 void function(node *a);
 void if_statement(node *a);
 void while_loop(node *a);
-void operations(node *a, DataType type);
-void operations_rec(node *a, DataType type);
-void operation(node *a, DataType type);
+void operations(node *a, DataType data_type);
+void operations_rec(node *a, DataType data_type);
+void operation(node *a, DataType data_type);
 void args(node *a);
 
 void if_block(node *a);
@@ -82,7 +82,6 @@ void instructions (node *a) {
     default:
         exit_analyse("");
     }
-
 }
 
 void instruction (node *a) {
@@ -104,9 +103,12 @@ void instruction (node *a) {
         exit_analyse("");
     }
 
+    if (get_lexeme().nature != END_INSTRUCTION) {
+        exit_analyse("une instruction doit finir par ';'");
+    }
 }
 
-void initialisation(node *a, DataType type) {
+void initialisation(node *a, DataType data_type) {
 
     a = new_node(N_INITIALISATION);
     
@@ -116,15 +118,14 @@ void initialisation(node *a, DataType type) {
         exit_analyse("");
     }
 
-    type = check_variable(N_VARIABLE, get_lexeme().char_tab, type);
-
-    if (type != D_UNDEFINED) {
+    if(check_variable(N_VARIABLE, get_lexeme().char_tab, data_type) != D_UNDEFINED) {
         exit_analyse("variable déjà initialisée");
     }
 
+   
     node *n = new_node(N_VARIABLE);
     strcpy(n->name, get_lexeme().char_tab);
-    n->type = type;
+    n->data_type = data_type;
 
     if (!add_global(n)) {
         exit_analyse("internal error: can't add global");
@@ -133,7 +134,7 @@ void initialisation(node *a, DataType type) {
 
     n = new_node(N_VARIABLE);
     strcpy(n->name, get_lexeme().char_tab);
-    n->type = type;
+    n->data_type = data_type;
     a->left = n;
    
     next_lexeme();
@@ -144,7 +145,7 @@ void initialisation(node *a, DataType type) {
     
     next_lexeme();
 
-    operations(a->right, type);
+    operations(a->right, data_type);
 
 }
 
@@ -157,66 +158,65 @@ void assignation(node *a) {
         exit_analyse("");
     }
 
-    DataType type = check_variable(N_VARIABLE, get_lexeme().char_tab, D_UNDEFINED);
+    DataType data_type = check_variable(N_VARIABLE, get_lexeme().char_tab, D_UNDEFINED);
 
-    if (type == D_UNDEFINED) {
+    if (data_type == D_UNDEFINED) {
         exit_analyse("variable non définie");
     }
 
 
     node *n = new_node(N_VARIABLE);
     strcpy(n->name, get_lexeme().char_tab);
-    n->type = type;
+    n->data_type = data_type;
     a->left = n;
     
 
     next_lexeme();
 
     if (get_lexeme().nature != ASSIGN) {
-        exit_analyse("");
+        exit_analyse("besoin du signe \"=\"");
     }
     
     next_lexeme();
 
-    operations(a->right, type);
+    operations(a->right, data_type);
 }
 
 
 
 
 
-void operation(node *a, DataType type) {
+void operation(node *a, DataType data_type) {
 
     switch (get_lexeme().nature)
     {
     case NAME:
 
-        type = check_variable(N_VARIABLE, a->name, type);
+        data_type = check_variable(N_VARIABLE, a->name, data_type);
 
-        if (type == D_UNDEFINED) {
+        if (data_type == D_UNDEFINED) {
             exit_analyse("variable non définie ou du mauvais type");
         }
 
-        node *n = new_node(N_VARIABLE);
-        strcpy(n->name, get_lexeme().char_tab);
-        n->type = type;
-        a->right = n;
+        a = new_node(N_VARIABLE);
+        strcpy(a->name, get_lexeme().char_tab);
+        a->data_type = data_type;
         break;
 
     case STRING:
-        if (type != D_CHAR) {
+        if (data_type != D_CHAR) {
             exit_analyse("besoin du type char");
         }
-        a->right = new_node(N_STRING);
-        a->right->string = get_lexeme().char_tab;
+        a = new_node(N_STRING);
+        strcpy(a->string, get_lexeme().char_tab);
         break;
 
     case NUMBER:
-        if (type != D_INT) {
+        if (data_type != D_INT) {
             exit_analyse("besoin du type int");
         }
-        a->right = new_node(N_NUMBER);
-        a->right->integer = atoi(get_lexeme().char_tab);
+        a = new_node(N_NUMBER);
+        a->integer = atoi(get_lexeme().char_tab);
         break;
 
     default:
@@ -229,27 +229,27 @@ void operation(node *a, DataType type) {
 
 
 
-void operations(node *a, DataType type) {
+void operations(node *a, DataType data_type) {
 
-    operation(a, type);
+    operation(a, data_type);
 
     next_lexeme();
 
-    operations_rec(a, type);
+    operations_rec(a, data_type);
 }
 
 
 
-void operations_rec(node *a, DataType type) {
+void operations_rec(node *a, DataType data_type) {
 
     switch (get_lexeme().nature)
     {
     case NAME:
     case STRING:
     case NUMBER:
-        operation(a, type);
+        operation(a, data_type);
         next_lexeme();
-        operations_rec(a, type);
+        operations_rec(a, data_type);
     default:
         break;
     }
@@ -261,14 +261,10 @@ void operations_rec(node *a, DataType type) {
 
 
 
-
-
-
-
 void exit_analyse(char *msg) {
 
     if (get_lexeme().nature != ERROR) {
-        printf("Erreur syntaxique %d:%d : lexeme %s non autorisé ici.\n%s\n",
+        printf("Erreur syntaxique %d:%d : %s non autorisé ici. %s\n",
            get_lexeme().line,
            get_lexeme().column, 
            nature_to_text(get_lexeme().nature),

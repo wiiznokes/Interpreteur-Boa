@@ -57,12 +57,12 @@ typedef struct node
     */
 
     // variable
-    char *name;
+    char name[256];
     DataType data_type;
 
     // valeur
     int integer;
-    char *string;
+    char string[256];
 
     // operateur
     Operateur op;

@@ -4,5 +4,5 @@ char chaine <- "hello" ;
 
 chaine = "world" ;
 
-chaine "world" ;
+chaine = "world" ;
 
