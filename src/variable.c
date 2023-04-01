@@ -1,10 +1,10 @@
-#include "string.h"
-#include "stdio.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "variable.h"
 #include "lexical_analyse.h"
 #include "node.h"
-
 
 
 list globals;
@@ -20,11 +20,13 @@ char log_message[200];
 bool add_global(node *n) {
 
     if (n == NULL) {
+        printf("internal error: add_global\n");
         exit(1);
     }
 
     if (n->type != N_VARIABLE && n->type != N_FUN) {
-        exit (1);
+        printf("internal error: add_global\n");
+        exit(1);
     }
 
     node *tmp = globals.head;
@@ -47,11 +49,13 @@ bool add_global(node *n) {
 
 bool add_local(node *n) {
     if (n == NULL) {
+        printf("internal error: add_local\n");
         exit(1);
     }
 
     if (n->type != N_VARIABLE) {
-        exit (1);
+        printf("internal error: add_local\n");
+        exit(1);
     }
 
     if(!get_by_name(n->name)) {
