@@ -18,14 +18,14 @@ tree ast;
 
 void instructions (node *a);
 void instruction (node *a);
-void initialisation(node *a, data_t type);
+void initialisation(node *a, DataType type);
 void assignation(node *a);
 void function(node *a);
 void if_statement(node *a);
 void while_loop(node *a);
-void operations(node *a, data_t type);
-void operations_rec(node *a, data_t type);
-void operation(node *a, data_t type);
+void operations(node *a, DataType type);
+void operations_rec(node *a, DataType type);
+void operation(node *a, DataType type);
 void args(node *a);
 
 void if_block(node *a);
@@ -106,7 +106,7 @@ void instruction (node *a) {
 
 }
 
-void initialisation(node *a, data_t type) {
+void initialisation(node *a, DataType type) {
 
     a = new_node(N_INITIALISATION);
     
@@ -116,10 +116,26 @@ void initialisation(node *a, data_t type) {
         exit_analyse("");
     }
 
-    a->left = new_variable(get_lexeme().char_tab, type);
-    
+    type = check_variable(N_VARIABLE, get_lexeme().char_tab, type);
+
+    if (type != D_UNDEFINED) {
+        exit_analyse("variable déjà initialisée");
+    }
+
+    node *n = new_node(N_VARIABLE);
+    strcpy(n->name, get_lexeme().char_tab);
+    n->type = type;
+
+    if (!add_global(n)) {
+        exit_analyse("internal error: can't add global");
+    }
 
 
+    n = new_node(N_VARIABLE);
+    strcpy(n->name, get_lexeme().char_tab);
+    n->type = type;
+    a->left = n;
+   
     next_lexeme();
 
     if (get_lexeme().nature != INIT) {
@@ -141,13 +157,17 @@ void assignation(node *a) {
         exit_analyse("");
     }
 
-    data_t type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+    DataType type = check_variable(N_VARIABLE, get_lexeme().char_tab, D_UNDEFINED);
 
     if (type == D_UNDEFINED) {
-        exit_analyse("");
+        exit_analyse("variable non définie");
     }
 
-    a->left = new_variable(get_lexeme().char_tab, type);
+
+    node *n = new_node(N_VARIABLE);
+    strcpy(n->name, get_lexeme().char_tab);
+    n->type = type;
+    a->left = n;
     
 
     next_lexeme();
@@ -165,23 +185,27 @@ void assignation(node *a) {
 
 
 
-void operation(node *a, data_t type) {
+void operation(node *a, DataType type) {
 
     switch (get_lexeme().nature)
     {
     case NAME:
 
-        type = check_variable(a->var->name, type);
+        type = check_variable(N_VARIABLE, a->name, type);
 
         if (type == D_UNDEFINED) {
-            exit_analyse("");
+            exit_analyse("variable non définie ou du mauvais type");
         }
-        a->right = new_variable(get_lexeme().char_tab, type);
+
+        node *n = new_node(N_VARIABLE);
+        strcpy(n->name, get_lexeme().char_tab);
+        n->type = type;
+        a->right = n;
         break;
 
     case STRING:
         if (type != D_CHAR) {
-            exit_analyse("");
+            exit_analyse("besoin du type char");
         }
         a->right = new_node(N_STRING);
         a->right->string = get_lexeme().char_tab;
@@ -189,14 +213,14 @@ void operation(node *a, data_t type) {
 
     case NUMBER:
         if (type != D_INT) {
-            exit_analyse("");
+            exit_analyse("besoin du type int");
         }
         a->right = new_node(N_NUMBER);
-        a->right->value = atoi(get_lexeme().char_tab);
+        a->right->integer = atoi(get_lexeme().char_tab);
         break;
 
     default:
-        exit_analyse("");
+        exit_analyse("besoin d'une operande");
         break;
     }
 
@@ -205,7 +229,7 @@ void operation(node *a, data_t type) {
 
 
 
-void operations(node *a, data_t type) {
+void operations(node *a, DataType type) {
 
     operation(a, type);
 
@@ -216,7 +240,7 @@ void operations(node *a, data_t type) {
 
 
 
-void operations_rec(node *a, data_t type) {
+void operations_rec(node *a, DataType type) {
 
     switch (get_lexeme().nature)
     {

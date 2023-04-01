@@ -3,23 +3,37 @@
 
 
 
-
-
 typedef enum
 {
     N_INITIALISATION,
     N_ASSIGNATION,
     N_VARIABLE,
-    N_IF,
-    N_ELSE,
-    N_WHILE,
-    N_FOR,
-    N_FUN,
-    
+
+
     N_OPERATEUR,
     N_STRING,
-    N_NUMBER
-} node_type;
+    N_NUMBER,
+
+
+    N_IF,
+    N_ELSE,
+
+    N_FUN,
+    N_ARG,
+    N_RETURN_TYPE
+
+} NodeType;
+
+
+typedef enum
+{
+    D_UNDEFINED,
+    D_UNIT, // mean nothing (void)
+    D_INT,
+    D_CHAR
+} DataType;
+
+
 
 typedef enum
 {
@@ -27,7 +41,7 @@ typedef enum
     N_MUL,
     N_MOINS,
     N_DIV
-} bin_operateur;
+} Operateur;
 
 
 typedef struct node
@@ -35,26 +49,39 @@ typedef struct node
     struct node *right;
     struct node *left;
 
-    node_type type;
+    NodeType type;
 
-    // optionnal
+    /*
+        Optional
+        todo: utiliser union ?
+    */
 
-    variable_t *var;
-    bin_operateur op;
+    // variable
+    char *name;
+    DataType data_type;
 
-    int value;
+    // valeur
+    int integer;
     char *string;
+
+    // operateur
+    Operateur op;
+
+    // function
+    DataType return_type;
+
+
 } node;
 
 
 
 
-node *new_node(node_type type);
+node *new_node(NodeType type);
 
 void free_node(node *n);
 
 
-char *node_type_to_text(node_type type);
+char *node_type_to_text(NodeType type);
 
 
 #endif

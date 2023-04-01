@@ -5,46 +5,37 @@
 
 
 #include "list.h"
-
-typedef enum
-{
-    D_UNDEFINED,
-    D_UNIT, // mean nothing
-    D_INT,
-    D_CHAR
-} data_t;
+#include "node.h"
 
 
 
-typedef struct
-{
-    char *name;
-    data_t type;
-
-    char *string;
-    int integer;
-} variable_t;
-
-typedef struct
-{
-    data_t return_type;
-    list args;            // list de variables
-    list local_variables; // list de variables locale
-} function_t;
 
 
 /*
-    verify if the name already exist in list.
+    - need to be a variable or a function
+    - verify if a variable or a function with the same name 
+    already exist inside global and local
+
+    - add node if it's not the case, show an error msg otherwise
 */
 bool add_global(node *n);
 
 
 /*
-    the type must not be D_UNDEFINED
+    - need to be a variable
+    - verify if a variable or a function with the same name 
+    already exist inside global and local
+
+    - add node if it's not the case, show an error msg otherwise
 */
-node *new_variable(char *name, data_t type);
+bool add_local(node *n);
 
 
+
+/*
+    clear local variables
+*/
+void clear_local();
 
 
 
@@ -62,7 +53,8 @@ node *get_by_name(char *name);
     return value == D_UNDEFINED meens the variable was 
     not found (with the same name and type)
 */
-data_t check_variable(char *name, data_t type);
+DataType check_variable(NodeType nodeType, char *name, DataType dataType);
+
 
 
 #endif
