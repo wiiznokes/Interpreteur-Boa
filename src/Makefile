@@ -27,4 +27,4 @@ clear:
 	clear
 
 clean:
-	rm -rf *.o $(EXE) test.bin
+	rm -rf *.o *.gch $(EXE) test.bin
