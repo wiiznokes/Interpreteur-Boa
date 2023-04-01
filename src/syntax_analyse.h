@@ -18,7 +18,7 @@ void stop_analyse();
 
 
 /*
-    Grammaire:
+    *** grammaire ***
 
     instructions: instuction instructions
     instructions:
@@ -30,16 +30,33 @@ void stop_analyse();
     instruction: while_loop
 
 
-    initialisation: type name <- operations
-    assignation: name = operations
+    initialisation: type name <- eag
+    assignation: name = eag
 
-    operation: name
-    operation: valeur
 
-    operations: operation operations_rec
+    *** from calculette ***
 
-    operations_rec: operation operations_rec
-    operations_rec:
+    eag: seq_terme
+    seq_terme: terme suite_seq_terme
+    suite_seq_terme: op1 terme suite_seq_terme
+    suite_seq_terme:
+    terme: seq_facteur
+    seq_facteur: facteur suite_seq_facteur
+    suite_seq_facteur: op2 facteur suite_seq_facteur
+    suite_seq_facteur:
+    facteur: NAME
+    facteur: INTEGER
+    facteur: CHAR
+    facteur: PARO eag PARF
+    facteur: MOINS facteur
+    op1: PLUS
+    op1: MOINS
+    op2: MUL
+
+
+
+
+    *** TODO ***
 
     fonction: fun name ( args ) : type { instructions }
 
@@ -54,25 +71,6 @@ void stop_analyse();
 
     while_loop: while ( operations ) { instructions }
 
-
-
-
-
-    grammaire calculette
-
-    eag → seq terme
-    seq terme → terme suite seq terme
-    suite seq terme → op1 terme suite seq terme
-    suite seq terme → ε
-    terme → seq facteur
-    seq facteur → facteur suite seq facteur
-    suite seq facteur → op2 facteur suite seq facteur
-    suite seq facteur → ε
-    facteur → ENTIER
-    facteur → PARO eag PARF
-    op1 → PLUS
-    op1 → MOINS
-    op2 → MUL
 
 */
 
