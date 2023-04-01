@@ -2,7 +2,8 @@
 #define NODE_H
 
 
-#include "variable.h"
+
+
 
 typedef enum
 {
@@ -28,7 +29,8 @@ typedef enum
     N_DIV
 } bin_operateur;
 
-typedef struct
+
+typedef struct node
 {
     struct node *right;
     struct node *left;
@@ -43,6 +45,9 @@ typedef struct
     int value;
     char *string;
 } node;
+
+
+
 
 node *new_node(node_type type);
 

@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lexical_analyse.h"
 #include "syntax_analyse.h"
+
+#include "lexical_analyse.h"
 #include "variable.h"
-#include "tree.h"
 #include "node.h"
 
 /* *********************
@@ -53,9 +53,9 @@ void fill_ast(char *fileName) {
 
 
 
-tree *get_ast() {
+tree get_ast() {
 
-    return &ast;
+    return ast;
 
 }
 
@@ -109,8 +109,7 @@ void instruction (node *a) {
 void initialisation(node *a, data_t type) {
 
     a = new_node(N_INITIALISATION);
-
- 
+    
     next_lexeme();
 
     if (get_lexeme().nature != NAME) {
@@ -253,7 +252,7 @@ void exit_analyse(char *msg) {
         );
     }
 
-    free_tree(&ast);
+    free_tree(ast);
 
     stop_lexical_analyse();
 
@@ -263,6 +262,6 @@ void exit_analyse(char *msg) {
 
 void stop_analyse() {
 
-    free_tree(&ast);
+    free_tree(ast);
     stop_lexical_analyse();
 }

@@ -6,10 +6,6 @@
 
 #include "list.h"
 
-
-typedef struct node node;
-
-
 typedef enum
 {
     D_UNDEFINED,

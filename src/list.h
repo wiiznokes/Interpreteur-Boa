@@ -5,8 +5,8 @@
 #include "stdbool.h"
 
 
+#include "node.h"
 
-typedef struct node node;
 
 typedef struct
 {

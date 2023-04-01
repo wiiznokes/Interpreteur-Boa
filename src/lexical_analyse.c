@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lecture_caracteres.h"
+
 #include "lexical_analyse.h"
+#include "lecture_caracteres.h"
 
 
 /*

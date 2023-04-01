@@ -3,6 +3,7 @@
 
 #include "node.h"
 
+
 node *new_node(node_type type)
 {
     node *n = malloc(sizeof(node));

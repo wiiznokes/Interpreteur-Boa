@@ -16,7 +16,7 @@ void fill_ast(char *fileName);
 void stop_analyse();
 
 
-tree *get_ast();
+tree get_ast();
 
 /*
     Grammaire:

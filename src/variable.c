@@ -3,7 +3,7 @@
 
 #include "variable.h"
 #include "lexical_analyse.h"
-
+#include "node.h"
 
 
 
