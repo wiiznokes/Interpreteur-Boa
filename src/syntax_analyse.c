@@ -16,10 +16,10 @@
 tree ast;
 
 
-void instructions (node *a);
-void instruction (node *a);
-void initialisation(node *a, DataType data_type);
-void assignation(node *a);
+void instructions (node **a);
+void instruction (node **a);
+void initialisation(node **a, DataType data_type);
+void assignation(node **a);
 void function(node *a);
 void if_statement(node *a);
 void while_loop(node *a);
@@ -48,22 +48,19 @@ void fill_ast(char *fileName) {
 
     init_lexical_analyse(fileName);
 
-    instructions(ast);
+    instructions(&ast);
+
+
+    print_tree(ast);
 }
 
 
-
-tree get_ast() {
-
-    return ast;
-
-}
 
 
 /* *************** */
 
 
-void instructions (node *a) {
+void instructions (node **a) {
 
     next_lexeme();
 
@@ -84,7 +81,7 @@ void instructions (node *a) {
     }
 }
 
-void instruction (node *a) {
+void instruction (node **a) {
 
     switch (get_lexeme().nature)
     {
@@ -108,9 +105,9 @@ void instruction (node *a) {
     }
 }
 
-void initialisation(node *a, DataType data_type) {
+void initialisation(node **a, DataType data_type) {
 
-    a = new_node(N_INITIALISATION);
+    *a = new_node(N_INITIALISATION);
     
     next_lexeme();
 
@@ -135,7 +132,7 @@ void initialisation(node *a, DataType data_type) {
     n = new_node(N_VARIABLE);
     strcpy(n->name, get_lexeme().char_tab);
     n->data_type = data_type;
-    a->left = n;
+    (*a)->left = n;
    
     next_lexeme();
 
@@ -145,14 +142,14 @@ void initialisation(node *a, DataType data_type) {
     
     next_lexeme();
 
-    operations(a->right, data_type);
+    operations((*a)->right, data_type);
 
 }
 
 
-void assignation(node *a) {
+void assignation(node **a) {
 
-    a = new_node(N_ASSIGNATION);
+    *a = new_node(N_ASSIGNATION);
 
     if (get_lexeme().nature != NAME) {
         exit_analyse("");
@@ -168,7 +165,7 @@ void assignation(node *a) {
     node *n = new_node(N_VARIABLE);
     strcpy(n->name, get_lexeme().char_tab);
     n->data_type = data_type;
-    a->left = n;
+    (*a)->left = n;
     
 
     next_lexeme();
@@ -179,7 +176,7 @@ void assignation(node *a) {
     
     next_lexeme();
 
-    operations(a->right, data_type);
+    operations((*a)->right, data_type);
 }
 
 
