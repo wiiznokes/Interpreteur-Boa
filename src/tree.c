@@ -30,7 +30,7 @@ static void print_tree_helper(node *n, int depth, int type)
     {
         return;
     }
-    print_tree_helper(n->left, depth + 1, 1);
+    print_tree_helper(n->right, depth + 1, 1);
     for (int i = 0; i < depth; i++)
     {
         printf("│   ");
@@ -51,7 +51,7 @@ static void print_tree_helper(node *n, int depth, int type)
     }
     
     printf("%s\n", node_type_to_text(n->type));
-    print_tree_helper(n->right, depth + 1, 2);
+    print_tree_helper(n->left, depth + 1, 2);
 }
 
 

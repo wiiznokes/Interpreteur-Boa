@@ -73,7 +73,8 @@ void instructions (node **a) {
     case CHAR:
     case NAME:
         instruction(a);
-        instructions(a);
+        // inject a pointeur of pointer of a->right
+        instructions(&(*a)->right);
         break;
 
     default:
