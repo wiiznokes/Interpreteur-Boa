@@ -1,10 +1,14 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "node.h"
+
 #include "stdbool.h"
 
-typedef struct list
+
+#include "node.h"
+
+
+typedef struct
 {
 	int size;
 	node *head;

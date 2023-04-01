@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lecture_caracteres.h"
+
 #include "lexical_analyse.h"
+#include "lecture_caracteres.h"
 
 
 /*
@@ -151,6 +152,10 @@ char *nature_to_text(NatureLexeme nature)
         return "END_INSTRUCTION";
     case END_FILE:
         return "END_FILE";
+
+    default:
+        printf("internal error: nature_to_text\n");
+        exit(1);
     }
 }
 
@@ -361,6 +366,10 @@ bool transition(char c)
         default:
             return false;
         }
+
+    default:
+        printf ("internal error: transition, you forgot a state %d\n", current_state);
+        exit(1);
     }
 }
 

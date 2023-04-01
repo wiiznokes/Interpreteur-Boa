@@ -3,7 +3,8 @@
 
 #include "node.h"
 
-node *new_node(node_type type)
+
+node *new_node(NodeType type)
 {
     node *n = malloc(sizeof(node));
     n->left = NULL;
@@ -15,28 +16,44 @@ node *new_node(node_type type)
 
 void free_node(node *n)
 {
-    // il faudra libérer *prt en fonction de sa stucture
-
-    free(n->ptr);
-
     free(n);
 }
 
 
 
 
-char *node_type_to_text(node_type type)
+char *node_type_to_text(NodeType type)
 {
     switch (type)
     {
-    case OPERATEUR:
-        return "OPERATEUR";
-    case VALEUR:
-        return "VALEUR";
+    case N_INITIALISATION:
+        return "N_INITIALISATION";
+    case N_ASSIGNATION:
+        return "N_ASSIGNATION";
+    case N_VARIABLE:
+        return "N_VARIABLE";
+
+    case N_OPERATEUR:
+        return "N_OPERATEUR";
+    case N_STRING:
+        return "N_STRING";
+    case N_NUMBER:
+        return "N_NUMBER";
+
+    case N_IF:
+        return "N_IF";
+    case N_ELSE:
+        return "N_ELSE";
+
+    case N_FUN:
+        return "N_FUN";
+    case N_ARG:
+        return "N_FUN";
+    case N_RETURN_TYPE:
+        return "N_FUN";
+
+    default:
+        printf("internal error: node_type_to_text\n");
+        exit(1);
     }
-}
-void print_node(node *n)
-{
-    
-    printf("%s", node_type_to_text(n->type));
 }

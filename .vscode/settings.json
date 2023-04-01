@@ -19,6 +19,9 @@
         "node.h": "c",
         "tree.h": "c",
         "lexical_analyse.h": "c",
-        "syntax_analyse.h": "c"
+        "syntax_analyse.h": "c",
+        "variable.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c"
     }
 }

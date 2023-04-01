@@ -2,16 +2,21 @@
 #define SYNTAX_ANALYSE_H
 
 #include "stdbool.h"
-#include "list.h"
+
+
 #include "tree.h"
-#include "variable.h"
 
 
 
 
 
-void fill_ast(char *fileName, tree *ast);
+void fill_ast(char *fileName);
 
+
+void stop_analyse();
+
+
+tree get_ast();
 
 /*
     Grammaire:
@@ -24,33 +29,33 @@ void fill_ast(char *fileName, tree *ast);
     instruction: fonction
     instruction: if_statement
     instruction: while_loop
-    instruction: for_loop
 
 
-    initialisation: type name <- operation
-    assignation: name = operation
+    initialisation: type name <- operations
+    assignation: name = operations
 
     operation: name
     operation: valeur
-    operation: la même que la calculette
 
-    operations: operation operations
-    operations:
+    operations: operation operations_rec
+
+    operations_rec: operation operations_rec
+    operations_rec:
 
     fonction: fun name ( args ) : type { instructions }
 
-    args: operations
+    args: operations_rec
 
     if_statement: if_block else_block
     if_statement: if_block
 
 
-    if_block: if ( operation ) { instructions }
+    if_block: if ( operations ) { instructions }
     else_block: else { instructions }
 
-    while_loop: while ( operation ) { instructions }
+    while_loop: while ( operations ) { instructions }
 
-    for_loop: for ( operation ) { instructions }
+
 
 
 

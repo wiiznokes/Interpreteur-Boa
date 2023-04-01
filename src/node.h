@@ -2,21 +2,38 @@
 #define NODE_H
 
 
-#include "variable.h"
 
 typedef enum
 {
-    INITIALISATION,
-    AFFECTATION,
-    IF,
-    ELSE,
-    WHILE,
-    FOR,
-    FUN,
-    
-    OPERATEUR,
-    VALEUR
-} node_type;
+    N_INITIALISATION,
+    N_ASSIGNATION,
+    N_VARIABLE,
+
+
+    N_OPERATEUR,
+    N_STRING,
+    N_NUMBER,
+
+
+    N_IF,
+    N_ELSE,
+
+    N_FUN,
+    N_ARG,
+    N_RETURN_TYPE
+
+} NodeType;
+
+
+typedef enum
+{
+    D_UNDEFINED,
+    D_UNIT, // mean nothing (void)
+    D_INT,
+    D_CHAR
+} DataType;
+
+
 
 typedef enum
 {
@@ -24,42 +41,47 @@ typedef enum
     N_MUL,
     N_MOINS,
     N_DIV
-} TypeOperateur;
+} Operateur;
+
 
 typedef struct node
 {
     struct node *right;
     struct node *left;
 
-    node_type type;
-
-    char *key; // pourra representé le nom d'une fonction, ou du variable
+    NodeType type;
 
     /*
-        pointeur vers une structure générique
-        permettra d'avoir une structure pour chaque node_type
-        en utilisant l'interface de list.h tt le temps
+        Optional
+        todo: utiliser union ?
     */
-    void *ptr;
+
+    // variable
+    char *name;
+    DataType data_type;
+
+    // valeur
+    int integer;
+    char *string;
+
+    // operateur
+    Operateur op;
+
+    // function
+    DataType return_type;
+
+
 } node;
 
-node *new_node(node_type type);
+
+
+
+node *new_node(NodeType type);
 
 void free_node(node *n);
 
-void print_node(node *n);
 
-
-
-
-typedef struct init_t
-{
-    Data_type type;
-} init_t;
-
-
-
-
+char *node_type_to_text(NodeType type);
 
 
 #endif
