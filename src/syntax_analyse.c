@@ -20,18 +20,16 @@ void instructions (node **a);
 void instruction (node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
-void function(node *a);
-void if_statement(node *a);
-void while_loop(node *a);
-void operations(node *a, DataType data_type);
-void operations_rec(node *a, DataType data_type);
-void operation(node *a, DataType data_type);
-void args(node *a);
+void function(node **a);
+void if_statement(node **a);
+void while_loop(node **a);
+void operations(node **a, DataType data_type);
+void operations_rec(node **a, DataType data_type);
+void operation(node **a, DataType data_type);
+void args(node **a);
 
-void if_block(node *a);
-void else_block(node *a);
-void args(node *a);
-
+void if_block(node **a);
+void else_block(node **a);
 
 void exit_analyse(char *msg);
 
@@ -143,7 +141,7 @@ void initialisation(node **a, DataType data_type) {
     
     next_lexeme();
 
-    operations((*a)->right, data_type);
+    operations(&(*a)->right, data_type);
 
 }
 
@@ -177,44 +175,47 @@ void assignation(node **a) {
     
     next_lexeme();
 
-    operations((*a)->right, data_type);
+    operations(&(*a)->left, data_type);
 }
 
 
 
 
 
-void operation(node *a, DataType data_type) {
+void operation(node **a, DataType data_type) {
 
     switch (get_lexeme().nature)
     {
     case NAME:
 
-        data_type = check_variable(N_VARIABLE, a->name, data_type);
+        data_type = check_variable(N_VARIABLE, get_lexeme().char_tab, data_type);
 
         if (data_type == D_UNDEFINED) {
             exit_analyse("variable non définie ou du mauvais type");
         }
 
-        a = new_node(N_VARIABLE);
-        strcpy(a->name, get_lexeme().char_tab);
-        a->data_type = data_type;
+        node *n = new_node(N_VARIABLE);
+        strcpy(n->name, get_lexeme().char_tab);
+        n->data_type = data_type;
+        *a = n;
         break;
 
     case STRING:
         if (data_type != D_CHAR) {
             exit_analyse("besoin du type char");
         }
-        a = new_node(N_STRING);
-        strcpy(a->string, get_lexeme().char_tab);
+        n = new_node(N_STRING);
+        strcpy(n->string, get_lexeme().char_tab);
+        *a = n;
         break;
 
     case NUMBER:
         if (data_type != D_INT) {
             exit_analyse("besoin du type int");
         }
-        a = new_node(N_NUMBER);
-        a->integer = atoi(get_lexeme().char_tab);
+        n = new_node(N_NUMBER);
+        n->integer = atoi(get_lexeme().char_tab);
+        *a = n;
         break;
 
     default:
@@ -227,7 +228,7 @@ void operation(node *a, DataType data_type) {
 
 
 
-void operations(node *a, DataType data_type) {
+void operations(node **a, DataType data_type) {
 
     operation(a, data_type);
 
@@ -238,7 +239,7 @@ void operations(node *a, DataType data_type) {
 
 
 
-void operations_rec(node *a, DataType data_type) {
+void operations_rec(node **a, DataType data_type) {
 
     switch (get_lexeme().nature)
     {
