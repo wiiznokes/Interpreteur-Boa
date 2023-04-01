@@ -24,13 +24,13 @@ void free_tree(tree t)
             1 -> left
             2 -> right
 */
-static void print_tree_helper(tree t, int depth, int type)
+static void print_tree_helper(node *n, int depth, int type)
 {
-    if (t == NULL)
+    if (n == NULL)
     {
         return;
     }
-    print_tree_helper(t->left, depth + 1, 1);
+    print_tree_helper(n->left, depth + 1, 1);
     for (int i = 0; i < depth; i++)
     {
         printf("│   ");
@@ -49,9 +49,9 @@ static void print_tree_helper(tree t, int depth, int type)
     default:
         exit(1);
     }
-    print_node(t);
-    printf("\n");
-    print_tree_helper(t->right, depth + 1, 2);
+    
+    printf("%s\n", node_type_to_text(n));
+    print_tree_helper(n->right, depth + 1, 2);
 }
 
 

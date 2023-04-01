@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 FLAGS = -g -Wall
 EXE = Boa
 
@@ -7,7 +7,7 @@ EXE = Boa
 build: clear build_boa
 
 
-build_boa: interprete.o syntax_analyse.o lexical_analyse.o lecture_caracteres.o
+build_boa: interprete.o syntax_analyse.o lexical_analyse.o lecture_caracteres.o node.o tree.o variable.o list.o
 	$(CC) $(FLAGS) $^ -o $(EXE)
 
 

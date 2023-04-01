@@ -6,16 +6,18 @@
 
 typedef enum
 {
-    INITIALISATION,
-    AFFECTATION,
-    IF,
-    ELSE,
-    WHILE,
-    FOR,
-    FUN,
+    N_INITIALISATION,
+    N_ASSIGNATION,
+    N_VARIABLE,
+    N_IF,
+    N_ELSE,
+    N_WHILE,
+    N_FOR,
+    N_FUN,
     
-    OPERATEUR,
-    VALEUR
+    N_OPERATEUR,
+    N_STRING,
+    N_NUMBER
 } node_type;
 
 typedef enum
@@ -24,42 +26,30 @@ typedef enum
     N_MUL,
     N_MOINS,
     N_DIV
-} TypeOperateur;
+} bin_operateur;
 
-typedef struct node
+typedef struct
 {
     struct node *right;
     struct node *left;
 
     node_type type;
 
-    char *key; // pourra representé le nom d'une fonction, ou du variable
+    // optionnal
 
-    /*
-        pointeur vers une structure générique
-        permettra d'avoir une structure pour chaque node_type
-        en utilisant l'interface de list.h tt le temps
-    */
-    void *ptr;
+    variable_t *var;
+    bin_operateur op;
+
+    int value;
+    char *string;
 } node;
 
 node *new_node(node_type type);
 
 void free_node(node *n);
 
-void print_node(node *n);
 
-
-
-
-typedef struct init_t
-{
-    Data_type type;
-} init_t;
-
-
-
-
+char *node_type_to_text(node_type type);
 
 
 #endif

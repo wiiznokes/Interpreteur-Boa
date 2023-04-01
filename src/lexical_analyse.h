@@ -43,4 +43,6 @@ void stop_lexical_analyse();
 
 char* nature_to_text(NatureLexeme nature);
 
+
+
 #endif

@@ -4,30 +4,32 @@
 
 #include "lexical_analyse.h"
 #include "syntax_analyse.h"
-
+#include "variable.h"
+#include "tree.h"
+#include "node.h"
 
 /* *********************
     private
 
 */
 
+tree ast;
+
+
 void instructions (node *a);
 void instruction (node *a);
-void initialisation(node *a, Data_type type);
+void initialisation(node *a, data_t type);
 void assignation(node *a);
 void function(node *a);
 void if_statement(node *a);
 void while_loop(node *a);
-void for_loop(node *a);
-void operations(node *a);
-void operation(node *a);
+void operations(node *a, data_t type);
+void operations_rec(node *a, data_t type);
+void operation(node *a, data_t type);
 void args(node *a);
 
 void if_block(node *a);
 void else_block(node *a);
-void args(node *a);
-void operations(node *a);
-void operation(node *a);
 void args(node *a);
 
 
@@ -37,13 +39,28 @@ void exit_analyse(char *msg);
 
 /* *************** */
 
-void fill_ast(char *fileName, tree *a) {
+
+/**
+    interface impl
+*/
+
+void fill_ast(char *fileName) {
 
     init_lexical_analyse(fileName);
 
-    instructions(a);
+    instructions(ast);
 }
 
+
+
+tree *get_ast() {
+
+    return &ast;
+
+}
+
+
+/* *************** */
 
 
 void instructions (node *a) {
@@ -89,44 +106,132 @@ void instruction (node *a) {
 
 }
 
-void initialisation(node *a, Data_type type) {
+void initialisation(node *a, data_t type) {
 
-    node* n_init = new_node();
-    init_t init_stuct;
-    init_stuct.type = type;
-    n_init->ptr = &init_stuct;
+    a = new_node(N_INITIALISATION);
 
-    n_init->type = INITIALISATION;
-
+ 
     next_lexeme();
 
     if (get_lexeme().nature != NAME) {
         exit_analyse("");
     }
 
-
-    // add name to list of variable
-
-    strcpy(n_init->key, get_lexeme().char_tab);
-
-
+    a->left = new_variable(get_lexeme().char_tab, type);
     
 
 
+    next_lexeme();
 
+    if (get_lexeme().nature != INIT) {
+        exit_analyse("");
+    }
+    
+    next_lexeme();
+
+    operations(a->right, type);
 
 }
 
 
 void assignation(node *a) {
 
+    a = new_node(N_ASSIGNATION);
+
+    if (get_lexeme().nature != NAME) {
+        exit_analyse("");
+    }
+
+    data_t type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+
+    if (type == D_UNDEFINED) {
+        exit_analyse("");
+    }
+
+    a->left = new_variable(get_lexeme().char_tab, type);
+    
+
+    next_lexeme();
+
+    if (get_lexeme().nature != ASSIGN) {
+        exit_analyse("");
+    }
+    
+    next_lexeme();
+
+    operations(a->right, type);
 }
 
 
 
 
 
+void operation(node *a, data_t type) {
 
+    switch (get_lexeme().nature)
+    {
+    case NAME:
+
+        type = check_variable(a->var->name, type);
+
+        if (type == D_UNDEFINED) {
+            exit_analyse("");
+        }
+        a->right = new_variable(get_lexeme().char_tab, type);
+        break;
+
+    case STRING:
+        if (type != D_CHAR) {
+            exit_analyse("");
+        }
+        a->right = new_node(N_STRING);
+        a->right->string = get_lexeme().char_tab;
+        break;
+
+    case NUMBER:
+        if (type != D_INT) {
+            exit_analyse("");
+        }
+        a->right = new_node(N_NUMBER);
+        a->right->value = atoi(get_lexeme().char_tab);
+        break;
+
+    default:
+        exit_analyse("");
+        break;
+    }
+
+}
+
+
+
+
+void operations(node *a, data_t type) {
+
+    operation(a, type);
+
+    next_lexeme();
+
+    operations_rec(a, type);
+}
+
+
+
+void operations_rec(node *a, data_t type) {
+
+    switch (get_lexeme().nature)
+    {
+    case NAME:
+    case STRING:
+    case NUMBER:
+        operation(a, type);
+        next_lexeme();
+        operations_rec(a, type);
+    default:
+        break;
+    }
+
+}
 
 
 
@@ -148,8 +253,16 @@ void exit_analyse(char *msg) {
         );
     }
 
+    free_tree(&ast);
+
     stop_lexical_analyse();
 
     exit(1);
 }
 
+
+void stop_analyse() {
+
+    free_tree(&ast);
+    stop_lexical_analyse();
+}

@@ -365,10 +365,7 @@ void print_list(list *l)
 
     while (n != NULL)
     {
-        printf("%d[", i);
-        print_node(n);
-        printf("], ");
-
+        printf("%d[%s], ", i, node_type_to_text(n->type));
         n = n->right;
         i++;
     }
