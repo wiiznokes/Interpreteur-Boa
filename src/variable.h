@@ -9,7 +9,7 @@
 
 
 /*
-    this file is only use for the lexical analyse
+    this file is only use for the syntax analyse
 */
 
 
