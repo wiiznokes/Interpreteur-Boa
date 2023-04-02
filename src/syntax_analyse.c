@@ -165,7 +165,7 @@ void assignation(node **a)
         exit_analyse("");
     }
 
-    DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED,true);
+    DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
 
     if (data_type == D_UNDEFINED)
     {
@@ -295,18 +295,17 @@ void facteur(node **a1, DataType data_type)
         {
             exit_analyse("");
         }
-        if (data_type != D_INT)
-        {
-            exit_analyse("besoin du type int");
-        }
-        *a1 = creer_number(atoi(get_lexeme().char_tab));
+        *a1 = creer_variable(get_lexeme().char_tab, data_type);
         next_lexeme_or_quit();
         break;
 
     case NUMBER:
         if (data_type != D_INT)
         {
-            exit_analyse("besoin du type int");
+            printf("besoin du type %s: %s\n",
+                data_type_to_text(data_type),
+                get_lexeme().char_tab);
+            exit_analyse("");
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
         next_lexeme_or_quit();
@@ -315,7 +314,10 @@ void facteur(node **a1, DataType data_type)
     case STRING:
         if (data_type != D_CHAR)
         {
-            exit_analyse("besoin du type char");
+            printf("besoin du type %s: %s\n",
+                data_type_to_text(data_type),
+                get_lexeme().char_tab);
+            exit_analyse("");
         }
         *a1 = creer_string(get_lexeme().char_tab);
         next_lexeme_or_quit();
@@ -330,7 +332,7 @@ void facteur(node **a1, DataType data_type)
         }
         else
         {
-            exit_analyse("erreur: PARENTHESES");
+            exit_analyse("erreur: parenthese");
         }
         break;
     default:
@@ -361,7 +363,7 @@ int op1(Operateur *op, DataType data_type)
 }
 
 int op2(Operateur *op, DataType data_type)
-{   
+{
     int return_value;
     switch (get_lexeme().nature)
     {
@@ -406,11 +408,12 @@ Operateur nature_lex_to_op(NatureLexeme nature)
     }
 }
 
-
-void next_lexeme_or_quit() {
+void next_lexeme_or_quit()
+{
     next_lexeme();
 
-    if (get_lexeme().nature == ERROR) {
+    if (get_lexeme().nature == ERROR)
+    {
         exit_analyse("");
     }
 }

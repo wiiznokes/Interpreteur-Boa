@@ -7,4 +7,4 @@ chaine = "world" ;
 
 
 
-entier = 8 + 9;
+chaine = chaine - chaine;

@@ -97,10 +97,10 @@ node *get_by_name(char *name)
 
 DataType check_variable(
     char *name,
-    DataType dataType,
+    DataType data_type,
     bool show_error_if_undefined)
 {
-    
+
     node *n = get_by_name(name);
 
     if (n == NULL)
@@ -112,18 +112,18 @@ DataType check_variable(
         return D_UNDEFINED;
     }
 
-    if (dataType == D_UNDEFINED)
+    if (data_type == D_UNDEFINED)
     {
         return n->data_type;
     }
 
-    if (dataType == n->data_type)
+    if (data_type == n->data_type)
     {
-        return dataType;
+        return data_type;
     }
     else
     {
-        printf("variable %s n'a pas le type\n", name);
+        printf("variable %s n'a pas le type %s\n", name, data_type_to_text(data_type));
         return D_UNDEFINED;
     }
 }

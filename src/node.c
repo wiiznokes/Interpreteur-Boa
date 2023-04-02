@@ -3,7 +3,6 @@
 
 #include "node.h"
 
-
 node *new_node(NodeType type)
 {
     node *n = malloc(sizeof(node));
@@ -18,9 +17,6 @@ void free_node(node *n)
 {
     free(n);
 }
-
-
-
 
 char *node_type_to_text(NodeType type)
 {
@@ -44,6 +40,24 @@ char *node_type_to_text(NodeType type)
 
     default:
         printf("internal error: node_type_to_text\n");
+        exit(1);
+    }
+}
+
+char *data_type_to_text(DataType type)
+{
+    switch (type)
+    {
+    case D_UNDEFINED:
+        return "D_UNDEFINED";
+    case D_UNIT:
+        return "D_UNIT";
+    case D_INT:
+        return "D_INT";
+    case D_CHAR:
+        return "D_CHAR";
+    default:
+        printf("internal error: data_type_to_text\n");
         exit(1);
     }
 }

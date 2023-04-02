@@ -78,5 +78,6 @@ void free_node(node *n);
 
 char *node_type_to_text(NodeType type);
 
+char *data_type_to_text(DataType type);
 
 #endif
