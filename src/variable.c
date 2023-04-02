@@ -13,8 +13,6 @@ list locals;
 
 
 void show_error(char *msg);
-char log_message[200];
-
 
 
 bool add_global(node *n) {
@@ -33,9 +31,7 @@ bool add_global(node *n) {
 
     while(tmp) {
         if (!strcmp(tmp->name, n->name)) {
-            snprintf(log_message, 200, "variable %s already defined",
-                n->name);
-            show_error(log_message);
+            show_error("variable already defined");
             return false;
         }
         tmp = tmp->right;

@@ -17,7 +17,7 @@
 tree ast;
 
 
-void instructions (tree *a);
+void instructions (node **a);
 void instruction (node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
@@ -65,7 +65,7 @@ void fill_ast(char *fileName) {
 /* *************** */
 
 
-void instructions (tree *a) {
+void instructions (node **a) {
 
     next_lexeme();
 
@@ -77,16 +77,10 @@ void instructions (tree *a) {
     case INT:
     case CHAR:
     case NAME:
-        instruction(a);
-        // inject a pointeur of pointer of a->right
-
-        //why this has not the same behavior ?
-        node *n = (*a)->right;
-        instructions(&n);
-
-
-
-        //instructions(&(*a)->right);
+        node *a1;
+        instruction(&a1);
+        *a = a1;
+        instructions(&(a1->right));
         break;
 
     default:
