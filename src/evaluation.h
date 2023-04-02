@@ -3,7 +3,8 @@
 
 #include "tree.h"
 
-void evaluate(tree ast);
+void start_evaluation();
 
+void stop_evaluation();
 
 #endif

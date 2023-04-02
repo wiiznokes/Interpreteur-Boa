@@ -14,14 +14,13 @@
 
 */
 
-tree ast;
+
 
 void instructions(node **a);
 void instruction(node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
 
-void exit_analyse(char *msg);
 
 // from calculette
 
@@ -39,6 +38,7 @@ int op2(Operateur *op, DataType data_type);
 
 Operateur nature_lex_to_op(NatureLexeme nature);
 void next_lexeme_or_quit();
+void exit_analyse(char *msg);
 
 /* *************** */
 
@@ -50,11 +50,21 @@ void fill_ast(char *fileName)
 {
 
     init_lexical_analyse(fileName);
+    
+    start_variable();
 
-    instructions(&ast);
+    instructions(get_ast());
 
-    print_tree(ast);
+    print_tree(*get_ast());
 }
+
+
+void stop_analyse()
+{
+    stop_variable();
+    stop_lexical_analyse();
+}
+
 
 /* *************** */
 
@@ -189,31 +199,12 @@ void assignation(node **a)
     (*a)->right = a1;
 }
 
-void exit_analyse(char *msg)
-{
 
-    if (get_lexeme().nature != ERROR)
-    {
-        printf("Erreur syntaxique %d:%d : %s non autorisé ici. %s\n",
-               get_lexeme().line,
-               get_lexeme().column,
-               nature_to_text(get_lexeme().nature),
-               msg);
-    }
 
-    free_tree(ast);
 
-    stop_lexical_analyse();
 
-    exit(1);
-}
 
-void stop_analyse()
-{
 
-    free_tree(ast);
-    stop_lexical_analyse();
-}
 
 /* from calculette */
 
@@ -340,21 +331,19 @@ int op1(Operateur *op, DataType data_type)
     switch (get_lexeme().nature)
     {
     case PLUS:
-        break;
     case MINUS:
         if (data_type == D_CHAR)
         {
-            exit_analyse("can't use '-' with a string\n");
+            exit_analyse("can't use operator with strings\n");
         }
+         *op = nature_lex_to_op(get_lexeme().nature);
+        next_lexeme_or_quit();
+        return 1;
         break;
 
     default:
         return 0;
     }
-
-    *op = nature_lex_to_op(get_lexeme().nature);
-    next_lexeme_or_quit();
-    return 1;
 }
 
 int op2(Operateur *op, DataType data_type)
@@ -366,8 +355,8 @@ int op2(Operateur *op, DataType data_type)
         return_value = 1;
         break;
     case DIV:
-        break;
         return_value = 2;
+        break;
     default:
         return 0;
     }
@@ -383,6 +372,26 @@ int op2(Operateur *op, DataType data_type)
 }
 
 // helper functions
+
+
+void exit_analyse(char *msg)
+{
+
+    if (get_lexeme().nature != ERROR)
+    {
+        printf("Erreur syntaxique %d:%d : %s non autorisé ici. %s\n",
+               get_lexeme().line,
+               get_lexeme().column,
+               nature_to_text(get_lexeme().nature),
+               msg);
+    }
+
+    stop_analyse();
+    free_ast();
+
+    exit(1);
+}
+
 
 Operateur nature_lex_to_op(NatureLexeme nature)
 {

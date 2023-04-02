@@ -8,6 +8,16 @@
 #include "node.h"
 
 
+/*
+    this file is only use for the lexical analyse
+*/
+
+
+// init lists of variables
+void start_variable();
+
+// free list of variables
+void stop_variable();
 
 
 
@@ -57,6 +67,7 @@ DataType check_variable(
     char *name,
     DataType dataType,
     bool show_error_if_undefined);
+
 
 
 #endif

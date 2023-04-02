@@ -22,6 +22,8 @@
         "syntax_analyse.h": "c",
         "variable.h": "c",
         "stdlib.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "evaluation.h": "c",
+        "ast_construction.h": "c"
     }
 }

@@ -6,9 +6,8 @@
 #include "lexical_analyse.h"
 #include "node.h"
 
-list globals;
-
-list locals;
+list *globals;
+list *locals;
 
 void show_error(char *msg);
 
@@ -27,7 +26,7 @@ bool add_global(node *n)
         exit(1);
     }
 
-    node *tmp = globals.head;
+    node *tmp = globals->head;
 
     while (tmp)
     {
@@ -39,7 +38,7 @@ bool add_global(node *n)
         tmp = tmp->right;
     }
 
-    add_tail(&globals, n);
+    add_tail(globals, n);
     return true;
 }
 
@@ -59,7 +58,7 @@ bool add_local(node *n)
 
     if (!get_by_name(n->name))
     {
-        add_tail(&locals, n);
+        add_tail(locals, n);
         return true;
     }
 
@@ -68,13 +67,13 @@ bool add_local(node *n)
 
 void clear_local()
 {
-    clear_list(&locals);
+    clear_list(locals);
 }
 
 node *get_by_name(char *name)
 {
 
-    node *tmp = globals.head;
+    node *tmp = globals->head;
 
     while (tmp)
     {
@@ -83,7 +82,7 @@ node *get_by_name(char *name)
         tmp = tmp->right;
     }
 
-    tmp = locals.head;
+    tmp = locals->head;
 
     while (tmp)
     {
@@ -134,4 +133,16 @@ void show_error(char *msg)
            get_lexeme().line,
            get_lexeme().column,
            msg);
+}
+
+
+
+void start_variable() {
+    globals = new_list();
+    locals = new_list();
+}
+
+void stop_variable() {
+    free_list(globals);
+    free_list(locals);
 }

@@ -4,6 +4,13 @@
 
 
 #include "node.h"
+#include "tree.h"
+
+
+tree *get_ast();
+
+void free_ast();
+
 
 /*
     renvoie un arbre abstrait de nature OPERATEUR,  d'operateur opr 

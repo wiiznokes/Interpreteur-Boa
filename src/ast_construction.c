@@ -3,6 +3,20 @@
 #include <string.h>
 #include "ast_construction.h"
 
+
+
+tree ast;
+
+
+tree *get_ast() {
+      return &ast;
+}
+
+void free_ast() {
+      free_tree(ast);
+}
+
+
 node *creer_operation(Operateur op , node *op_left , node *op_right)
 {
       node *n = new_node(N_OPERATION);

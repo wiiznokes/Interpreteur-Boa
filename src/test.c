@@ -16,16 +16,21 @@ void modif(t **var) {
     (*var)->a = 10;
 }
 
+
+
+void eval() {
+
+    return "bonjour";
+}
+
+
 int main(int argc, char **argv)
 {
 
    
-    t *var;
+    char *res = (char *)eval();
 
-    modif(&var);
-
-
-    printf("%d\n", var->a);
+    printf("%s\n", res);
 
 
     return 0;

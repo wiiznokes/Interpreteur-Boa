@@ -33,8 +33,8 @@ typedef enum
 typedef enum
 {
     O_PLUS,
-    O_MUL,
     O_MINUS,
+    O_MUL,
     O_DIV
 } Operateur;
 

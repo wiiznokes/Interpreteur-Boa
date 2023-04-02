@@ -1,13 +1,13 @@
 
-int entier2<- 2 * (3 + 6) / 2;
+int entier2 <- 2 * (3 + 6) / 2;
 
 
-int entier<-8;
+int entier <- 8 + entier2;
 
-char chaine <- "hello" ;
+char chaine <- "hello";     
 
-chaine = "world" ;
+chaine = "world";
 
 
 
-chaine = chaine + chaine;
+chaine = chaine;
