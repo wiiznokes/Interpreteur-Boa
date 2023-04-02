@@ -6,12 +6,29 @@
 #include "lexical_analyse.h"
 #include "node.h"
 
+
+
+/* ***************
+    private
+*/
+
+
 list *globals;
 list *locals;
 
+
 void show_error(char *msg);
 
-bool add_global(node *n)
+
+/*
+    returns the node with the corresponding name (count <= 1 by impl)
+    or returns NULL
+*/
+node *get_by_name_analyse(char *name);
+
+/* ********************* */
+
+bool add_global_analyse(node *n)
 {
 
     if (n == NULL)
@@ -42,7 +59,7 @@ bool add_global(node *n)
     return true;
 }
 
-bool add_local(node *n)
+bool add_local_analyse(node *n)
 {
     if (n == NULL)
     {
@@ -56,7 +73,7 @@ bool add_local(node *n)
         exit(1);
     }
 
-    if (!get_by_name(n->name))
+    if (!get_by_name_analyse(n->name))
     {
         add_tail(locals, n);
         return true;
@@ -70,7 +87,7 @@ void clear_local()
     clear_list(locals);
 }
 
-node *get_by_name(char *name)
+node *get_by_name_analyse(char *name)
 {
 
     node *tmp = globals->head;
@@ -100,7 +117,7 @@ DataType check_variable(
     bool show_error_if_undefined)
 {
 
-    node *n = get_by_name(name);
+    node *n = get_by_name_analyse(name);
 
     if (n == NULL)
     {

@@ -142,7 +142,7 @@ void initialisation(node **a, DataType data_type)
 
     // ajout d'une node dans la liste de variables
     node *n = creer_variable(get_lexeme().char_tab, data_type);
-    if (!add_global(n))
+    if (!add_global_analyse(n))
     {
         free(n);
         exit_analyse("internal error: can't add global");

@@ -9,5 +9,3 @@ char chaine <- "hello";
 chaine = "world";
 
 
-
-chaine = chaine;

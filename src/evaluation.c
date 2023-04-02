@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #include "evaluation.h"
 #include "stack.h"
@@ -6,9 +7,101 @@
 
 #include "ast_construction.h"
 
+
+
+/* *********************
+    private
+*/
+
+void evaluate(node *a);
+int evaluate_int(node *a);
+char *evaluate_char(node *a);
+
+void exit_evaluation(char *msg);
+/* ******************** */
+
+
+/* *********************
+    interface impl
+*/
+
 void start_evaluation()
 {
+    start_stack();
     evaluate(*get_ast());
+}
+
+
+void stop_evaluation() {
+    free_ast();
+    free_stack();
+}
+
+
+/* ******************** */
+
+
+
+
+void evaluate(node *a)
+{
+    switch (a->type)
+    {
+    case N_INSTRUCTION:
+        evaluate(a->left);
+        if (a->right) {
+            evaluate(a->right);
+        }
+        break;
+    case N_INITIALISATION:
+        switch (a->left->data_type)
+        {
+        case D_INT:
+            int x1 = evaluate_int(a->right);
+            node *n1 = creer_variable(a->left->name, a->left->data_type);
+            n1->number = x1;
+            add_global(n1);
+            break;
+        case D_CHAR:
+            char *x2 = evaluate_char(a->right);
+            node *n2 = creer_variable(a->left->name, a->left->data_type);
+            strcpy(n2->string, x2);
+            add_global(n2);
+            break;
+
+        default:
+            printf("internal error: evaluate\n");
+            exit(1);
+            break;
+        }
+        break;
+    case N_ASSIGNATION:
+        switch (a->left->data_type)
+        {
+        case D_INT:
+            set_int(a->left->name, evaluate_int(a->right));
+            break;
+        case D_CHAR:
+            set_char(a->left->name, evaluate_char(a->right));
+            break;
+
+        default:
+            printf("internal error: evaluate\n");
+            exit(1);
+            break;
+        }
+        break;
+    case N_VARIABLE:
+        break;
+
+    case N_VALUE:
+        break;
+
+    default:
+        printf("internal error: evaluate\n");
+        exit(1);
+        break;
+    }
 }
 
 
@@ -64,73 +157,18 @@ char *evaluate_char(node *a) {
     }
 }
 
-void evaluate(node *a)
-{
 
-    switch (a->type)
-    {
-    case N_INSTRUCTION:
-        evaluate(a->left);
-        evaluate(a->right);
-        break;
-    case N_INITIALISATION:
-        switch (a->left->data_type)
-        {
-        case D_INT:
-            int x = evaluate_int(a->right);
-            node *n = creer_variable(a->left->name, a->left->data_type);
-            n->number = x;
-            add_global(n);
-            break;
-        case D_CHAR:
-            char *x = evaluate_char(a->right);
-            node *n = creer_variable(a->left->name, a->left->data_type);
-            strcpy(n->string, x);
-            add_global(n);
-            break;
 
-        default:
-            printf("internal error: evaluate\n");
-            exit(1);
-            break;
-        }
 
-    case N_ASSIGNATION:
-        switch (a->left->data_type)
-        {
-        case D_INT:
-            set_int(a->left->name, evaluate_int(a->right));
-            break;
-        case D_CHAR:
-            set_char(a->left->name, evaluate_char(a->right));
-            break;
 
-        default:
-            printf("internal error: evaluate\n");
-            exit(1);
-            break;
-        }
-    case N_VARIABLE:
-        break;
 
-    case N_VALUE:
-        break;
 
-    default:
-        printf("internal error: evaluate\n");
-        exit(1);
-    }
-}
 
 
 void exit_evaluation(char *msg)
 {
 
-
+    stop_evaluation();
     
 }
 
-
-void stop_evaluation() {
-    free_ast();
-}

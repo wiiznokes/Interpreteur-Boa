@@ -3,7 +3,7 @@
 
 
 #include "syntax_analyse.h"
-
+#include "evaluation.h"
 
 
 int main(int argc, char **argv)
@@ -25,8 +25,10 @@ int main(int argc, char **argv)
 
 
 	fill_ast(fileName);
-
 	stop_analyse();
+
+	start_evaluation();
+	stop_evaluation();
 
 	return 0;
 }

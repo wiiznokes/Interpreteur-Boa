@@ -2,10 +2,18 @@
 #define STACK_H
 
 
+#include "node.h"
+#include <stdbool.h>
 
-void up();
+
+void start_stack();
+void free_stack();
+
+
+bool up();
 
 void down();
+
 
 
 void add_global(node *n);

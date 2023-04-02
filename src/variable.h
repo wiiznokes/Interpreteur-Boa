@@ -28,7 +28,7 @@ void stop_variable();
 
     - add node if it's not the case, show an error msg otherwise
 */
-bool add_global(node *n);
+bool add_global_analyse(node *n);
 
 
 /*
@@ -38,7 +38,7 @@ bool add_global(node *n);
 
     - add node if it's not the case, show an error msg otherwise
 */
-bool add_local(node *n);
+bool add_local_analyse(node *n);
 
 
 
@@ -46,14 +46,6 @@ bool add_local(node *n);
     clear local variables
 */
 void clear_local();
-
-
-
-/*
-    returns the node with the corresponding name (count <= 1 by impl)
-    or returns NULL
-*/
-node *get_by_name(char *name);
 
 
 
