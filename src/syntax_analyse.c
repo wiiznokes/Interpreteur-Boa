@@ -60,7 +60,7 @@ void fill_ast(char *fileName)
 void instructions(node **a)
 {
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     switch (get_lexeme().nature)
     {
@@ -117,7 +117,7 @@ void initialisation(node **a, DataType data_type)
 
     *a = new_node(N_INITIALISATION);
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     if (get_lexeme().nature != NAME)
     {
@@ -139,14 +139,14 @@ void initialisation(node **a, DataType data_type)
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     if (get_lexeme().nature != INIT)
     {
         exit_analyse("");
     }
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     node *a1;
     eag(&a1, data_type);
@@ -173,14 +173,14 @@ void assignation(node **a)
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     if (get_lexeme().nature != ASSIGN)
     {
         exit_analyse("besoin du signe \"=\"");
     }
 
-    next_lexeme();
+    next_lexeme_or_quit();
 
     node *a1;
     eag(&a1, data_type);
@@ -272,8 +272,7 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
     {
         if (atoi(get_lexeme().char_tab) == 0)
         {
-            printf(" ERREUR : division par 0 impossible \n ");
-            exit(3);
+            exit_analyse("division par 0 impossible");
         }
         facteur(&a3, data_type);
         a4 = creer_operation(op, a1, a3);
@@ -296,7 +295,7 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("besoin du type int");
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
-        next_lexeme();
+        next_lexeme_or_quit();
         break;
 
     case STRING:
@@ -305,25 +304,23 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("besoin du type char");
         }
         *a1 = creer_string(get_lexeme().char_tab);
-        next_lexeme();
+        next_lexeme_or_quit();
         break;
 
     case PARO:
-        next_lexeme();
+        next_lexeme_or_quit();
         eag(a1, data_type);
         if (get_lexeme().nature == PARF)
         {
-            next_lexeme();
+            next_lexeme_or_quit();
         }
         else
         {
-            printf("ERREUR PARENTHESES");
-            exit(1);
+            exit_analyse("erreur: PARENTHESES");
         }
         break;
     default:
-        printf("Erreur facteur ii");
-        exit(0);
+        exit_analyse("erreur: facteur");
     }
 }
 
@@ -332,30 +329,44 @@ int op1(Operateur *op, DataType data_type)
     switch (get_lexeme().nature)
     {
     case PLUS:
+        break;
     case MINUS:
-        *op = nature_lex_to_op(get_lexeme().nature);
-        next_lexeme();
-        return 1;
+        if (data_type == D_CHAR)
+        {
+            exit_analyse("can't use '-' with a string\n");
+        }
+        break;
+
     default:
         return 0;
     }
+
+    *op = nature_lex_to_op(get_lexeme().nature);
+    next_lexeme_or_quit();
+    return 1;
 }
 
 int op2(Operateur *op, DataType data_type)
-{
+{   
+    int return_value;
     switch (get_lexeme().nature)
     {
     case MUL:
-        *op = nature_lex_to_op(get_lexeme().nature);
-        next_lexeme();
-        return 1;
+        return_value = 1;
+        break;
     case DIV:
-        *op = nature_lex_to_op(get_lexeme().nature);
-        next_lexeme();
-        return 2;
+        break;
+        return_value = 2;
     default:
         return 0;
     }
+
+    if (data_type == D_CHAR)
+    {
+        exit_analyse("can't use '/' or '*' with a string\n");
+    }
+    *op = nature_lex_to_op(get_lexeme().nature);
+    next_lexeme_or_quit();
 }
 
 // helper functions
@@ -376,5 +387,14 @@ Operateur nature_lex_to_op(NatureLexeme nature)
     default:
         printf("internal error: nature_lex_to_op\n");
         exit(1);
+    }
+}
+
+
+void next_lexeme_or_quit() {
+    next_lexeme();
+
+    if (get_lexeme().nature == ERROR) {
+        exit_analyse("");
     }
 }
