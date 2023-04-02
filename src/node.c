@@ -3,7 +3,6 @@
 
 #include "node.h"
 
-
 node *new_node(NodeType type)
 {
     node *n = malloc(sizeof(node));
@@ -19,13 +18,12 @@ void free_node(node *n)
     free(n);
 }
 
-
-
-
 char *node_type_to_text(NodeType type)
 {
     switch (type)
     {
+    case N_INSTRUCTION:
+        return "N_INSTRUCTION";
     case N_INITIALISATION:
         return "N_INITIALISATION";
     case N_ASSIGNATION:
@@ -33,27 +31,33 @@ char *node_type_to_text(NodeType type)
     case N_VARIABLE:
         return "N_VARIABLE";
 
-    case N_OPERATEUR:
-        return "N_OPERATEUR";
-    case N_STRING:
-        return "N_STRING";
-    case N_NUMBER:
-        return "N_NUMBER";
-
-    case N_IF:
-        return "N_IF";
-    case N_ELSE:
-        return "N_ELSE";
-
+    case N_OPERATION:
+        return "N_OPERATION";
+    case N_VALUE:
+        return "N_VALUE";
     case N_FUN:
-        return "N_FUN";
-    case N_ARG:
-        return "N_FUN";
-    case N_RETURN_TYPE:
         return "N_FUN";
 
     default:
         printf("internal error: node_type_to_text\n");
+        exit(1);
+    }
+}
+
+char *data_type_to_text(DataType type)
+{
+    switch (type)
+    {
+    case D_UNDEFINED:
+        return "D_UNDEFINED";
+    case D_UNIT:
+        return "D_UNIT";
+    case D_INT:
+        return "D_INT";
+    case D_CHAR:
+        return "D_CHAR";
+    default:
+        printf("internal error: data_type_to_text\n");
         exit(1);
     }
 }

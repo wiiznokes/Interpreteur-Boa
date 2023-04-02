@@ -53,8 +53,10 @@ node *get_by_name(char *name);
     return value == D_UNDEFINED meens the variable was 
     not found (with the same name and type)
 */
-DataType check_variable(NodeType nodeType, char *name, DataType dataType);
-
+DataType check_variable(
+    char *name,
+    DataType dataType,
+    bool show_error_if_undefined);
 
 
 #endif

@@ -18,6 +18,13 @@ typedef enum
     END_INSTRUCTION,
     END_FILE,
 
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    PARO,
+    PARF,
+
     ERROR
 } NatureLexeme;
 

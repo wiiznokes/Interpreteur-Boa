@@ -43,6 +43,13 @@ typedef enum
     S_INFERIOR,
     S_INITIALISATION,  // accepteur
     S_EGALE,           // accpteur
+    S_PLUS,             // accpteur
+    S_MINUS,  // accpteur
+    S_MUL,  // accpteur
+    S_DIV,  // accpteur
+    S_PARO,  // accpteur
+    S_PARF,  // accpteur
+
     S_END_INSTRUCTION, // accepteur
 
 } State;
@@ -152,6 +159,18 @@ char *nature_to_text(NatureLexeme nature)
         return "END_INSTRUCTION";
     case END_FILE:
         return "END_FILE";
+    case PLUS:
+        return "PLUS";
+    case MINUS:
+        return "MINUS";
+    case MUL:
+        return "MUL";
+    case DIV:
+        return "DIV";
+    case PARO:
+        return "PARO";
+    case PARF:
+        return "PARF";
 
     default:
         printf("internal error: nature_to_text\n");
@@ -196,6 +215,24 @@ bool transition(char c)
             return true;
         case ';':
             current_state = S_END_INSTRUCTION;
+            return true;
+        case '+':
+            current_state = S_PLUS;
+            return true;
+        case '-':
+            current_state = S_MINUS;
+            return true;
+        case '*':
+            current_state = S_MUL;
+            return true;
+        case '/':
+            current_state = S_DIV;
+            return true;
+        case '(':
+            current_state = S_PARO;
+            return true;
+        case ')':
+            current_state = S_PARF;
             return true;
 
         default:
@@ -366,6 +403,43 @@ bool transition(char c)
         default:
             return false;
         }
+    case S_PLUS:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_MINUS:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_MUL:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_DIV:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_PARO:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_PARF:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    
 
     default:
         printf ("internal error: transition, you forgot a state %d\n", current_state);
@@ -419,6 +493,24 @@ void proccess_end()
         break;
     case S_END_INSTRUCTION:
         current_lexeme.nature = END_INSTRUCTION;
+        break;
+    case S_PLUS:
+        current_lexeme.nature = PLUS;
+        break;
+    case S_MINUS:
+        current_lexeme.nature = MINUS;
+        break;
+    case S_MUL:
+        current_lexeme.nature = MUL;
+        break;
+    case S_DIV:
+        current_lexeme.nature = DIV;
+        break;
+    case S_PARO:
+        current_lexeme.nature = PARO;
+        break;
+    case S_PARF:
+        current_lexeme.nature = PARF;
         break;
 
     default:

@@ -5,22 +5,17 @@
 
 typedef enum
 {
+    N_INSTRUCTION,
+    
     N_INITIALISATION,
     N_ASSIGNATION,
     N_VARIABLE,
 
 
-    N_OPERATEUR,
-    N_STRING,
-    N_NUMBER,
+    N_OPERATION,
+    N_VALUE,
 
-
-    N_IF,
-    N_ELSE,
-
-    N_FUN,
-    N_ARG,
-    N_RETURN_TYPE
+    N_FUN
 
 } NodeType;
 
@@ -37,10 +32,10 @@ typedef enum
 
 typedef enum
 {
-    N_PLUS,
-    N_MUL,
-    N_MOINS,
-    N_DIV
+    O_PLUS,
+    O_MUL,
+    O_MINUS,
+    O_DIV
 } Operateur;
 
 
@@ -61,7 +56,7 @@ typedef struct node
     DataType data_type;
 
     // valeur
-    int integer;
+    int number;
     char string[256];
 
     // operateur
@@ -83,5 +78,6 @@ void free_node(node *n);
 
 char *node_type_to_text(NodeType type);
 
+char *data_type_to_text(DataType type);
 
 #endif
