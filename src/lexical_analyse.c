@@ -403,6 +403,43 @@ bool transition(char c)
         default:
             return false;
         }
+    case S_PLUS:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_MINUS:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_MUL:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_DIV:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_PARO:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    case S_PARF:
+        switch (c)
+        {
+        default:
+            return false;
+        }
+    
 
     default:
         printf ("internal error: transition, you forgot a state %d\n", current_state);

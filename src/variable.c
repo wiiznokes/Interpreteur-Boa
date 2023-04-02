@@ -6,125 +6,132 @@
 #include "lexical_analyse.h"
 #include "node.h"
 
-
 list globals;
 
 list locals;
 
-
 void show_error(char *msg);
 
+bool add_global(node *n)
+{
 
-bool add_global(node *n) {
-
-    if (n == NULL) {
+    if (n == NULL)
+    {
         printf("internal error: add_global\n");
         exit(1);
     }
 
-    if (n->type != N_VARIABLE && n->type != N_FUN) {
+    if (n->type != N_VARIABLE && n->type != N_FUN)
+    {
         printf("internal error: add_global\n");
         exit(1);
     }
 
     node *tmp = globals.head;
 
-    while(tmp) {
-        if (!strcmp(tmp->name, n->name)) {
+    while (tmp)
+    {
+        if (!strcmp(tmp->name, n->name))
+        {
             show_error("variable already defined");
             return false;
         }
         tmp = tmp->right;
     }
 
-
     add_tail(&globals, n);
     return true;
 }
 
-
-bool add_local(node *n) {
-    if (n == NULL) {
+bool add_local(node *n)
+{
+    if (n == NULL)
+    {
         printf("internal error: add_local\n");
         exit(1);
     }
 
-    if (n->type != N_VARIABLE) {
+    if (n->type != N_VARIABLE)
+    {
         printf("internal error: add_local\n");
         exit(1);
     }
 
-    if(!get_by_name(n->name)) {
+    if (!get_by_name(n->name))
+    {
         add_tail(&locals, n);
         return true;
     }
 
     return false;
-    
 }
 
-
-void clear_local() {
+void clear_local()
+{
     clear_list(&locals);
 }
 
+node *get_by_name(char *name)
+{
 
-
-node *get_by_name(char *name) {
-   
     node *tmp = globals.head;
 
-    while(tmp) {
-        if (!strcmp(tmp->name, name)) return tmp;
+    while (tmp)
+    {
+        if (!strcmp(tmp->name, name))
+            return tmp;
         tmp = tmp->right;
     }
-
-
 
     tmp = locals.head;
 
-    while(tmp) {
-        if (!strcmp(tmp->name, name)) return tmp;
+    while (tmp)
+    {
+        if (!strcmp(tmp->name, name))
+            return tmp;
         tmp = tmp->right;
     }
-    
+
     return NULL;
 }
 
-
-
-DataType check_variable(NodeType nodeType, char *name, DataType dataType) {
-
+DataType check_variable(
+    char *name,
+    DataType dataType,
+    bool show_error_if_undefined)
+{
+    
     node *n = get_by_name(name);
 
-    if (n == NULL) {
+    if (n == NULL)
+    {
+        if (show_error_if_undefined)
+        {
+            printf("variable %s is not defined\n", name);
+        }
         return D_UNDEFINED;
     }
 
-    if (dataType == D_UNDEFINED) {
+    if (dataType == D_UNDEFINED)
+    {
         return n->data_type;
     }
 
-    if (dataType == n->data_type) {
+    if (dataType == n->data_type)
+    {
         return dataType;
     }
-    else {
+    else
+    {
+        printf("variable %s n'a pas le type\n", name);
         return D_UNDEFINED;
     }
 }
 
-
-
-
-
-
-
-
-
-void show_error(char *msg) {
+void show_error(char *msg)
+{
     printf("Erreur variable %d:%d : %s\n",
            get_lexeme().line,
            get_lexeme().column,
-           msg
-    );
+           msg);
 }

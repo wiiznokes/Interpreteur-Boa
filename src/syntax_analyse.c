@@ -125,9 +125,9 @@ void initialisation(node **a, DataType data_type)
         exit_analyse("");
     }
 
-    if (check_variable(N_VARIABLE, get_lexeme().char_tab, data_type) != D_UNDEFINED)
+    if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
     {
-        exit_analyse("variable déjà initialisée");
+        exit_analyse("");
     }
 
     // ajout d'une node dans la liste de variables
@@ -165,11 +165,11 @@ void assignation(node **a)
         exit_analyse("");
     }
 
-    DataType data_type = check_variable(N_VARIABLE, get_lexeme().char_tab, D_UNDEFINED);
+    DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED,true);
 
     if (data_type == D_UNDEFINED)
     {
-        exit_analyse("variable non définie");
+        exit_analyse("");
     }
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
@@ -290,6 +290,19 @@ void facteur(node **a1, DataType data_type)
 {
     switch (get_lexeme().nature)
     {
+    case NAME:
+        if (check_variable(get_lexeme().char_tab, data_type, true) == D_UNDEFINED)
+        {
+            exit_analyse("");
+        }
+        if (data_type != D_INT)
+        {
+            exit_analyse("besoin du type int");
+        }
+        *a1 = creer_number(atoi(get_lexeme().char_tab));
+        next_lexeme_or_quit();
+        break;
+
     case NUMBER:
         if (data_type != D_INT)
         {
