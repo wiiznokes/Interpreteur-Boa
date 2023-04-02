@@ -7,6 +7,7 @@
 #include "lexical_analyse.h"
 #include "variable.h"
 #include "node.h"
+#include "ast_construction.h"
 
 /* *********************
     private
@@ -16,24 +17,30 @@
 tree ast;
 
 
-void instructions (node **a);
+void instructions (tree *a);
 void instruction (node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
-void function(node **a);
-void if_statement(node **a);
-void while_loop(node **a);
-void operations(node **a, DataType data_type);
-void operations_rec(node **a, DataType data_type);
-void operation(node **a, DataType data_type);
-void args(node **a);
-
-void if_block(node **a);
-void else_block(node **a);
 
 void exit_analyse(char *msg);
 
 
+// from calculette
+
+void eag(node **a1, DataType data_type);
+void seq_terme(node **a2, DataType data_type);
+void suite_seq_terme(node *a1 , node  **a2, DataType data_type);
+void terme(node **a1, DataType data_type);
+void seq_facteur(node **a2, DataType data_type);
+void suite_seq_facteur(node *a1 , node **a2, DataType data_type);
+void facteur(node **a1, DataType data_type);
+int op1(Operateur *Op, DataType data_type);
+int op2(Operateur *Op, DataType data_type);
+
+
+// helper functions
+
+Operateur nature_lex_to_op(NatureLexeme nature);
 
 /* *************** */
 
@@ -58,7 +65,7 @@ void fill_ast(char *fileName) {
 /* *************** */
 
 
-void instructions (node **a) {
+void instructions (tree *a) {
 
     next_lexeme();
 
@@ -72,7 +79,14 @@ void instructions (node **a) {
     case NAME:
         instruction(a);
         // inject a pointeur of pointer of a->right
-        instructions(&(*a)->right);
+
+        //why this has not the same behavior ?
+        node *n = (*a)->right;
+        instructions(&n);
+
+
+
+        //instructions(&(*a)->right);
         break;
 
     default:
@@ -82,22 +96,27 @@ void instructions (node **a) {
 
 void instruction (node **a) {
 
+    *a = new_node(N_INSTRUCTION);
+
+    node *a1;
     switch (get_lexeme().nature)
     {
     
     case INT:
-        initialisation(a, D_INT);
+        initialisation(&a1, D_INT);
         break;
     case CHAR:
-        initialisation(a, D_CHAR);
+        initialisation(&a1, D_CHAR);
         break;
     case NAME:
-        assignation(a);
+        assignation(&a1);
         break;
 
     default:
         exit_analyse("");
     }
+
+    (*a)->left = a1;
 
     if (get_lexeme().nature != END_INSTRUCTION) {
         exit_analyse("une instruction doit finir par ';'");
@@ -118,20 +137,14 @@ void initialisation(node **a, DataType data_type) {
         exit_analyse("variable déjà initialisée");
     }
 
-   
-    node *n = new_node(N_VARIABLE);
-    strcpy(n->name, get_lexeme().char_tab);
-    n->data_type = data_type;
-
+    // ajout d'une node dans la liste de variables
+    node *n = creer_variable(get_lexeme().char_tab, data_type);
     if (!add_global(n)) {
+        free(n);
         exit_analyse("internal error: can't add global");
     }
 
-
-    n = new_node(N_VARIABLE);
-    strcpy(n->name, get_lexeme().char_tab);
-    n->data_type = data_type;
-    (*a)->left = n;
+    (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
    
     next_lexeme();
 
@@ -141,7 +154,10 @@ void initialisation(node **a, DataType data_type) {
     
     next_lexeme();
 
-    operations(&(*a)->right, data_type);
+    node *a1;
+    eag(&a1, data_type);
+
+    (*a)->right = a1;
 
 }
 
@@ -161,11 +177,7 @@ void assignation(node **a) {
     }
 
 
-    node *n = new_node(N_VARIABLE);
-    strcpy(n->name, get_lexeme().char_tab);
-    n->data_type = data_type;
-    (*a)->left = n;
-    
+    (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
     next_lexeme();
 
@@ -175,83 +187,10 @@ void assignation(node **a) {
     
     next_lexeme();
 
-    operations(&(*a)->left, data_type);
-}
+    node *a1;
+    eag(&a1, data_type);
 
-
-
-
-
-void operation(node **a, DataType data_type) {
-
-    switch (get_lexeme().nature)
-    {
-    case NAME:
-
-        data_type = check_variable(N_VARIABLE, get_lexeme().char_tab, data_type);
-
-        if (data_type == D_UNDEFINED) {
-            exit_analyse("variable non définie ou du mauvais type");
-        }
-
-        node *n = new_node(N_VARIABLE);
-        strcpy(n->name, get_lexeme().char_tab);
-        n->data_type = data_type;
-        *a = n;
-        break;
-
-    case STRING:
-        if (data_type != D_CHAR) {
-            exit_analyse("besoin du type char");
-        }
-        n = new_node(N_STRING);
-        strcpy(n->string, get_lexeme().char_tab);
-        *a = n;
-        break;
-
-    case NUMBER:
-        if (data_type != D_INT) {
-            exit_analyse("besoin du type int");
-        }
-        n = new_node(N_NUMBER);
-        n->integer = atoi(get_lexeme().char_tab);
-        *a = n;
-        break;
-
-    default:
-        exit_analyse("besoin d'une operande");
-        break;
-    }
-
-}
-
-
-
-
-void operations(node **a, DataType data_type) {
-
-    operation(a, data_type);
-
-    next_lexeme();
-
-    operations_rec(a, data_type);
-}
-
-
-
-void operations_rec(node **a, DataType data_type) {
-
-    switch (get_lexeme().nature)
-    {
-    case NAME:
-    case STRING:
-    case NUMBER:
-        operation(a, data_type);
-        next_lexeme();
-        operations_rec(a, data_type);
-    default:
-        break;
-    }
+    (*a)->right = a1;
 
 }
 
@@ -283,4 +222,175 @@ void stop_analyse() {
 
     free_tree(ast);
     stop_lexical_analyse();
+}
+
+
+
+/* from calculette */
+
+
+void eag(node **a1, DataType data_type){
+    seq_terme(a1, data_type);
+}
+
+
+void seq_terme(node **a2, DataType data_type){
+    node *a1;
+    terme(&a1, data_type);
+    suite_seq_terme(a1, a2, data_type);
+}
+
+
+void suite_seq_terme(node *a1 , node  **a2, DataType data_type)
+{
+    node *a3, *a4;
+    Operateur op;
+        
+    if(op1(&op, data_type))
+    {
+        terme(&a3, data_type);
+        a4 = creer_operation(op, a1, a3);
+        suite_seq_terme(a4, a2, data_type);		
+    }	
+    else
+    {
+        *a2=a1;		
+    }
+}
+
+void terme(node **a1, DataType data_type)
+{
+    seq_facteur(a1, data_type);
+}
+
+
+void seq_facteur(node **a2, DataType data_type)
+{
+    node *a1;
+    facteur(&a1, data_type);
+    suite_seq_facteur(a1, a2, data_type);
+}
+
+void suite_seq_facteur(node *a1 , node **a2, DataType data_type)
+{
+    node *a3, *a4;
+    Operateur op;
+    int r = op2(&op, data_type);
+    if(r==1)
+    {
+        facteur(&a3, data_type);
+        a4 = creer_operation(op, a1, a3);
+        suite_seq_facteur(a4, a2, data_type);
+
+    }
+    else if (r==2)
+    {
+        if(atoi(get_lexeme().char_tab) == 0)
+        {
+            printf(" ERREUR : division par 0 impossible \n ");
+            exit(3);
+        }
+        facteur(&a3, data_type);
+        a4 = creer_operation(op, a1,a3);
+        suite_seq_facteur(a4, a2, data_type);
+    }
+    else
+    {
+        // case: plus d'operateur
+        *a2=a1;		
+    }
+
+
+}
+
+void facteur(node **a1, DataType data_type)
+{
+switch(get_lexeme().nature){
+    case NUMBER:
+        if (data_type != D_INT) {
+            exit_analyse("besoin du type int");
+        }
+        *a1 = creer_number(atoi(get_lexeme().char_tab));
+        next_lexeme();
+        break;
+
+   case STRING:
+        if (data_type != D_CHAR) {
+            exit_analyse("besoin du type char");
+        }
+        *a1 = creer_string(get_lexeme().char_tab);
+        next_lexeme();
+        break;
+    
+    case PARO:
+        next_lexeme();
+        eag(a1, data_type);
+        if(get_lexeme().nature == PARF)
+        {
+            next_lexeme();
+        }
+        else
+        {
+            printf("ERREUR PARENTHESES");
+            exit(1);
+        }
+        break;
+    default:
+            printf("Erreur facteur ii");
+            exit(0);
+
+    }
+}
+
+int op1(Operateur *Op, DataType data_type)
+{
+    switch(get_lexeme().nature){
+        case PLUS:
+        case MINUS:
+            *Op = nature_lex_to_op(get_lexeme().nature);
+            next_lexeme();
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int op2(Operateur *Op, DataType data_type)
+{ 
+    switch(get_lexeme().nature){
+        case MUL: 
+            *Op = nature_lex_to_op(get_lexeme().nature);
+            next_lexeme();
+            return 1;
+        case DIV: 
+            *Op = nature_lex_to_op(get_lexeme().nature);
+            next_lexeme();
+            return 2;
+        default: 
+            return 0;
+    }
+}
+
+
+
+
+
+// helper functions 
+
+Operateur nature_lex_to_op(NatureLexeme nature) {
+    switch (nature)
+    {
+    case PLUS:
+        return O_PLUS;
+    case MINUS:
+        return O_MINUS;
+    case MUL:
+        return O_MUL;
+    case DIV:
+        return O_DIV;
+    
+    default:
+        printf("internal error: nature_lex_to_op\n");
+        exit(1);
+    }
 }

@@ -26,6 +26,8 @@ char *node_type_to_text(NodeType type)
 {
     switch (type)
     {
+    case N_INSTRUCTION:
+        return "N_INSTRUCTION";
     case N_INITIALISATION:
         return "N_INITIALISATION";
     case N_ASSIGNATION:
@@ -33,23 +35,11 @@ char *node_type_to_text(NodeType type)
     case N_VARIABLE:
         return "N_VARIABLE";
 
-    case N_OPERATEUR:
-        return "N_OPERATEUR";
-    case N_STRING:
-        return "N_STRING";
-    case N_NUMBER:
-        return "N_NUMBER";
-
-    case N_IF:
-        return "N_IF";
-    case N_ELSE:
-        return "N_ELSE";
-
+    case N_OPERATION:
+        return "N_OPERATION";
+    case N_VALUE:
+        return "N_VALUE";
     case N_FUN:
-        return "N_FUN";
-    case N_ARG:
-        return "N_FUN";
-    case N_RETURN_TYPE:
         return "N_FUN";
 
     default:
