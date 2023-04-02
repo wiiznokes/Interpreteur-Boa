@@ -38,6 +38,7 @@ int op2(Operateur *op, DataType data_type);
 // helper functions
 
 Operateur nature_lex_to_op(NatureLexeme nature);
+void next_lexeme_or_quit();
 
 /* *************** */
 
@@ -367,6 +368,8 @@ int op2(Operateur *op, DataType data_type)
     }
     *op = nature_lex_to_op(get_lexeme().nature);
     next_lexeme_or_quit();
+
+    return return_value;
 }
 
 // helper functions
