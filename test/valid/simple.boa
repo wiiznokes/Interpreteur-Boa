@@ -1,4 +1,7 @@
 
+int entier2<- 2 * (3 + 6) / 2;
+
+
 int entier<-8;
 
 char chaine <- "hello" ;
@@ -7,4 +10,4 @@ chaine = "world" ;
 
 
 
-chaine = chaine - chaine;
+chaine = chaine + chaine;

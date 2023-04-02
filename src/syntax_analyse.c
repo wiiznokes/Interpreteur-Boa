@@ -262,15 +262,15 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
 {
     node *a3, *a4;
     Operateur op;
-    int r = op2(&op, data_type);
-    if (r == 1)
+
+    switch (op2(&op, data_type))
     {
+    case 1:
         facteur(&a3, data_type);
         a4 = creer_operation(op, a1, a3);
         suite_seq_facteur(a4, a2, data_type);
-    }
-    else if (r == 2)
-    {
+        break;
+    case 2:
         if (atoi(get_lexeme().char_tab) == 0)
         {
             exit_analyse("division par 0 impossible");
@@ -278,12 +278,12 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
         facteur(&a3, data_type);
         a4 = creer_operation(op, a1, a3);
         suite_seq_facteur(a4, a2, data_type);
-    }
-    else
-    {
+        break;
+    default:
         // case: plus d'operateur
         *a2 = a1;
     }
+
 }
 
 void facteur(node **a1, DataType data_type)
@@ -296,7 +296,6 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_variable(get_lexeme().char_tab, data_type);
-        next_lexeme_or_quit();
         break;
 
     case NUMBER:
@@ -308,7 +307,6 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
-        next_lexeme_or_quit();
         break;
 
     case STRING:
@@ -320,24 +318,21 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_string(get_lexeme().char_tab);
-        next_lexeme_or_quit();
         break;
 
     case PARO:
         next_lexeme_or_quit();
         eag(a1, data_type);
-        if (get_lexeme().nature == PARF)
+        if (get_lexeme().nature != PARF)
         {
-            next_lexeme_or_quit();
-        }
-        else
-        {
-            exit_analyse("erreur: parenthese");
+            exit_analyse("erreur: besoin parenthèse fermante");
         }
         break;
     default:
         exit_analyse("erreur: facteur");
     }
+
+    next_lexeme_or_quit();
 }
 
 int op1(Operateur *op, DataType data_type)
