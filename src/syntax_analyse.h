@@ -1,7 +1,7 @@
 #ifndef SYNTAX_ANALYSE_H
 #define SYNTAX_ANALYSE_H
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 
 #include "tree.h"
@@ -10,7 +10,7 @@
 
 
 
-void fill_ast(char *fileName);
+void fill_ast(char *fileName, bool show_log);
 
 
 void stop_analyse();

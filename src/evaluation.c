@@ -60,6 +60,7 @@ void evaluate(node *a)
             int x1 = evaluate_int(a->right);
             node *n1 = creer_variable(a->left->name, a->left->data_type);
             n1->number = x1;
+            printf("%s = %d\n", n1->name, n1->number);
             add_global(n1);
             break;
         case D_CHAR:
@@ -80,6 +81,7 @@ void evaluate(node *a)
         {
         case D_INT:
             set_int(a->left->name, evaluate_int(a->right));
+            printf("%s = %d\n", a->left->name, a->left->number);
             break;
         case D_CHAR:
             set_char(a->left->name, evaluate_char(a->right));
@@ -129,6 +131,24 @@ int evaluate_int(node *a)
                 exit_evaluation("division par 0");
             }
             return x1 / x2;
+        case O_EQUAL:
+            return evaluate_int(a->left) == evaluate_int(a->right);
+        case O_LESS:
+            return evaluate_int(a->left) < evaluate_int(a->right);
+        case O_MORE:
+            return evaluate_int(a->left) > evaluate_int(a->right);
+        case O_LESS_EQUAL:
+            return evaluate_int(a->left) <= evaluate_int(a->right);
+        case O_MORE_EQUAL:
+            return evaluate_int(a->left) >= evaluate_int(a->right);
+        case O_OR:
+            return evaluate_int(a->left) || evaluate_int(a->right);
+        case O_AND:
+            return evaluate_int(a->left) && evaluate_int(a->right);
+        case O_NOT_EQUAL:
+            return evaluate_int(a->left) != evaluate_int(a->right);
+        case O_NOT:
+            return evaluate_int(a->left);
         default:
             printf("internal error: evaluate_int\n");
             exit(1);
@@ -150,6 +170,7 @@ char *evaluate_char(node *a) {
         return get_char(a->name);
     case N_VALUE:
         return a->string;
+        
     default:
         printf("internal error: evaluate_char\n");
         exit(1);

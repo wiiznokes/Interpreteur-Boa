@@ -50,7 +50,7 @@ static void print_tree_helper(node *n, int depth, int type)
         exit(1);
     }
 
-    char log[200];
+    char log[200] = "";
 
     switch (n->type)
     {

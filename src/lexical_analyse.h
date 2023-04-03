@@ -1,7 +1,7 @@
 #ifndef LEXICAL_ANALYSE_H
 #define LEXICAL_ANALYSE_H
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 typedef enum
 {
@@ -63,7 +63,7 @@ typedef struct
 
 } Lexeme;
 
-void init_lexical_analyse(char *fileName);
+void init_lexical_analyse(char *fileName, bool show_log);
 
 void next_lexeme();
 Lexeme get_lexeme();
