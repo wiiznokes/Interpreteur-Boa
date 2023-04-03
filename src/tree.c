@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "tree.h"
-
+#include <string.h>
 
 
 void free_tree(tree t)
@@ -49,8 +49,34 @@ static void print_tree_helper(node *n, int depth, int type)
     default:
         exit(1);
     }
+
+    char log[200];
+
+    switch (n->type)
+    {
+    case N_VARIABLE:
+        strcpy(log, data_type_to_text(n->data_type));
+        break;
+    case N_OPERATION:
+        strcpy(log, operateur_to_text(n->op));
+        break;
+    case N_VALUE:
+        switch (n->data_type)
+        {
+        case D_CHAR:
+            strcpy(log, n->string);
+            break;
+        case D_INT:
+            sprintf(log, "%d", n->number);
+        default:
+            break;
+        }
     
-    printf("%s\n", node_type_to_text(n->type));
+    default:
+        break;
+    }
+    
+    printf("%s: %s\n", node_type_to_text(n->type), log);
     print_tree_helper(n->left, depth + 1, 2);
 }
 

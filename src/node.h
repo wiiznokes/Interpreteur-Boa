@@ -15,6 +15,7 @@ typedef enum
     N_OPERATION,
     N_VALUE,
 
+    N_CONDITION,
     N_FUN
 
 } NodeType;
@@ -35,7 +36,17 @@ typedef enum
     O_PLUS,
     O_MINUS,
     O_MUL,
-    O_DIV
+    O_DIV,
+    O_EQUAL,
+    O_LESS,
+    O_MORE,
+    O_LESS_EQUAL,
+    O_MORE_EQUAL,
+    O_OR,
+    O_AND,
+    O_NOT_EQUAL,
+    O_NOT,
+
 } Operateur;
 
 
@@ -62,9 +73,6 @@ typedef struct node
     // operateur
     Operateur op;
 
-    // function
-    DataType return_type;
-
 
 } node;
 
@@ -77,7 +85,7 @@ void free_node(node *n);
 
 
 char *node_type_to_text(NodeType type);
-
 char *data_type_to_text(DataType type);
+char *operateur_to_text(Operateur op);
 
 #endif
