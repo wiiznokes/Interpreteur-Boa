@@ -24,8 +24,7 @@ void down_stack();
         int a = 1;
     }
     // down scope
-
-    all scope in the current stack
+    
 */
 bool up_scope();
 void down_scope();

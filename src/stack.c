@@ -17,27 +17,26 @@ list *stack[MAX_STACK][MAX_STACK];
 
 node *get_by_name(char *name);
 
+int *get_scope_count() { return &scope_count[stack_count - 1]; }
+
 /* ************** */
 
 void start_stack()
 {
-    stack[0][0] = new_list();
-    stack_count = 1;
-    scope_count[stack_count - 1] = 1;
+    stack_count = 0;
+    *get_scope_count() = 0;
+    up_stack();
 }
 
 void free_stack()
 {
-    for (int i = 0; i < stack_count; i++)
+    while (stack_count > 0)
     {
-        int nb_scope = scope_count[i - 1];
-        scope_count[i - 1] = 0;
-        for (int j = 0; j < nb_scope; j++)
-        {
-            free_list(stack[i][j]);
-        }
+        down_stack();
     }
+
     stack_count = 0;
+    *get_scope_count() = 0;
 }
 
 bool up_stack()
@@ -50,54 +49,50 @@ bool up_stack()
 
     stack_count++;
     stack[stack_count - 1][0] = new_list();
-    scope_count[stack_count - 1] = 1;
+    *get_scope_count() = 1;
 
     return true;
 }
 
 void down_stack()
 {
-    stack_count--;
-
     if (stack_count < 1)
     {
         printf("internal error: down stack, size < 1\n");
         exit(1);
     }
 
-    for (int i = 0; i < scope_count[stack_count]; i++)
+    while (*get_scope_count() > 0)
     {
-        free_list(stack[stack_count][i]);
+        down_scope();
     }
-
-    scope_count[stack_count] = 0;
+    stack_count--;
 }
 
 bool up_scope()
 {
-    if (scope_count[stack_count - 1] >= MAX_STACK)
+    if (*get_scope_count() >= MAX_STACK)
     {
         printf("error: stack overflow, you reatch the limit of %d\n", MAX_STACK);
         return false;
     }
 
-    scope_count[stack_count - 1]++;
-    stack[stack_count - 1][scope_count[stack_count - 1]] = new_list();
+    *get_scope_count() = *get_scope_count() + 1;
+    stack[stack_count - 1][*get_scope_count() - 1] = new_list();
 
     return true;
 }
 
 void down_scope()
 {
-    scope_count[stack_count - 1]--;
-
-    if (scope_count[stack_count - 1] < 1)
+    if (*get_scope_count() < 1)
     {
-        printf("internal error: down stack, size < 1\n");
+        printf("internal error: down_scope, size < 1\n");
         exit(1);
     }
 
-    free_list(stack[stack_count - 1][scope_count[stack_count - 1]]);
+    free_list(stack[stack_count - 1][*get_scope_count() - 1]);
+    *get_scope_count() = *get_scope_count() - 1;
 }
 
 void add_stack(node *n)
@@ -108,7 +103,7 @@ void add_stack(node *n)
         exit(1);
     }
 
-    if (!add_tail(stack[stack_count - 1][scope_count[stack_count - 1]], n))
+    if (!add_tail(stack[stack_count - 1][*get_scope_count() - 1], n))
     {
         printf("internal error: add_stack\n");
         exit(1);

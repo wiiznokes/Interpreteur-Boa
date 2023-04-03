@@ -2,35 +2,27 @@
 #include <stdlib.h>
 
 
-typedef struct
-{
-    int a;
-} t;
+int s[100];
+
+int count = 0;
 
 
+int *get() {
 
-void modif(t **var) {
-
-    *var = malloc(sizeof(t));
-    
-    (*var)->a = 10;
+    return &s[count - 1];
 }
-
-
-
-void eval() {
-
-    return "bonjour";
-}
-
 
 int main(int argc, char **argv)
 {
+    s[0] = 0;
+    count = 1;
 
-   
-    char *res = (char *)eval();
+    printf("%d\n", s[0]);
 
-    printf("%s\n", res);
+
+    *get() = 2;
+
+    printf("%d\n", s[0]);
 
 
     return 0;
