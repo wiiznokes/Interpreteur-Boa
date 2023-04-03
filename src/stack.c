@@ -19,6 +19,8 @@ node *get_by_name(char *name);
 
 int *get_scope_count() { return &scope_count[stack_count - 1]; }
 
+list **get_last_scope() { return &stack[stack_count - 1][*get_scope_count() - 1]; }
+
 /* ************** */
 
 void start_stack()
@@ -78,7 +80,7 @@ bool up_scope()
     }
 
     *get_scope_count() = *get_scope_count() + 1;
-    stack[stack_count - 1][*get_scope_count() - 1] = new_list();
+    *get_last_scope() = new_list();
 
     return true;
 }
@@ -91,7 +93,7 @@ void down_scope()
         exit(1);
     }
 
-    free_list(stack[stack_count - 1][*get_scope_count() - 1]);
+    free_list(*get_last_scope());
     *get_scope_count() = *get_scope_count() - 1;
 }
 
@@ -103,7 +105,7 @@ void add_stack(node *n)
         exit(1);
     }
 
-    if (!add_tail(stack[stack_count - 1][*get_scope_count() - 1], n))
+    if (!add_tail(*get_last_scope(), n))
     {
         printf("internal error: add_stack\n");
         exit(1);
