@@ -5,27 +5,50 @@
 
 typedef enum
 {
+
+    ERROR,
+    END_FILE,
+
     // data type
     INT,
     CHAR,
+    
     // symbol
     INIT,
     ASSIGN,
+    END_INSTRUCTION,
 
+    // variable
     NAME,
     STRING,
     NUMBER,
-    END_INSTRUCTION,
-    END_FILE,
-
+    
+    // operation
+    PARO,
+    PARF,
     PLUS,
     MINUS,
     MUL,
     DIV,
-    PARO,
-    PARF,
+    EQUAL,
+    LESS,
+    MORE,
+    LESS_EQUAL,
+    MORE_EQUAL,
+    OR,
+    AND,
+    NOT_EQUAL,
+    NOT,
 
-    ERROR
+    // condition
+    IF,
+    ELSE,
+
+    // function
+    FUN,
+    COLON, // :
+    RETURN
+    
 } NatureLexeme;
 
 typedef struct
