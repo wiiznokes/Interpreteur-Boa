@@ -14,13 +14,10 @@
 
 */
 
-
-
 void instructions(node **a);
 void instruction(node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
-
 
 // from calculette
 
@@ -50,7 +47,7 @@ void fill_ast(char *fileName)
 {
 
     init_lexical_analyse(fileName);
-    
+
     start_variable();
 
     instructions(get_ast());
@@ -58,13 +55,11 @@ void fill_ast(char *fileName)
     print_tree(*get_ast());
 }
 
-
 void stop_analyse()
 {
     stop_variable();
     stop_lexical_analyse();
 }
-
 
 /* *************** */
 
@@ -199,13 +194,6 @@ void assignation(node **a)
     (*a)->right = a1;
 }
 
-
-
-
-
-
-
-
 /* from calculette */
 
 void eag(node **a1, DataType data_type)
@@ -274,7 +262,6 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
         // case: plus d'operateur
         *a2 = a1;
     }
-
 }
 
 void facteur(node **a1, DataType data_type)
@@ -293,8 +280,8 @@ void facteur(node **a1, DataType data_type)
         if (data_type != D_INT)
         {
             printf("besoin du type %s: %s\n",
-                data_type_to_text(data_type),
-                get_lexeme().char_tab);
+                   data_type_to_text(data_type),
+                   get_lexeme().char_tab);
             exit_analyse("");
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
@@ -304,8 +291,8 @@ void facteur(node **a1, DataType data_type)
         if (data_type != D_CHAR)
         {
             printf("besoin du type %s: %s\n",
-                data_type_to_text(data_type),
-                get_lexeme().char_tab);
+                   data_type_to_text(data_type),
+                   get_lexeme().char_tab);
             exit_analyse("");
         }
         *a1 = creer_string(get_lexeme().char_tab);
@@ -332,15 +319,24 @@ int op1(Operateur *op, DataType data_type)
     {
     case PLUS:
     case MINUS:
+    case OR:
+    case AND:
+    case NOT:
+    case EQUAL:
+    case NOT_EQUAL:
+    case LESS:
+    case MORE:
+    case LESS_EQUAL:
+    case MORE_EQUAL:
+
         if (data_type == D_CHAR)
         {
-            exit_analyse("can't use operator with strings\n");
+            exit_analyse("Pas compatible avec char");
         }
-         *op = nature_lex_to_op(get_lexeme().nature);
+        *op = nature_lex_to_op(get_lexeme().nature);
         next_lexeme_or_quit();
+        
         return 1;
-        break;
-
     default:
         return 0;
     }
@@ -373,7 +369,6 @@ int op2(Operateur *op, DataType data_type)
 
 // helper functions
 
-
 void exit_analyse(char *msg)
 {
 
@@ -392,7 +387,6 @@ void exit_analyse(char *msg)
     exit(1);
 }
 
-
 Operateur nature_lex_to_op(NatureLexeme nature)
 {
     switch (nature)
@@ -405,6 +399,24 @@ Operateur nature_lex_to_op(NatureLexeme nature)
         return O_MUL;
     case DIV:
         return O_DIV;
+    case EQUAL:
+        return O_EQUAL;
+    case LESS:
+        return O_LESS;
+    case MORE:
+        return O_MORE;
+    case LESS_EQUAL:
+        return O_LESS_EQUAL;
+    case MORE_EQUAL:
+        return O_MORE_EQUAL;
+    case OR:
+        return O_OR;
+    case AND:
+        return O_AND;
+    case NOT_EQUAL:
+        return O_NOT_EQUAL;
+    case NOT:
+        return O_NOT;
 
     default:
         printf("internal error: nature_lex_to_op\n");
