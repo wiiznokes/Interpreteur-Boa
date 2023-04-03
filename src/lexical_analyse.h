@@ -5,6 +5,10 @@
 
 typedef enum
 {
+
+    ERROR,
+    END_FILE,
+
     // data type
     INT,
     CHAR,
@@ -43,10 +47,8 @@ typedef enum
     // function
     FUN,
     COLON, // :
-    RETURN,
-
-    ERROR,
-    END_FILE
+    RETURN
+    
 } NatureLexeme;
 
 typedef struct

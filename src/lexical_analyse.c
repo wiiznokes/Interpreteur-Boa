@@ -54,17 +54,17 @@ typedef enum
     S_AMPERSAND, // (&) non accepteur
     S_AND,
 
-    S_INITIALISATION,
+    S_INIT,
 
     S_NOT,
     S_NOT_EQUAL,
 
+    S_PARO,
+    S_PARF,
     S_PLUS,
     S_MINUS,
     S_MUL,
     S_DIV,
-    S_PARO,
-    S_PARF,
 
     // condition
     S_IF,
@@ -174,6 +174,11 @@ char *nature_to_text(NatureLexeme nature)
 {
     switch (nature)
     {
+    case ERROR:
+        return "ERROR";
+    case END_FILE:
+        return "END_FILE";
+
     case INT:
         return "INT";
     case CHAR:
@@ -234,11 +239,6 @@ char *nature_to_text(NatureLexeme nature)
     case RETURN:
         return "RETURN";
 
-    case ERROR:
-        return "ERROR";
-    case END_FILE:
-        return "END_FILE";
-
     default:
         printf("internal error: nature_to_text\n");
         exit(1);
@@ -275,7 +275,7 @@ bool transition(char c)
             current_state = S_GUILL;
             return true;
         case '<':
-            current_state = S_INFERIOR;
+            current_state = S_LESS;
             return true;
         case '=':
             current_state = S_EGALE;
@@ -442,17 +442,17 @@ bool transition(char c)
         {
             return false;
         }
-    case S_INFERIOR:
+    case S_LESS:
         switch (c)
         {
         case '-':
-            current_state = S_INITIALISATION;
+            current_state = S_INIT;
             return true;
         default:
             return false;
         }
 
-    case S_INITIALISATION:
+    case S_INIT:
         switch (c)
         {
         default:
@@ -519,47 +519,60 @@ void proccess_end()
     
     switch (current_state)
     {
+    
     case S_START:
         current_lexeme.nature = END_FILE;
-        break;
-    case S_I:
-        current_lexeme.nature = NAME;
-        break;
-    case S_IN:
-        current_lexeme.nature = NAME;
         break;
     case S_INT:
         current_lexeme.nature = INT;
         break;
-    case S_C:
-        current_lexeme.nature = NAME;
-        break;
-    case S_CH:
-        current_lexeme.nature = NAME;
-        break;
-    case S_CHA:
-        current_lexeme.nature = NAME;
-        break;
     case S_CHAR:
         current_lexeme.nature = CHAR;
-        break;
-    case S_NAME:
-        current_lexeme.nature = NAME;
-        break;
-    case S_STRING:
-        current_lexeme.nature = STRING;
         break;
     case S_NUMBER:
         current_lexeme.nature = NUMBER;
         break;
-    case S_INITIALISATION:
-        current_lexeme.nature = INIT;
+    case S_STRING:
+        current_lexeme.nature = STRING;
         break;
     case S_EGALE:
         current_lexeme.nature = ASSIGN;
         break;
-    case S_END_INSTRUCTION:
-        current_lexeme.nature = END_INSTRUCTION;
+    case S_EQUAL:
+        current_lexeme.nature = EQUAL;
+        break;
+    case S_LESS:
+        current_lexeme.nature = LESS;
+        break;
+    case S_LESS_EQUAL:
+        current_lexeme.nature = LESS_EQUAL;
+        break;
+    case S_MORE:
+        current_lexeme.nature = MORE;
+        break;
+    case S_MORE_EQUAL:
+        current_lexeme.nature = MORE_EQUAL;
+        break;
+    case S_OR:
+        current_lexeme.nature = OR;
+        break;
+    case S_AND:
+        current_lexeme.nature = AND;
+        break;
+    case S_INIT:
+        current_lexeme.nature = INIT;
+        break;
+    case S_NOT:
+        current_lexeme.nature = NOT;
+        break;
+    case S_NOT_EQUAL:
+        current_lexeme.nature = NOT_EQUAL;
+        break;
+    case S_PARO:
+        current_lexeme.nature = PARO;
+        break;
+    case S_PARF:
+        current_lexeme.nature = PARF;
         break;
     case S_PLUS:
         current_lexeme.nature = PLUS;
@@ -573,11 +586,42 @@ void proccess_end()
     case S_DIV:
         current_lexeme.nature = DIV;
         break;
-    case S_PARO:
-        current_lexeme.nature = PARO;
+    case S_IF:
+        current_lexeme.nature = IF;
         break;
-    case S_PARF:
-        current_lexeme.nature = PARF;
+    case S_ELSE:
+        current_lexeme.nature = ELSE;
+        break;
+    case S_FUN:
+        current_lexeme.nature = FUN;
+        break;
+    case S_COLON:
+        current_lexeme.nature = COLON;
+        break;
+    case S_RETURN:
+        current_lexeme.nature = RETURN;
+        break;
+    case S_END_INSTRUCTION:
+        current_lexeme.nature = END_INSTRUCTION;
+        break;
+
+    case S_I:
+    case S_IN:
+    case S_C:
+    case S_CH:
+    case S_CHA:
+    case S_NAME:
+    case S_E:
+    case S_EL:
+    case S_ELS:
+    case S_F:
+    case S_FU:
+    case S_R:
+    case S_RE:
+    case S_RET:
+    case S_RETU:
+    case S_RETUR:
+        current_lexeme.nature = NAME;
         break;
 
     default:
