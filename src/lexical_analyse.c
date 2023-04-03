@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "lexical_analyse.h"
 #include "lecture_caracteres.h"
-
 
 /*
     private
@@ -29,12 +27,12 @@ typedef enum
     S_CHA,
     S_CHAR,
 
-    // generic 
+    // generic
     S_NAME,
     S_NUMBER,
 
     // string
-    S_GUILL,    // non accepteur
+    S_GUILL, // non accepteur
     S_STRING,
 
     // operation
@@ -92,16 +90,16 @@ typedef enum
 Lexeme current_lexeme;
 State current_state;
 
-
 void next_char();
 // return true si on doit refaire une itération
 bool transition(char c);
 void proccess_end();
 bool is_number(char c);
 bool is_letter(char c);
+bool set_name_if_needed(char c);
 bool is_separator(char c);
 void add_char(char *s, char c);
-void handle_error(char* message);
+void handle_error(char *message);
 
 /*
  ***************
@@ -117,7 +115,6 @@ void next_lexeme()
 {
     current_state = S_START;
     current_lexeme.char_tab[0] = '\0';
-   
 
     if (fin_de_sequence_car())
     {
@@ -135,8 +132,8 @@ void next_lexeme()
         }
     }
 
-
-    if (!transition(caractere_courant())) {
+    if (!transition(caractere_courant()))
+    {
         handle_error("");
         return;
     }
@@ -147,10 +144,11 @@ void next_lexeme()
 
     while (transition(caractere_courant()))
     {
-        if (counter >= MAX_LEXEME_SIZE) {
+        if (counter >= MAX_LEXEME_SIZE)
+        {
             char log_message[200];
             snprintf(log_message, 200, "Erreur lexical: un lexeme ne peut pas faire plus de %d caractère.\n",
-                MAX_LEXEME_SIZE);
+                     MAX_LEXEME_SIZE);
             handle_error(log_message);
             return;
         }
@@ -162,11 +160,10 @@ void next_lexeme()
     proccess_end();
 
     printf("Lexeme de nature %s = \"%s\"\n",
-			   nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
+           nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
 }
 
 Lexeme get_lexeme() { return current_lexeme; }
-
 
 void stop_lexical_analyse() { arreter_car(); }
 
@@ -274,14 +271,29 @@ bool transition(char c)
         case '"':
             current_state = S_GUILL;
             return true;
-        case '<':
-            current_state = S_LESS;
-            return true;
         case '=':
             current_state = S_EGALE;
             return true;
-        case ';':
-            current_state = S_END_INSTRUCTION;
+        case '<':
+            current_state = S_LESS;
+            return true;
+        case '>':
+            current_state = S_MORE;
+            return true;
+        case '|':
+            current_state = S_BAR;
+            return true;
+        case '&':
+            current_state = S_AMPERSAND;
+            return true;
+        case '!':
+            current_state = S_NOT;
+            return true;
+        case '(':
+            current_state = S_PARO;
+            return true;
+        case ')':
+            current_state = S_PARF;
             return true;
         case '+':
             current_state = S_PLUS;
@@ -295,11 +307,20 @@ bool transition(char c)
         case '/':
             current_state = S_DIV;
             return true;
-        case '(':
-            current_state = S_PARO;
+        case 'e':
+            current_state = S_E;
             return true;
-        case ')':
-            current_state = S_PARF;
+        case 'f':
+            current_state = S_F;
+            return true;
+        case ':':
+            current_state = S_COLON;
+            return true;
+        case 'r':
+            current_state = S_R;
+            return true;
+        case ';':
+            current_state = S_END_INSTRUCTION;
             return true;
 
         default:
@@ -326,15 +347,12 @@ bool transition(char c)
         case 'n':
             current_state = S_IN;
             return true;
+        case 'f':
+            current_state = S_IF;
+            return true;
         default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
+            return set_name_if_needed(c);
         }
-
     case S_IN:
         switch (c)
         {
@@ -342,24 +360,11 @@ bool transition(char c)
             current_state = S_INT;
             return true;
         default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
+            return set_name_if_needed(c);
         }
     case S_INT:
-        switch (c)
-        {
-        default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
-        }
+        return set_name_if_needed(c);
+
     case S_C:
         switch (c)
         {
@@ -367,12 +372,7 @@ bool transition(char c)
             current_state = S_CH;
             return true;
         default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
+            return set_name_if_needed(c);
         }
     case S_CH:
         switch (c)
@@ -381,12 +381,7 @@ bool transition(char c)
             current_state = S_CHA;
             return true;
         default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
+            return set_name_if_needed(c);
         }
     case S_CHA:
         switch (c)
@@ -395,34 +390,16 @@ bool transition(char c)
             current_state = S_CHAR;
             return true;
         default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
+            return set_name_if_needed(c);
         }
     case S_CHAR:
-        switch (c)
-        {
-        default:
-            if (is_letter(c) || is_number(c))
-            {
-                current_state = S_NAME;
-                return true;
-            }
-            return false;
-        }
+        return set_name_if_needed(c);
+
     case S_NAME:
-        if (is_letter(c) || is_number(c))
-        {
-            current_state = S_NAME;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return is_letter(c) || is_number(c);
+
+    case S_NUMBER:
+        return is_number(caractere_courant());
 
     case S_GUILL:
         if (c == '"')
@@ -433,93 +410,212 @@ bool transition(char c)
     case S_STRING:
         return false;
 
-    case S_NUMBER:
-        if (is_number(caractere_courant()))
+    case S_EGALE:
+        switch (c)
         {
+        case '=':
+            current_state = S_EQUAL;
             return true;
-        }
-        else
-        {
+        default:
             return false;
         }
+    case S_EQUAL:
+        return false;
+
     case S_LESS:
         switch (c)
         {
         case '-':
             current_state = S_INIT;
             return true;
+        case '=':
+            current_state = S_LESS_EQUAL;
+            return true;
         default:
             return false;
         }
+    case S_LESS_EQUAL:
+        return false;
+
+    case S_MORE:
+        switch (c)
+        {
+        case '=':
+            current_state = S_MORE_EQUAL;
+            return true;
+        default:
+            return false;
+        }
+    case S_MORE_EQUAL:
+        return false;
+
+    case S_BAR:
+        switch (c)
+        {
+        case '|':
+            current_state = S_OR;
+            return true;
+        default:
+            return false;
+        }
+    case S_OR:
+        return false;
+
+    case S_AMPERSAND:
+        switch (c)
+        {
+        case '&':
+            current_state = S_AND;
+            return true;
+        default:
+            return false;
+        }
+    case S_AND:
+        return false;
 
     case S_INIT:
+        return false;
+
+    case S_NOT:
         switch (c)
         {
+        case '=':
+            current_state = S_NOT_EQUAL;
+            return true;
         default:
             return false;
         }
-    case S_EGALE:
-        switch (c)
-        {
-        default:
-            return false;
-        }
-    case S_END_INSTRUCTION:
-        switch (c)
-        {
-        default:
-            return false;
-        }
-    case S_PLUS:
-        switch (c)
-        {
-        default:
-            return false;
-        }
-    case S_MINUS:
-        switch (c)
-        {
-        default:
-            return false;
-        }
-    case S_MUL:
-        switch (c)
-        {
-        default:
-            return false;
-        }
-    case S_DIV:
-        switch (c)
-        {
-        default:
-            return false;
-        }
+    case S_NOT_EQUAL:
+        return false;
+
     case S_PARO:
-        switch (c)
-        {
-        default:
-            return false;
-        }
     case S_PARF:
+    case S_PLUS:
+    case S_MINUS:
+    case S_MUL:
+    case S_DIV:
+        return false;
+
+    case S_IF:
+        return set_name_if_needed(c);
+
+    case S_E:
         switch (c)
         {
+        case 'l':
+            current_state = S_EL;
+            return true;
         default:
-            return false;
+            return set_name_if_needed(c);
         }
+    case S_EL:
+        switch (c)
+        {
+        case 's':
+            current_state = S_ELS;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_ELS:
+        switch (c)
+        {
+        case 'e':
+            current_state = S_ELSE;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_ELSE:
+        return set_name_if_needed(c);
+
+    case S_F:
+        switch (c)
+        {
+        case 'u':
+            current_state = S_FU;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_FU:
+        switch (c)
+        {
+        case 'n':
+            current_state = S_FUN;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_FUN:
+        return set_name_if_needed(c);
+
+    case S_COLON:
+        return false;
+
+    case S_R:
+        switch (c)
+        {
+        case 'e':
+            current_state = S_RE;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_RE:
+        switch (c)
+        {
+        case 't':
+            current_state = S_RET;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_RET:
+        switch (c)
+        {
+        case 'u':
+            current_state = S_RETU;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_RETU:
+        switch (c)
+        {
+        case 'r':
+            current_state = S_RETUR;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_RETUR:
+        switch (c)
+        {
+        case 'n':
+            current_state = S_RETURN;
+            return true;
+        default:
+            return set_name_if_needed(c);
+        }
+    case S_RETURN:
+        return set_name_if_needed(c);
     
+    case S_END_INSTRUCTION:
+        return false;
 
     default:
-        printf ("internal error: transition, you forgot a state %d\n", current_state);
+        printf("internal error: transition, you forgot a state %d\n", current_state);
         exit(1);
     }
 }
 
 void proccess_end()
 {
-    
+
     switch (current_state)
     {
-    
+
     case S_START:
         current_lexeme.nature = END_FILE;
         break;
@@ -631,12 +727,21 @@ void proccess_end()
 bool is_number(char c) { return c >= '0' && c <= '9'; }
 bool is_letter(char c) { return c >= 'A' && c <= 'z'; }
 
+bool set_name_if_needed(char c) {
+    if (is_letter(c) || is_number(c))
+    {
+        current_state = S_NAME;
+        return true;
+    }
+    return false;
+}
+
 bool is_separator(char c)
 {
     return c == '\n' || c == ' ' || c == EOF || c == '\t';
 }
 
-void handle_error(char* message)
+void handle_error(char *message)
 {
     current_lexeme.nature = ERROR;
 
