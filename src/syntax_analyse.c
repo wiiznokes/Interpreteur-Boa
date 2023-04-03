@@ -273,6 +273,7 @@ void condition(node **a) {
         exit_analyse("besoin de '}' après else");
     }
 
+    next_lexeme_or_quit();
 }
 
 /* from calculette */
