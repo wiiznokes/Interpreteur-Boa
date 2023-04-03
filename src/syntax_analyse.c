@@ -390,7 +390,7 @@ void facteur(node **a1, DataType data_type)
         }
         break;
     default:
-        exit_analyse("erreur: facteur");
+        exit_analyse("");
     }
 
     next_lexeme_or_quit();
