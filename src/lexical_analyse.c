@@ -16,41 +16,76 @@
 typedef enum
 {
     S_START, // accepteur (compte comme fin de fichier)
-    S_ERROR,
+    S_ERROR, // non accepteur
 
     // int
-    S_I,   // accepteur
-    S_IN,  // accepteur
-    S_INT, // accepteur
+    S_I,
+    S_IN,
+    S_INT,
 
     // char
-    S_C,    // accepteur
-    S_CH,   // accepteur
-    S_CHA,  // accepteur
-    S_CHAR, // accepteur
+    S_C,
+    S_CH,
+    S_CHA,
+    S_CHAR,
 
-    // name
-    S_NAME, // accepteur
+    // generic 
+    S_NAME,
+    S_NUMBER,
 
     // string
-    S_GUILL,
-    S_STRING, // accepteur
+    S_GUILL,    // non accepteur
+    S_STRING,
 
-    // number
-    S_NUMBER, // accepteur
+    // operation
 
-    // symbole
-    S_INFERIOR,
-    S_INITIALISATION,  // accepteur
-    S_EGALE,           // accpteur
-    S_PLUS,             // accpteur
-    S_MINUS,  // accpteur
-    S_MUL,  // accpteur
-    S_DIV,  // accpteur
-    S_PARO,  // accpteur
-    S_PARF,  // accpteur
+    S_EGALE,
+    S_EQUAL,
 
-    S_END_INSTRUCTION, // accepteur
+    S_LESS,
+    S_LESS_EQUAL,
+
+    S_MORE,
+    S_MORE_EQUAL,
+
+    S_BAR, // non accepteur
+    S_OR,
+
+    S_AMPERSAND, // (&) non accepteur
+    S_AND,
+
+    S_INITIALISATION,
+
+    S_NOT,
+    S_NOT_EQUAL,
+
+    S_PLUS,
+    S_MINUS,
+    S_MUL,
+    S_DIV,
+    S_PARO,
+    S_PARF,
+
+    // condition
+    S_IF,
+    S_E,
+    S_EL,
+    S_ELS,
+    S_ELSE,
+
+    // function
+    S_F,
+    S_FU,
+    S_FUN,
+    S_COLON, // :
+    S_R,
+    S_RE,
+    S_RET,
+    S_RETU,
+    S_RETUR,
+    S_RETURN,
+
+    S_END_INSTRUCTION,
 
 } State;
 
@@ -139,26 +174,29 @@ char *nature_to_text(NatureLexeme nature)
 {
     switch (nature)
     {
-    case ERROR:
-        return "ERROR";
     case INT:
         return "INT";
     case CHAR:
         return "CHAR";
-    case STRING:
-        return "STRING";
-    case NUMBER:
-        return "NUMBER";
+
     case INIT:
         return "INIT";
     case ASSIGN:
         return "ASSIGN";
-    case NAME:
-        return "NAME";
     case END_INSTRUCTION:
         return "END_INSTRUCTION";
-    case END_FILE:
-        return "END_FILE";
+
+    case NAME:
+        return "NAME";
+    case STRING:
+        return "STRING";
+    case NUMBER:
+        return "NUMBER";
+
+    case PARO:
+        return "PARO";
+    case PARF:
+        return "PARF";
     case PLUS:
         return "PLUS";
     case MINUS:
@@ -167,10 +205,39 @@ char *nature_to_text(NatureLexeme nature)
         return "MUL";
     case DIV:
         return "DIV";
-    case PARO:
-        return "PARO";
-    case PARF:
-        return "PARF";
+    case EQUAL:
+        return "EQUAL";
+    case LESS:
+        return "LESS";
+    case LESS_EQUAL:
+        return "LESS_EQUAL";
+    case MORE_EQUAL:
+        return "MORE_EQUAL";
+    case OR:
+        return "OR";
+    case AND:
+        return "AND";
+    case NOT_EQUAL:
+        return "NOT_EQUAL";
+    case NOT:
+        return "NOT";
+
+    case IF:
+        return "IF";
+    case ELSE:
+        return "ELSE";
+
+    case FUN:
+        return "FUN";
+    case COLON:
+        return "COLON";
+    case RETURN:
+        return "RETURN";
+
+    case ERROR:
+        return "ERROR";
+    case END_FILE:
+        return "END_FILE";
 
     default:
         printf("internal error: nature_to_text\n");
