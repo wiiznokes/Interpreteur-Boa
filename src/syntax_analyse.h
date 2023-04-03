@@ -58,16 +58,25 @@ void stop_analyse();
 
     *** TODO ***
 
+    condition: if_block else_block
+    condition: if_block
+
+
+    if_block: if ( eag ) { instructions }
+    else_block: else { instructions }
+
+
+
+
+
+
+
+
     fonction: fun name ( args ) : type { instructions }
 
     args: operations_rec
 
-    if_statement: if_block else_block
-    if_statement: if_block
 
-
-    if_block: if ( operations ) { instructions }
-    else_block: else { instructions }
 
     while_loop: while ( operations ) { instructions }
 
