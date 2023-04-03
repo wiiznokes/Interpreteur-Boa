@@ -61,6 +61,7 @@ void fill_ast(char *fileName, bool show_log)
     if (show_log) {
         printf("\n\n");
         print_tree(*get_ast());
+        printf("\n\n");
     }
 }
 

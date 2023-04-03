@@ -67,6 +67,7 @@ void evaluate(node *a)
             char *x2 = evaluate_char(a->right);
             node *n2 = creer_variable(a->left->name, a->left->data_type);
             strcpy(n2->string, x2);
+            printf("%s = %s\n", a->left->name, x2);
             add_global(n2);
             break;
 
@@ -85,6 +86,7 @@ void evaluate(node *a)
             break;
         case D_CHAR:
             set_char(a->left->name, evaluate_char(a->right));
+            printf("%s = %s\n", a->left->name, get_char(a->left->name));
             break;
 
         default:

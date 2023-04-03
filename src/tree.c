@@ -50,12 +50,12 @@ static void print_tree_helper(node *n, int depth, int type)
         exit(1);
     }
 
-    char log[200] = "";
+    char log[500] = "";
 
     switch (n->type)
     {
     case N_VARIABLE:
-        strcpy(log, data_type_to_text(n->data_type));
+        sprintf(log, "%s %s", data_type_to_text(n->data_type), n->name);
         break;
     case N_OPERATION:
         strcpy(log, operateur_to_text(n->op));
@@ -71,7 +71,6 @@ static void print_tree_helper(node *n, int depth, int type)
         default:
             break;
         }
-    
     default:
         break;
     }

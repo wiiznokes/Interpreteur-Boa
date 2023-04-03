@@ -3,10 +3,12 @@ int entier2 <- (1 && 0) || 1;
 
 
 
-if (entier2) {
+char b <- "bisous";
 
-
-}
+b = "janvier";
 
 
 int a <- 8;
+
+
+a = a + a;
