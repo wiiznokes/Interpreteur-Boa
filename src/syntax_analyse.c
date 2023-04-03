@@ -18,7 +18,7 @@ void instructions(node **a);
 void instruction(node **a);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a);
-
+void condition(node **a);
 // from calculette
 
 void eag(node **a1, DataType data_type);
@@ -50,7 +50,13 @@ void fill_ast(char *fileName, bool show_log)
 
     start_variable();
 
+    next_lexeme_or_quit();
+
     instructions(get_ast());
+
+    if (get_lexeme().nature != END_FILE) {
+        exit_analyse("");
+    }
 
     if (show_log) {
         printf("\n\n");
@@ -69,7 +75,6 @@ void stop_analyse()
 void instructions(node **a)
 {
 
-    next_lexeme_or_quit();
 
     switch (get_lexeme().nature)
     {
@@ -79,14 +84,14 @@ void instructions(node **a)
     case INT:
     case CHAR:
     case NAME:
+    case IF:
         node *a1;
         instruction(&a1);
         *a = a1;
         instructions(&(a1->right));
         break;
-
     default:
-        exit_analyse("");
+        break;
     }
 }
 
@@ -101,12 +106,24 @@ void instruction(node **a)
 
     case INT:
         initialisation(&a1, D_INT);
+        if (get_lexeme().nature != END_INSTRUCTION)
+            exit_analyse("une instruction doit finir par ';'");
+        next_lexeme_or_quit();
         break;
     case CHAR:
         initialisation(&a1, D_CHAR);
+        if (get_lexeme().nature != END_INSTRUCTION) 
+            exit_analyse("une instruction doit finir par ';'");
+        next_lexeme_or_quit();
         break;
     case NAME:
         assignation(&a1);
+        if (get_lexeme().nature != END_INSTRUCTION)
+            exit_analyse("une instruction doit finir par ';'");
+        next_lexeme_or_quit();
+        break;
+    case IF:
+        condition(&a1);
         break;
 
     default:
@@ -115,10 +132,6 @@ void instruction(node **a)
 
     (*a)->left = a1;
 
-    if (get_lexeme().nature != END_INSTRUCTION)
-    {
-        exit_analyse("une instruction doit finir par ';'");
-    }
 }
 
 void initialisation(node **a, DataType data_type)
@@ -161,17 +174,13 @@ void initialisation(node **a, DataType data_type)
     eag(&a1, data_type);
 
     (*a)->right = a1;
+
 }
 
 void assignation(node **a)
 {
 
     *a = new_node(N_ASSIGNATION);
-
-    if (get_lexeme().nature != NAME)
-    {
-        exit_analyse("");
-    }
 
     DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
 
@@ -182,19 +191,87 @@ void assignation(node **a)
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
-    next_lexeme_or_quit();
 
+    next_lexeme_or_quit();
     if (get_lexeme().nature != ASSIGN)
     {
         exit_analyse("besoin du signe \"=\"");
     }
 
-    next_lexeme_or_quit();
 
+    next_lexeme_or_quit();
     node *a1;
     eag(&a1, data_type);
 
     (*a)->right = a1;
+
+}
+
+
+void condition(node **a) {
+
+    *a = new_node(N_CONDITION);
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARO)
+    {
+        exit_analyse("besoin de '(' après if");
+    }
+
+    next_lexeme_or_quit();
+    node *a1;
+    eag(&a1, D_INT);
+    (*a)->left = a1;
+
+    if (get_lexeme().nature != PARF)
+    {
+        exit_analyse("besoin de ')' après if");
+    }
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != BRACE_OPEN)
+    {
+        exit_analyse("besoin de '{' après if");
+    }
+
+    next_lexeme_or_quit();
+    node *a2 = new_node(N_CONDITION);
+    node *a3;
+    instructions(&a3);
+    a2->left = a3;
+
+    (*a)->right = a2;
+
+    if (get_lexeme().nature != BRACE_CLOSE)
+    {
+        exit_analyse("besoin de '}' après if");
+    }
+
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != ELSE)
+    {
+        return;
+    }
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != BRACE_OPEN)
+    {
+        exit_analyse("besoin de '{' après else");
+    }
+
+
+    next_lexeme_or_quit();
+    node *a4;
+    instructions(&a4);
+    a2->right = a4;
+
+
+    if (get_lexeme().nature != BRACE_CLOSE)
+    {
+        exit_analyse("besoin de '}' après else");
+    }
+
 }
 
 /* from calculette */

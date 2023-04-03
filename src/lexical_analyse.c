@@ -70,6 +70,8 @@ typedef enum
     S_EL,
     S_ELS,
     S_ELSE,
+    S_BRACE_OPEN,
+    S_BRACE_CLOSE,
 
     // function
     S_F,
@@ -235,7 +237,11 @@ char *nature_to_text(NatureLexeme nature)
         return "IF";
     case ELSE:
         return "ELSE";
-
+    case BRACE_OPEN:
+        return "BRACE_OPEN";
+    case BRACE_CLOSE:
+        return "BRACE_CLOSE";
+    
     case FUN:
         return "FUN";
     case COLON:
@@ -316,6 +322,12 @@ bool transition(char c)
             return true;
         case 'e':
             current_state = S_E;
+            return true;
+        case '{':
+            current_state = S_BRACE_OPEN;
+            return true;
+        case '}':
+            current_state = S_BRACE_CLOSE;
             return true;
         case 'f':
             current_state = S_F;
@@ -535,7 +547,10 @@ bool transition(char c)
         }
     case S_ELSE:
         return set_name_if_needed(c);
-
+    case S_BRACE_OPEN:
+        return false;
+    case S_BRACE_CLOSE:
+        return false;
     case S_F:
         switch (c)
         {
@@ -694,6 +709,12 @@ void proccess_end()
         break;
     case S_ELSE:
         current_lexeme.nature = ELSE;
+        break;
+    case S_BRACE_OPEN:
+        current_lexeme.nature = BRACE_OPEN;
+        break;
+    case S_BRACE_CLOSE:
+        current_lexeme.nature = BRACE_CLOSE;
         break;
     case S_FUN:
         current_lexeme.nature = FUN;

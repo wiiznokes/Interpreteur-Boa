@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
 	fill_ast(fileName, log_active);
 	stop_analyse();
-	start_evaluation();
+	//start_evaluation();
 	stop_evaluation();
 
 	return 0;
