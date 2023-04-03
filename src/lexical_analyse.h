@@ -43,6 +43,8 @@ typedef enum
     // condition
     IF,
     ELSE,
+    BRACE_OPEN,     // {
+    BRACE_CLOSE,    // }
 
     // function
     FUN,
