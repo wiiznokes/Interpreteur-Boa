@@ -5,7 +5,7 @@
 #include "syntax_analyse.h"
 
 #include "lexical_analyse.h"
-#include "variable.h"
+#include "stack.h"
 #include "node.h"
 #include "ast_construction.h"
 
