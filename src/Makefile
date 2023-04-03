@@ -15,7 +15,7 @@ build_boa: interprete.o syntax_analyse.o lexical_analyse.o \
 
 run: build
 	clear
-	./Boa ./../test/valid/simple.boa
+	./Boa -log ./../test/valid/simple.boa
 
 
 test: test.o list.o node.o tree.o

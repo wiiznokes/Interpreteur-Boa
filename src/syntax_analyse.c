@@ -43,16 +43,19 @@ void exit_analyse(char *msg);
     interface impl
 */
 
-void fill_ast(char *fileName)
+void fill_ast(char *fileName, bool show_log)
 {
 
-    init_lexical_analyse(fileName);
+    init_lexical_analyse(fileName, show_log);
 
     start_variable();
 
     instructions(get_ast());
 
-    print_tree(*get_ast());
+    if (show_log) {
+        printf("\n\n");
+        print_tree(*get_ast());
+    }
 }
 
 void stop_analyse()
