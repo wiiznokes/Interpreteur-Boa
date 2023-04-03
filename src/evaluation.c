@@ -62,14 +62,14 @@ void evaluate(node *a)
             node *n1 = creer_variable(a->left->name, a->left->data_type);
             n1->number = x1;
             printf("%s = %d\n", n1->name, x1);
-            add_global(n1);
+            add_stack(n1);
             break;
         case D_CHAR:
             x2 = evaluate_char(a->right);
             node *n2 = creer_variable(a->left->name, a->left->data_type);
             strcpy(n2->string, x2);
             printf("%s = %s\n", n2->name, x2);
-            add_global(n2);
+            add_stack(n2);
             break;
 
         default:

@@ -48,7 +48,7 @@ void fill_ast(char *fileName, bool show_log)
 
     init_lexical_analyse(fileName, show_log);
 
-    start_variable();
+    start_stack();
 
     next_lexeme_or_quit();
 
@@ -67,7 +67,7 @@ void fill_ast(char *fileName, bool show_log)
 
 void stop_analyse()
 {
-    stop_variable();
+    free_stack();
     stop_lexical_analyse();
 }
 
@@ -153,13 +153,9 @@ void initialisation(node **a, DataType data_type)
         exit_analyse("");
     }
 
-    // ajout d'une node dans la liste de variables
+
     node *n = creer_variable(get_lexeme().char_tab, data_type);
-    if (!add_global_analyse(n))
-    {
-        free(n);
-        exit_analyse("internal error: can't add global");
-    }
+    add_stack(n);
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
@@ -239,7 +235,9 @@ void condition(node **a) {
     next_lexeme_or_quit();
     node *a2 = new_node(N_CONDITION);
     node *a3;
+    up_scope();
     instructions(&a3);
+    down_scope();
     a2->left = a3;
 
     (*a)->right = a2;
@@ -265,7 +263,9 @@ void condition(node **a) {
 
     next_lexeme_or_quit();
     node *a4;
+    up_scope();
     instructions(&a4);
+    down_scope();
     a2->right = a4;
 
 

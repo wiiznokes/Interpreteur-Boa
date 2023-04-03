@@ -118,7 +118,7 @@ void add_stack(node *n)
 char *get_char(char *name)
 {
     node *n = get_by_name(name);
-    if (n == NULL || n->type != N_VARIABLE || n->type != D_CHAR)
+    if (n == NULL || n->type != N_VARIABLE || n->data_type != D_CHAR)
     {
         printf("internal error: set_char\n");
         exit(1);
@@ -129,7 +129,7 @@ char *get_char(char *name)
 int get_int(char *name)
 {
     node *n = get_by_name(name);
-    if (n == NULL || n->type != N_VARIABLE || n->type != D_INT)
+    if (n == NULL || n->type != N_VARIABLE || n->data_type != D_INT)
     {
         printf("internal error: set_int\n");
         exit(1);
@@ -140,7 +140,7 @@ int get_int(char *name)
 void set_char(char *name, char *value)
 {
     node *n = get_by_name(name);
-    if (n == NULL || n->type != N_VARIABLE || n->type != D_CHAR)
+    if (n == NULL || n->type != N_VARIABLE || n->data_type != D_CHAR)
     {
         printf("internal error: set_char\n");
         exit(1);
@@ -151,7 +151,7 @@ void set_char(char *name, char *value)
 void set_int(char *name, int value)
 {
     node *n = get_by_name(name);
-    if (n == NULL || n->type != N_VARIABLE || n->type != D_INT)
+    if (n == NULL || n->type != N_VARIABLE || n->data_type != D_INT)
     {
         printf("internal error: set_int\n");
         exit(1);
