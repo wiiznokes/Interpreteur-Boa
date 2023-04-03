@@ -46,6 +46,7 @@ char *x2;
 
 void evaluate(node *a)
 {
+    if (a == NULL) return;
     switch (a->type)
     {
     case N_INSTRUCTION:
@@ -98,18 +99,22 @@ void evaluate(node *a)
             break;
         }
         break;
-    case N_VARIABLE:
+    case N_CONDITION:
+        int res = evaluate_int(a->left);
+        up_scope();
+        if (res)
+            evaluate(a->right->left);
+        else 
+            evaluate(a->right->right);
+        down_scope();
         break;
-
-    case N_VALUE:
-        break;
-
     default:
         printf("internal error: evaluate\n");
         exit(1);
         break;
     }
 }
+
 
 
 
@@ -153,7 +158,7 @@ int evaluate_int(node *a)
         case O_NOT_EQUAL:
             return evaluate_int(a->left) != evaluate_int(a->right);
         case O_NOT:
-            return evaluate_int(a->left);
+            return !evaluate_int(a->right);
         default:
             printf("internal error: evaluate_int\n");
             exit(1);

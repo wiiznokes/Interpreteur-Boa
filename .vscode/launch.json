@@ -6,6 +6,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Boa",
             "args": [
+                "-log",
                 "test/valid/simple.boa"
             ],
             "stopAtEntry": false,

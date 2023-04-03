@@ -104,16 +104,15 @@ void add_char(char *s, char c);
 void handle_error(char *message);
 
 
-bool log_active;
+bool debug_lexical = true;
 /*
  ***************
  */
 
 
 
-void init_lexical_analyse(char *fileName, bool show_log)
+void init_lexical_analyse(char *fileName)
 {
-    log_active = show_log;
     demarrer_car(fileName);
     next_char();
 }
@@ -166,7 +165,7 @@ void next_lexeme()
 
     proccess_end();
 
-    if (log_active) {
+    if (debug_lexical) {
         printf("Lexeme de nature %s = \"%s\"\n",
            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
     }

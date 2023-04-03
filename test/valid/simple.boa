@@ -1,12 +1,11 @@
+int test <- 2;
+
+int a <- 7;
 
 
-
-
-if (1) {
+if ((0)) {
 
 }
-else {
-    int b <- 9;
-}
 
-int c <- 5;
+
+int b <- 7;

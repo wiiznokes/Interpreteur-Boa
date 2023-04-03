@@ -37,6 +37,10 @@ Operateur nature_lex_to_op(NatureLexeme nature);
 void next_lexeme_or_quit();
 void exit_analyse(char *msg);
 
+
+bool debug_syntax = true;
+void show_debug_syntax(char *txt) { if (debug_syntax) printf("%s\n", txt); }
+
 /* *************** */
 
 /**
@@ -46,7 +50,7 @@ void exit_analyse(char *msg);
 void fill_ast(char *fileName, bool show_log)
 {
 
-    init_lexical_analyse(fileName, show_log);
+    init_lexical_analyse(fileName);
 
     start_stack();
 
@@ -150,7 +154,9 @@ void initialisation(node **a, DataType data_type)
 
     if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
     {
-        exit_analyse("");
+        char log[300];
+        sprintf(log, "variable %s déjà déninie.", get_lexeme().char_tab);
+        exit_analyse(log);
     }
 
 
@@ -281,11 +287,13 @@ void condition(node **a) {
 
 void eag(node **a1, DataType data_type)
 {
+    show_debug_syntax("eag");
     seq_terme(a1, data_type);
 }
 
 void seq_terme(node **a2, DataType data_type)
 {
+    show_debug_syntax("seq_terme");
     node *a1;
     terme(&a1, data_type);
     suite_seq_terme(a1, a2, data_type);
@@ -293,6 +301,7 @@ void seq_terme(node **a2, DataType data_type)
 
 void suite_seq_terme(node *a1, node **a2, DataType data_type)
 {
+    show_debug_syntax("suite_seq_terme");
     node *a3, *a4;
     Operateur op;
 
@@ -310,11 +319,13 @@ void suite_seq_terme(node *a1, node **a2, DataType data_type)
 
 void terme(node **a1, DataType data_type)
 {
+    show_debug_syntax("terme");
     seq_facteur(a1, data_type);
 }
 
 void seq_facteur(node **a2, DataType data_type)
 {
+    show_debug_syntax("seq_facteur");
     node *a1;
     facteur(&a1, data_type);
     suite_seq_facteur(a1, a2, data_type);
@@ -322,6 +333,7 @@ void seq_facteur(node **a2, DataType data_type)
 
 void suite_seq_facteur(node *a1, node **a2, DataType data_type)
 {
+    show_debug_syntax("suite_seq_facteur");
     node *a3, *a4;
     Operateur op;
 
@@ -349,6 +361,7 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
 
 void facteur(node **a1, DataType data_type)
 {
+    show_debug_syntax("facteur");
     switch (get_lexeme().nature)
     {
     case NAME:
@@ -389,6 +402,13 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("erreur: besoin parenthèse fermante");
         }
         break;
+
+    case NOT:
+        next_lexeme_or_quit();
+        node *a2;
+        eag(&a2, data_type);
+        *a1 = creer_operation(O_NOT, NULL, a2);
+        break;
     default:
         exit_analyse("");
     }
@@ -396,15 +416,16 @@ void facteur(node **a1, DataType data_type)
     next_lexeme_or_quit();
 }
 
+
 int op1(Operateur *op, DataType data_type)
 {
+    show_debug_syntax("op1");
     switch (get_lexeme().nature)
     {
     case PLUS:
     case MINUS:
     case OR:
     case AND:
-    case NOT:
     case EQUAL:
     case NOT_EQUAL:
     case LESS:
@@ -427,6 +448,7 @@ int op1(Operateur *op, DataType data_type)
 
 int op2(Operateur *op, DataType data_type)
 {
+    show_debug_syntax("op2");
     int return_value;
     switch (get_lexeme().nature)
     {
