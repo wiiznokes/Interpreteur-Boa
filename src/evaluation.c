@@ -41,7 +41,8 @@ void stop_evaluation() {
 /* ******************** */
 
 
-
+int x1;
+char *x2;
 
 void evaluate(node *a)
 {
@@ -57,17 +58,17 @@ void evaluate(node *a)
         switch (a->left->data_type)
         {
         case D_INT:
-            int x1 = evaluate_int(a->right);
+            x1 = evaluate_int(a->right);
             node *n1 = creer_variable(a->left->name, a->left->data_type);
             n1->number = x1;
-            printf("%s = %d\n", n1->name, n1->number);
+            printf("%s = %d\n", n1->name, x1);
             add_global(n1);
             break;
         case D_CHAR:
-            char *x2 = evaluate_char(a->right);
+            x2 = evaluate_char(a->right);
             node *n2 = creer_variable(a->left->name, a->left->data_type);
             strcpy(n2->string, x2);
-            printf("%s = %s\n", a->left->name, x2);
+            printf("%s = %s\n", n2->name, x2);
             add_global(n2);
             break;
 
@@ -81,12 +82,14 @@ void evaluate(node *a)
         switch (a->left->data_type)
         {
         case D_INT:
-            set_int(a->left->name, evaluate_int(a->right));
-            printf("%s = %d\n", a->left->name, a->left->number);
+            x1 = evaluate_int(a->right);
+            set_int(a->left->name, x1);
+            printf("%s = %d\n", a->left->name, x1);
             break;
         case D_CHAR:
-            set_char(a->left->name, evaluate_char(a->right));
-            printf("%s = %s\n", a->left->name, get_char(a->left->name));
+            x2 = evaluate_char(a->right);
+            set_char(a->left->name, x2);
+            printf("%s = %s\n", a->left->name, x2);
             break;
 
         default:
