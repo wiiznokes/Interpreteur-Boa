@@ -92,6 +92,7 @@ void instructions(node **a)
         instructions(&(a1->right));
         break;
     default:
+        *a = NULL;
         break;
     }
 }
