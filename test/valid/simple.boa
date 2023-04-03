@@ -1,14 +1,10 @@
 
-int entier2 <- (1 && 0) || 1;
 
+if (1) {
 
+}
+else {
+    int b <- 9;
+}
 
-char b <- "bisous";
-
-b = "janvier";
-
-
-int a <- 8;
-
-
-a = a + a;
+int c <- 5;

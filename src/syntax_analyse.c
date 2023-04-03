@@ -92,6 +92,7 @@ void instructions(node **a)
         instructions(&(a1->right));
         break;
     default:
+        *a = NULL;
         break;
     }
 }
@@ -273,6 +274,7 @@ void condition(node **a) {
         exit_analyse("besoin de '}' après else");
     }
 
+    next_lexeme_or_quit();
 }
 
 /* from calculette */
@@ -388,7 +390,7 @@ void facteur(node **a1, DataType data_type)
         }
         break;
     default:
-        exit_analyse("erreur: facteur");
+        exit_analyse("");
     }
 
     next_lexeme_or_quit();
