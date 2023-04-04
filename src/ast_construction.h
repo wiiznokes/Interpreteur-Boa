@@ -12,19 +12,10 @@ tree *get_ast();
 void free_ast();
 
 
-/*
-    renvoie un arbre abstrait de nature OPERATEUR,  d'operateur opr 
-    et ayant opde_gauche et opde_droit pour fils gauche et droit
 
-    return NULL if error
-*/
 node *creer_operation(Operateur op , node *op_left , node *op_right);
 
 
-/*
-    renvoie un arbre abstrait "feuille", de nature OPERATION  
-    et de valeur val
-*/
 
 node *creer_number(int val); 
 
