@@ -11,6 +11,8 @@
 
 #define MAX_LEXEME_SIZE 250
 
+bool DEBUG_LEXICAL = false;
+
 typedef enum
 {
     S_START, // accepteur (compte comme fin de fichier)
@@ -104,7 +106,7 @@ void add_char(char *s, char c);
 void handle_error(char *message);
 
 
-bool debug_lexical = true;
+
 /*
  ***************
  */
@@ -205,7 +207,7 @@ void next_lexeme()
 
     proccess_end();
 
-    if (debug_lexical) {
+    if (DEBUG_LEXICAL) {
         printf("Lexeme de nature %s = \"%s\"\n",
            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
     }
