@@ -117,8 +117,44 @@ void init_lexical_analyse(char *fileName)
     next_char();
 }
 
+
+/*
+    tricks to know the next lexeme without
+    changing the current_lexeme variable
+*/
+
+bool silent_was_called = false;
+Lexeme prev_lexeme;
+Lexeme next_lexeme_cached;
+
+void copy_lexeme(Lexeme *dest, Lexeme *src) {
+    strcpy(dest->char_tab, src->char_tab);
+    dest->column = src->column;
+    dest->line = src->line;
+    dest->nature = src->nature;
+}
+
+Lexeme silent_get_next_lexeme() {
+    silent_was_called = true;
+    copy_lexeme(&prev_lexeme, &current_lexeme);
+    next_lexeme();
+    copy_lexeme(&next_lexeme_cached, &current_lexeme);
+    copy_lexeme(&current_lexeme, &prev_lexeme);
+    return next_lexeme_cached;
+}
+
+/* ********************** */
+
+
 void next_lexeme()
 {
+    if(silent_was_called) {
+        copy_lexeme(&current_lexeme, &next_lexeme_cached);
+        silent_was_called = false;
+        return;
+    }
+    
+
     current_state = S_START;
     current_lexeme.char_tab[0] = '\0';
 
