@@ -46,6 +46,7 @@ char *x2;
 
 void evaluate(node *a)
 {
+    if (a == NULL) return;
     switch (a->type)
     {
     case N_INSTRUCTION:
@@ -62,14 +63,14 @@ void evaluate(node *a)
             node *n1 = creer_variable(a->left->name, a->left->data_type);
             n1->number = x1;
             printf("%s = %d\n", n1->name, x1);
-            add_global(n1);
+            add_stack(n1);
             break;
         case D_CHAR:
             x2 = evaluate_char(a->right);
             node *n2 = creer_variable(a->left->name, a->left->data_type);
             strcpy(n2->string, x2);
             printf("%s = %s\n", n2->name, x2);
-            add_global(n2);
+            add_stack(n2);
             break;
 
         default:
@@ -98,18 +99,22 @@ void evaluate(node *a)
             break;
         }
         break;
-    case N_VARIABLE:
+    case N_CONDITION:
+        int res = evaluate_int(a->left);
+        up_scope();
+        if (res)
+            evaluate(a->right->left);
+        else 
+            evaluate(a->right->right);
+        down_scope();
         break;
-
-    case N_VALUE:
-        break;
-
     default:
         printf("internal error: evaluate\n");
         exit(1);
         break;
     }
 }
+
 
 
 
@@ -153,7 +158,7 @@ int evaluate_int(node *a)
         case O_NOT_EQUAL:
             return evaluate_int(a->left) != evaluate_int(a->right);
         case O_NOT:
-            return evaluate_int(a->left);
+            return !evaluate_int(a->right);
         default:
             printf("internal error: evaluate_int\n");
             exit(1);

@@ -10,18 +10,12 @@
 int main(int argc, char **argv)
 {	
 	char *fileName = "";
-
-	if (argc > 3) {
-		printf("number of args incorrect\n");
-		exit(1);
-	}
-
 	
-	bool log_active = false;
+	bool log = false;
 
 	for(int count = 1; count < argc; count++ ) {
 		if(!strcmp("-log", argv[count])) {
-			log_active = true;
+			log = true;
 		}
 		else {
 			fileName = argv[count];
@@ -29,7 +23,7 @@ int main(int argc, char **argv)
 	}
 
 
-	fill_ast(fileName, log_active);
+	fill_ast(fileName, log);
 	stop_analyse();
 	start_evaluation();
 	stop_evaluation();

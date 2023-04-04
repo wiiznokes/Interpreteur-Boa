@@ -65,7 +65,7 @@ typedef struct
 
 } Lexeme;
 
-void init_lexical_analyse(char *fileName, bool show_log);
+void init_lexical_analyse(char *fileName);
 
 void next_lexeme();
 Lexeme get_lexeme();

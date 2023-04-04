@@ -26,7 +26,7 @@ void stop_analyse();
     instruction: initialisation ;
     instruction: assignation ;
     instruction: fonction
-    instruction: if_statement
+    instruction: condition
     instruction: while_loop
 
 
@@ -34,7 +34,6 @@ void stop_analyse();
     assignation: name = eag
 
 
-    *** from calculette ***
 
     eag: seq_terme
     seq_terme: terme suite_seq_terme
@@ -49,14 +48,13 @@ void stop_analyse();
     facteur: CHAR
     facteur: PARO eag PARF
     facteur: MOINS facteur
-    op1: PLUS
-    op1: MOINS
-    op2: MUL
+    facteur: NOT facteur
+    op1: PLUS MOINS
+    op2: MUL DIV OR AND EQUAL NOT_EQUAL LESS MORE LESS_EQUAL MORE_EQUAL
 
 
 
 
-    *** TODO ***
 
     condition: if_block else_block
     condition: if_block

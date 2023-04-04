@@ -1,19 +1,36 @@
-int entier <- 8;
-
-char chaine <- "hello";
-
-chaine = "world";
 
 
-fun ddd (int a) : int { 
+// void start_stack();
+
+// function
+// void add(node *n);
+
+fun ddd (int arg) : int { 
 
     int b <- 7;
 
-    int c <- a + b;
+    int c <- arg + b;
 
     return c;
-
 }
 
 
-print(ddd(entier));
+
+// variables
+// void add(node *n);
+int a <- 8;
+
+
+// up_stack();
+// variables
+// void add(node *n);
+int b <- ddd(a);
+
+
+if (1) {
+    a = 2;
+    int c <- a;
+}
+else {
+    a = 3;
+}
