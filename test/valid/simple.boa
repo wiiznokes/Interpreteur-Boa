@@ -1,11 +1,12 @@
-int test <- 2;
+int test <- -17;
 
 int a <- 7;
 
 
-if ((0)) {
-
+if (!test) {
+    char b <- "gg";
 }
+
 
 
 int b <- 7;

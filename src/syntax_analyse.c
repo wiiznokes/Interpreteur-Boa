@@ -362,6 +362,9 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
 void facteur(node **a1, DataType data_type)
 {
     show_debug_syntax("facteur");
+
+    node *a2;
+
     switch (get_lexeme().nature)
     {
     case NAME:
@@ -370,6 +373,7 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_variable(get_lexeme().char_tab, data_type);
+        next_lexeme_or_quit();
         break;
 
     case NUMBER:
@@ -381,6 +385,7 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
+        next_lexeme_or_quit();
         break;
 
     case STRING:
@@ -392,6 +397,7 @@ void facteur(node **a1, DataType data_type)
             exit_analyse("");
         }
         *a1 = creer_string(get_lexeme().char_tab);
+        next_lexeme_or_quit();
         break;
 
     case PARO:
@@ -401,19 +407,26 @@ void facteur(node **a1, DataType data_type)
         {
             exit_analyse("erreur: besoin parenthèse fermante");
         }
+        next_lexeme_or_quit();
         break;
 
     case NOT:
         next_lexeme_or_quit();
-        node *a2;
-        eag(&a2, data_type);
+        facteur(&a2, data_type);
         *a1 = creer_operation(O_NOT, NULL, a2);
+        break;
+
+    case MINUS:
+        next_lexeme_or_quit();
+        facteur(&a2, data_type);
+        
+        node *zero_factice = creer_number(0);
+        *a1 = creer_operation(O_MINUS, zero_factice, a2);
         break;
     default:
         exit_analyse("");
     }
 
-    next_lexeme_or_quit();
 }
 
 
