@@ -9,6 +9,11 @@
 #include "node.h"
 #include "ast_construction.h"
 
+
+
+bool DEBUG_SYNTAX = false;
+
+
 /* *********************
     private
 
@@ -38,8 +43,8 @@ void next_lexeme_or_quit();
 void exit_analyse(char *msg);
 
 
-bool debug_syntax = true;
-void show_debug_syntax(char *txt) { if (debug_syntax) printf("%s\n", txt); }
+
+void show_debug_syntax(char *txt) { if (DEBUG_SYNTAX) printf("%s\n", txt); }
 
 /* *************** */
 

@@ -68,6 +68,13 @@ typedef struct
 void init_lexical_analyse(char *fileName);
 
 void next_lexeme();
+
+/*
+    return the next lexeme without 
+    changing the state
+*/
+Lexeme silent_get_next_lexeme();
+
 Lexeme get_lexeme();
 
 

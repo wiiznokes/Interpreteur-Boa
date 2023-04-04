@@ -11,6 +11,8 @@
 
 #define MAX_LEXEME_SIZE 250
 
+bool DEBUG_LEXICAL = false;
+
 typedef enum
 {
     S_START, // accepteur (compte comme fin de fichier)
@@ -104,7 +106,7 @@ void add_char(char *s, char c);
 void handle_error(char *message);
 
 
-bool debug_lexical = true;
+
 /*
  ***************
  */
@@ -117,8 +119,48 @@ void init_lexical_analyse(char *fileName)
     next_char();
 }
 
+
+/*
+    tricks to know the next lexeme without
+    changing the current_lexeme variable
+*/
+
+bool silent_was_called = false;
+Lexeme prev_lexeme;
+Lexeme next_lexeme_cached;
+
+void copy_lexeme(Lexeme *dest, Lexeme *src) {
+    strcpy(dest->char_tab, src->char_tab);
+    dest->column = src->column;
+    dest->line = src->line;
+    dest->nature = src->nature;
+}
+
+Lexeme silent_get_next_lexeme() {
+    if (silent_was_called) {
+        printf("internal error: silent_get_next_lexeme\n");
+        exit(1);
+    }
+    silent_was_called = true;
+    copy_lexeme(&prev_lexeme, &current_lexeme);
+    next_lexeme();
+    copy_lexeme(&next_lexeme_cached, &current_lexeme);
+    copy_lexeme(&current_lexeme, &prev_lexeme);
+    return next_lexeme_cached;
+}
+
+/* ********************** */
+
+
 void next_lexeme()
 {
+    if(silent_was_called) {
+        copy_lexeme(&current_lexeme, &next_lexeme_cached);
+        silent_was_called = false;
+        return;
+    }
+    
+
     current_state = S_START;
     current_lexeme.char_tab[0] = '\0';
 
@@ -165,7 +207,7 @@ void next_lexeme()
 
     proccess_end();
 
-    if (debug_lexical) {
+    if (DEBUG_LEXICAL) {
         printf("Lexeme de nature %s = \"%s\"\n",
            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
     }

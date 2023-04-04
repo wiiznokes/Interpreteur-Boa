@@ -54,4 +54,6 @@ DataType check_variable(
     bool show_error_if_undefined);
 
 
+node *get_by_name(char *name);
+
 #endif

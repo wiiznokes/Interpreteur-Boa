@@ -44,6 +44,7 @@ void stop_analyse();
     suite_seq_facteur: op2 facteur suite_seq_facteur
     suite_seq_facteur:
     facteur: NAME
+    facteur: call
     facteur: INTEGER
     facteur: CHAR
     facteur: PARO eag PARF
@@ -52,6 +53,32 @@ void stop_analyse();
     op1: PLUS MOINS
     op2: MUL DIV OR AND EQUAL NOT_EQUAL LESS MORE LESS_EQUAL MORE_EQUAL
 
+    
+
+    
+
+
+    fonction: fun name ( args ) : type { instructions }
+
+    args: arg arg_suite
+    args:
+
+    arg: type name
+
+    arg_suite: , arg
+    arg_suite:
+
+
+
+    call: NAME ( call_args )
+    call_args:
+    call_args: eag suite_call_args
+    suite_call_args:
+    suite_call_args: , suite_call_args
+
+
+
+    
 
 
 
@@ -65,14 +92,6 @@ void stop_analyse();
 
 
 
-
-
-
-
-
-    fonction: fun name ( args ) : type { instructions }
-
-    args: operations_rec
 
 
 
