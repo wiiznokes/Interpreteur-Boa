@@ -135,6 +135,10 @@ void copy_lexeme(Lexeme *dest, Lexeme *src) {
 }
 
 Lexeme silent_get_next_lexeme() {
+    if (silent_was_called) {
+        printf("internal error: silent_get_next_lexeme\n");
+        exit(1);
+    }
     silent_was_called = true;
     copy_lexeme(&prev_lexeme, &current_lexeme);
     next_lexeme();
