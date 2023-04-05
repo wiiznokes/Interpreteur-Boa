@@ -50,8 +50,8 @@ bool up_stack()
     }
 
     stack_count++;
-    stack[stack_count - 1][0] = new_list();
-    *get_scope_count() = 1;
+    *get_scope_count() = 0;
+    up_scope();
 
     return true;
 }
@@ -202,7 +202,7 @@ DataType check_variable(
 
 node *get_by_name(char *name)
 {
-    for (int scope = 0; scope < scope_count[stack_count - 1]; scope++)
+    for (int scope = 0; scope < *get_scope_count(); scope++)
     {
 
         list *vars = stack[stack_count - 1][scope];

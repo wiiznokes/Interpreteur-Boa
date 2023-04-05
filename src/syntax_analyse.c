@@ -317,7 +317,7 @@ void arg(node **a) {
 
     *a = creer_variable(get_lexeme().char_tab, data_type);
 
-    arg_suite(&n->left);
+    arg_suite(&(*a)->left);
     
 }
 
@@ -328,7 +328,6 @@ void arg_suite(node **a) {
     switch (get_lexeme().nature)
     {
     case COMMA:
-        next_lexeme_or_quit();
         next_lexeme_or_quit();
         arg(a);
         break;

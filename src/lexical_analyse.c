@@ -160,9 +160,6 @@ void next_lexeme()
     if(silent_was_called) {
         copy_lexeme(&current_lexeme, &next_lexeme_cached);
         silent_was_called = false;
-
-        printf("Lexeme de nature %s = \"%s\"\n",
-            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
         return;
     }
     
@@ -214,10 +211,9 @@ void next_lexeme()
     proccess_end();
 
     if (DEBUG_LEXICAL) {
-        if (!silent_was_called) {
-            printf("Lexeme de nature %s = \"%s\"\n",
-                nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
-        }
+        printf("Lexeme de nature %s = \"%s\"\n",
+            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
+        
     }
 }
 
