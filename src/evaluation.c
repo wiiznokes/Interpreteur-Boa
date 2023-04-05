@@ -14,6 +14,7 @@
 */
 
 void evaluate(node *a);
+void evaluate_eag(node *a, DataType data_type, int *res1, char **res2);
 int evaluate_int(node *a);
 char *evaluate_char(node *a);
 
@@ -56,43 +57,34 @@ void evaluate(node *a)
         }
         break;
     case N_INITIALISATION:
+        evaluate_eag(a->right, a->left->data_type, &x1, &x2);
+        node *n1 = creer_variable(a->left->name, a->left->data_type);
         switch (a->left->data_type)
         {
         case D_INT:
-            x1 = evaluate_int(a->right);
-            node *n1 = creer_variable(a->left->name, a->left->data_type);
             n1->number = x1;
-            printf("%s = %d\n", n1->name, x1);
-            add_stack(n1);
             break;
         case D_CHAR:
-            x2 = evaluate_char(a->right);
-            node *n2 = creer_variable(a->left->name, a->left->data_type);
-            strcpy(n2->string, x2);
-            printf("%s = %s\n", n2->name, x2);
-            add_stack(n2);
+            strcpy(n1->string, x2);
             break;
-
         default:
             printf("internal error: evaluate\n");
             exit(1);
             break;
         }
+        add_stack(n1);
         break;
+
     case N_ASSIGNATION:
+        evaluate_eag(a->right, a->left->data_type, &x1, &x2);
         switch (a->left->data_type)
         {
         case D_INT:
-            x1 = evaluate_int(a->right);
             set_int(a->left->name, x1);
-            printf("%s = %d\n", a->left->name, x1);
             break;
         case D_CHAR:
-            x2 = evaluate_char(a->right);
             set_char(a->left->name, x2);
-            printf("%s = %s\n", a->left->name, x2);
             break;
-
         default:
             printf("internal error: evaluate\n");
             exit(1);
@@ -100,13 +92,30 @@ void evaluate(node *a)
         }
         break;
     case N_CONDITION:
-        int res = evaluate_int(a->left);
+        evaluate_eag(a->left, D_INT, &x1, &x2);
         up_scope();
-        if (res)
+        if (x1)
             evaluate(a->right->left);
         else 
             evaluate(a->right->right);
         down_scope();
+        break;
+
+    case N_VARIABLE:
+    case N_VALUE:
+    case N_OPERATION:
+        evaluate_eag(a, a->data_type, &x1, &x2);
+        switch (a->data_type)
+        {
+        case D_INT:
+            printf("%d\n", x1);
+            break;
+        case D_CHAR:
+            printf("%s\n", x2);
+            break;
+        default:
+            break;
+        }
         break;
     default:
         printf("internal error: evaluate\n");
@@ -115,6 +124,25 @@ void evaluate(node *a)
     }
 }
 
+
+
+
+void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
+
+    
+    switch (data_type)
+    {
+    case D_INT:
+        *res1 = evaluate_int(a);
+        break;
+    case D_CHAR:
+        *res2 = evaluate_char(a);
+    default:
+        break;
+    }
+
+
+}
 
 
 

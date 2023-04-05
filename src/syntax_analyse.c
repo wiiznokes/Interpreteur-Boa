@@ -11,7 +11,7 @@
 
 
 
-bool DEBUG_SYNTAX = false;
+bool DEBUG_SYNTAX = true;
 
 
 /* *********************
@@ -22,7 +22,7 @@ bool DEBUG_SYNTAX = false;
 void instructions(node **a);
 void instruction(node **a);
 void initialisation(node **a, DataType data_type);
-void assignation(node **a);
+void assignation(node **a, DataType data_type);
 void condition(node **a);
 // from calculette
 
@@ -84,7 +84,7 @@ void stop_analyse()
 
 void instructions(node **a)
 {
-
+    show_debug_syntax("instructions");
 
     switch (get_lexeme().nature)
     {
@@ -95,6 +95,12 @@ void instructions(node **a)
     case CHAR:
     case NAME:
     case IF:
+    case FUN:
+    case NOT:
+    case PARO:
+    case NUMBER:
+    case MINUS:
+    case STRING:
         node *a1;
         instruction(&a1);
         *a = a1;
@@ -106,40 +112,64 @@ void instructions(node **a)
     }
 }
 
+
 void instruction(node **a)
 {
-
+    show_debug_syntax("instruction");
     *a = new_node(N_INSTRUCTION);
-
     node *a1;
+    bool need_semi_colon = true;
+
     switch (get_lexeme().nature)
     {
 
     case INT:
         initialisation(&a1, D_INT);
-        if (get_lexeme().nature != END_INSTRUCTION)
-            exit_analyse("une instruction doit finir par ';'");
-        next_lexeme_or_quit();
         break;
     case CHAR:
         initialisation(&a1, D_CHAR);
-        if (get_lexeme().nature != END_INSTRUCTION) 
-            exit_analyse("une instruction doit finir par ';'");
-        next_lexeme_or_quit();
         break;
     case NAME:
-        assignation(&a1);
-        if (get_lexeme().nature != END_INSTRUCTION)
-            exit_analyse("une instruction doit finir par ';'");
-        next_lexeme_or_quit();
+        Lexeme *next_lexeme = silent_get_next_lexeme();
+        DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
+        if (data_type == D_UNDEFINED)
+        {
+            exit_analyse("");
+        }
+
+        if (next_lexeme->nature == ASSIGN) 
+            assignation(&a1, data_type);
+        else 
+            eag(&a1, data_type);
+
+        break;
+    case NOT:
+    case PARO:
+    case NUMBER:
+    case MINUS:
+        eag(&a1, D_INT);
+        break;
+    case STRING:
+        eag(&a1, D_CHAR);
         break;
     case IF:
         condition(&a1);
+        need_semi_colon = false;
         break;
-
+    case FUN:
+        //function(&a1);
+        break;
+        
     default:
         exit_analyse("");
     }
+
+    if (need_semi_colon) {
+        if (get_lexeme().nature != END_INSTRUCTION) 
+            exit_analyse("une instruction doit finir par ';'");
+    }
+    
+    next_lexeme_or_quit();
 
     (*a)->left = a1;
 
@@ -147,6 +177,7 @@ void instruction(node **a)
 
 void initialisation(node **a, DataType data_type)
 {
+    show_debug_syntax("initialisation");
 
     *a = new_node(N_INITIALISATION);
 
@@ -160,7 +191,7 @@ void initialisation(node **a, DataType data_type)
     if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
     {
         char log[300];
-        sprintf(log, "variable %s déjà déninie.", get_lexeme().char_tab);
+        sprintf(log, "variable '%s' déjà déninie.", get_lexeme().char_tab);
         exit_analyse(log);
     }
 
@@ -186,17 +217,11 @@ void initialisation(node **a, DataType data_type)
 
 }
 
-void assignation(node **a)
+void assignation(node **a, DataType data_type)
 {
+    show_debug_syntax("assignation");
 
     *a = new_node(N_ASSIGNATION);
-
-    DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
-
-    if (data_type == D_UNDEFINED)
-    {
-        exit_analyse("");
-    }
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
@@ -218,6 +243,7 @@ void assignation(node **a)
 
 
 void condition(node **a) {
+    show_debug_syntax("condition");
 
     *a = new_node(N_CONDITION);
 
@@ -258,12 +284,14 @@ void condition(node **a) {
         exit_analyse("besoin de '}' après if");
     }
 
+    Lexeme *next_lexeme = silent_get_next_lexeme();
 
-    next_lexeme_or_quit();
-    if (get_lexeme().nature != ELSE)
+    
+    if (next_lexeme->nature != ELSE)
     {
         return;
     }
+    next_lexeme_or_quit();
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != BRACE_OPEN)
@@ -285,7 +313,6 @@ void condition(node **a) {
         exit_analyse("besoin de '}' après else");
     }
 
-    next_lexeme_or_quit();
 }
 
 /* from calculette */

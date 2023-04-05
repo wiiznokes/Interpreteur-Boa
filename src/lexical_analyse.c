@@ -11,7 +11,7 @@
 
 #define MAX_LEXEME_SIZE 250
 
-bool DEBUG_LEXICAL = false;
+bool DEBUG_LEXICAL = true;
 
 typedef enum
 {
@@ -136,17 +136,19 @@ void copy_lexeme(Lexeme *dest, Lexeme *src) {
     dest->nature = src->nature;
 }
 
-Lexeme silent_get_next_lexeme() {
+Lexeme *silent_get_next_lexeme() {
     if (silent_was_called) {
         printf("internal error: silent_get_next_lexeme\n");
         exit(1);
     }
-    silent_was_called = true;
     copy_lexeme(&prev_lexeme, &current_lexeme);
     next_lexeme();
     copy_lexeme(&next_lexeme_cached, &current_lexeme);
     copy_lexeme(&current_lexeme, &prev_lexeme);
-    return next_lexeme_cached;
+
+
+    silent_was_called = true;
+    return &next_lexeme_cached;
 }
 
 /* ********************** */
@@ -157,6 +159,9 @@ void next_lexeme()
     if(silent_was_called) {
         copy_lexeme(&current_lexeme, &next_lexeme_cached);
         silent_was_called = false;
+
+        printf("Lexeme de nature %s = \"%s\"\n",
+            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
         return;
     }
     
@@ -208,8 +213,10 @@ void next_lexeme()
     proccess_end();
 
     if (DEBUG_LEXICAL) {
-        printf("Lexeme de nature %s = \"%s\"\n",
-           nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
+        if (!silent_was_called) {
+            printf("Lexeme de nature %s = \"%s\"\n",
+                nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
+        }
     }
 }
 
