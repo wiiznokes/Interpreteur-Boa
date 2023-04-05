@@ -1,23 +1,7 @@
 
 
-int a <- 7;
 
 
-a;
-
-
-if (a) {
-    a = 6;
-    int b <- 8;
-}
-else {
-    a = 5;
-    int b <- 7;
-}
-
-fun c(int c, int d) {
-    int a <- !7;
-    int b <- 7;
-    a;
-    return a;
+fun c(int c, int d): char {
+    return "";
 }

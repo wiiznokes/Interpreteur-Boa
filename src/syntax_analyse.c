@@ -110,6 +110,7 @@ void instructions(node **a, DataType return_type)
     case NUMBER:
     case MINUS:
     case STRING:
+    case RETURN:
         node *a1;
         instruction(&a1, return_type);
         *a = a1;
@@ -175,8 +176,16 @@ void instruction(node **a, DataType return_type)
         }
 
         next_lexeme_or_quit();
-        node *a1;
-        eag(&a1, return_type);
+        node *a1 = NULL;
+        if (get_lexeme().nature == END_INSTRUCTION) {
+            if (return_type != D_UNIT) {
+                char log[300];
+                sprintf(log, "need %s return type", data_type_to_text(return_type));
+                exit_analyse(log);
+            }
+        }
+        else 
+            eag(&a1, return_type);
 
         node *n = new_node(N_RETURN);
         n->left = a1;
@@ -251,7 +260,7 @@ void function(node **a) {
         next_lexeme_or_quit();
     }
     else {
-        (*a)->data_type = D_UNDEFINED;
+        (*a)->data_type = D_UNIT;
     }
 
     if (get_lexeme().nature != BRACE_OPEN) {
