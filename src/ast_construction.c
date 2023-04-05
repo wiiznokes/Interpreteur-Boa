@@ -21,6 +21,7 @@ node *creer_operation(Operateur op , node *op_left , node *op_right)
 {
       node *n = new_node(N_OPERATION);
       n->op = op;
+      n->data_type = D_INT;
 
       n->left = op_left;
       n->right = op_right;

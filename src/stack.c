@@ -179,7 +179,7 @@ DataType check_variable(
     {
         if (show_error_if_undefined)
         {
-            printf("variable %s is not defined\n", name);
+            printf("variable '%s' is not defined\n", name);
         }
         return D_UNDEFINED;
     }
