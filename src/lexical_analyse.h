@@ -2,6 +2,7 @@
 #define LEXICAL_ANALYSE_H
 
 #include <stdbool.h>
+#include "node.h"
 
 typedef enum
 {
@@ -48,6 +49,7 @@ typedef enum
 
     // function
     FUN,
+    COMMA, // ,
     COLON, // :
     RETURN
     
@@ -82,6 +84,6 @@ void stop_lexical_analyse();
 
 char* nature_to_text(NatureLexeme nature);
 
-
+char* nature_to_text(NatureLexeme nature);
 
 #endif

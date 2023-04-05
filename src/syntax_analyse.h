@@ -27,7 +27,10 @@ void stop_analyse();
     instruction: assignation ;
     instruction: fonction
     instruction: condition
-    instruction: while_loop
+    instruction: return ;
+
+    return: RETURN
+    return: RETURN eag
 
 
     initialisation: type name <- eag

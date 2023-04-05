@@ -16,7 +16,8 @@ typedef enum
     N_VALUE,
 
     N_CONDITION,
-    N_FUN
+    N_FUN,
+    N_RETURN
 
 } NodeType;
 
