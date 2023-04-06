@@ -235,7 +235,7 @@ void function(node **a) {
 
     // args bloc
     node *a1 = NULL;
-    up_stack();
+    up_scope();
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARF)
@@ -275,11 +275,13 @@ void function(node **a) {
 
     (*a)->right = a2;
 
+    add_stack(*a);
+
     if (get_lexeme().nature != BRACE_CLOSE) {
         exit_analyse("symbole } attendu\n");
     }
 
-    down_stack();
+    down_scope();
 }
 
 /*

@@ -199,27 +199,51 @@ DataType check_variable(
     }
 }
 
+node *find_name_in_list(list *vars, char *name)
+{
+
+    if (vars == NULL)
+    {
+        printf("internal error: get_by_name\n");
+        exit(1);
+    }
+
+    node *tmp = vars->head;
+
+    while (tmp)
+    {
+        if (!strcmp(tmp->name, name))
+            return tmp;
+        tmp = tmp->right;
+    }
+
+    return NULL;
+}
+
+node *get_by_name_global(char *name)
+{
+    list *l = stack[0][0];
+    return find_name_in_list(l, name);
+}
+
 node *get_by_name(char *name)
 {
+    node *tmp;
+    list *l;
+
+    // check globals variables
+    if (stack_count > 1)
+    {
+        l = stack[0][0];
+        tmp = find_name_in_list(l, name);
+        if (tmp) return tmp;
+    }
+
     for (int scope = 0; scope < *get_scope_count(); scope++)
     {
-
-        list *vars = stack[stack_count - 1][scope];
-
-        if (vars == NULL)
-        {
-            printf("internal error: get_by_name\n");
-            exit(1);
-        }
-
-        node *tmp = vars->head;
-
-        while (tmp)
-        {
-            if (!strcmp(tmp->name, name))
-                return tmp;
-            tmp = tmp->right;
-        }
+        l = stack[stack_count - 1][scope];
+        tmp = find_name_in_list(l, name);
+        if (tmp) return tmp;
     }
 
     return NULL;
