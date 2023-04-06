@@ -14,13 +14,7 @@ node *new_node(NodeType type)
 }
 
 void free_node(node *n)
-{
-    if (!n)
-    {
-        return;
-    }
-    free_node(n->left);
-    free_node(n->right);
+{   
     free(n);
 }
 
