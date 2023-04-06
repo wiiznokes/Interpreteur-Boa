@@ -26,7 +26,6 @@ list **get_last_scope() { return &stack[stack_count - 1][*get_scope_count() - 1]
 void start_stack()
 {
     stack_count = 0;
-    *get_scope_count() = 0;
     up_stack();
 }
 
