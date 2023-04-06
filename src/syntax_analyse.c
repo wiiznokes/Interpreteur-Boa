@@ -208,6 +208,37 @@ void instruction(node **a, DataType return_type)
 }
 
 
+void call(node **a, DataType data_type) {
+    show_debug_syntax("call");
+
+    *a = new_node(N_CALL);
+
+    if (get_lexeme().nature != NAME)
+    {
+        exit_analyse("");
+    }
+
+    node *fun = get_fun(get_lexeme().char_tab, data_type);
+
+    if (!fun) {
+        exit_analyse("");
+    }
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARO)
+    {
+        exit_analyse("");
+    }
+}
+
+void call_args(node **a, DataType data_type) {
+    show_debug_syntax("call_args");
+}
+
+void suite_call_args(node **a, DataType data_type) {
+    show_debug_syntax("suite_call_args");
+}
+
 void function(node **a) {
 
     show_debug_syntax("function");

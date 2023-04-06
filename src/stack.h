@@ -35,7 +35,7 @@ void add_stack(node *n);
 
 char *get_char(char *name);
 int get_int(char *name);
-node *get_fun(char *name);
+node *get_fun(char *name, DataType data_type);
 
 void set_char(char *name, char *value);
 void set_int(char *name, int value);

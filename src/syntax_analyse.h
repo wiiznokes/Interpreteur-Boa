@@ -46,7 +46,7 @@ void stop_analyse();
     seq_facteur: facteur suite_seq_facteur
     suite_seq_facteur: op2 facteur suite_seq_facteur
     suite_seq_facteur:
-    facteur: NAME
+    facteur: VARIABLE
     facteur: call
     facteur: INTEGER
     facteur: CHAR

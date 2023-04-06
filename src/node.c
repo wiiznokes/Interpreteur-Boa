@@ -31,6 +31,8 @@ char *node_type_to_text(NodeType type)
         return "N_ASSIGNATION";
     case N_VARIABLE:
         return "N_VARIABLE";
+    case N_CALL:
+        return "N_CALL";
 
     case N_OPERATION:
         return "N_OPERATION";

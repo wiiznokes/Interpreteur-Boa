@@ -10,6 +10,7 @@ typedef enum
     N_INITIALISATION,
     N_ASSIGNATION,
     N_VARIABLE,
+    N_CALL,
 
 
     N_OPERATION,

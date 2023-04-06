@@ -155,16 +155,28 @@ void set_int(char *name, int value)
     n->number = value;
 }
 
-node *get_fun(char *name)
+node *get_fun(char *name, DataType data_type)
 {
     node *n = get_by_name(name);
     if (n == NULL || n->type != N_FUN)
     {
-        printf("internal error: get_fun\n");
-        exit(1);
+        printf("function '%s' is not defined\n", name);
+        return NULL;
     }
+
+    if (data_type != D_UNDEFINED && data_type != n->data_type)
+    {
+        printf("function %s est de type %s. %s attendu\n",
+            name, data_type_to_text(n->data_type), 
+            data_type_to_text(data_type));
+        return NULL;
+    }
+
     return n;
 }
+
+
+
 
 DataType check_variable(
     char *name,
@@ -183,6 +195,11 @@ DataType check_variable(
         return D_UNDEFINED;
     }
 
+    if (n->type != N_VARIABLE) {
+        printf("'%s' is not a variable\n", name);
+        return D_UNDEFINED;
+    }
+
     if (data_type == D_UNDEFINED)
     {
         return n->data_type;
@@ -194,7 +211,9 @@ DataType check_variable(
     }
     else
     {
-        printf("variable %s n'a pas le type %s\n", name, data_type_to_text(data_type));
+        printf("variable %s est de type %s. %s attendu\n",
+            name, data_type_to_text(n->data_type), 
+            data_type_to_text(data_type));
         return D_UNDEFINED;
     }
 }
