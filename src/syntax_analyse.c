@@ -229,6 +229,22 @@ void call(node **a, DataType data_type) {
     {
         exit_analyse("");
     }
+
+    // verifier que fun.left est bien null (est bien le bon compte d'args)
+
+    // args bloc
+    node *a1 = NULL;
+    up_scope();
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARF)
+    {
+        call_args(&a1);
+    }
+
+    (*a)->left = a1;
+    
+    next_lexeme_or_quit();
 }
 
 void call_args(node **a, DataType data_type) {
