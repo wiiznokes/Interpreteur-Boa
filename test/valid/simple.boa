@@ -1,6 +1,8 @@
 
 
 
+b = 9;
+
 fun double(int a): int {
 
     return a * 2;

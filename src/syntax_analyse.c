@@ -146,28 +146,24 @@ void instruction(node **a, DataType return_type)
     case NAME:
         Lexeme *next_lexeme = silent_get_next_lexeme();
         DataType data_type;
+        sprintf(log_buffer_syntax, "'%s' not exist.", get_lexeme().char_tab);
         switch (next_lexeme->nature)
         {
         case PARO:
             node *n = get_fun(get_lexeme().char_tab, D_UNDEFINED);
-            if (n == NULL)
-            {
-                sprintf(log_buffer_syntax, "function '%s' not exist.", get_lexeme().char_tab);
-                exit_analyse(log_buffer_syntax);
-            }
+            if (n == NULL) exit_analyse(log_buffer_syntax);
             eag(&a1, n->data_type);
             break;
+            
         case ASSIGN:
-            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
             assignation(&a1, data_type);
             break;
 
         default:
-            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
-            if (data_type == D_UNDEFINED)
-            {
-                exit_analyse("");
-            }
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
             eag(&a1, data_type);
             break;
         }
@@ -431,7 +427,7 @@ void arg(node **a)
         exit_analyse("");
     }
 
-    if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
+    if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
     {
         sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
         exit_analyse(log_buffer_syntax);
@@ -484,7 +480,7 @@ void initialisation(node **a, DataType data_type)
         exit_analyse("");
     }
 
-    if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
+    if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
     {
         sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
         exit_analyse(log_buffer_syntax);
@@ -686,7 +682,7 @@ void facteur(node **a1, DataType data_type)
     switch (get_lexeme().nature)
     {
     case NAME:
-        if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
+        if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
         {
             *a1 = creer_variable(get_lexeme().char_tab, data_type);
         }

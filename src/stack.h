@@ -52,10 +52,7 @@ void set_int(char *name, int value);
     return value == D_UNDEFINED meens the variable was 
     not found (with the same name and type)
 */
-DataType check_variable(
-    char *name,
-    DataType data_type,
-    bool show_error_if_undefined);
+DataType check_variable(char *name, DataType data_type);
 
 
 node *get_by_name(char *name);

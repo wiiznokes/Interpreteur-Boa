@@ -202,20 +202,13 @@ node *get_fun(char *name, DataType data_type)
 
 
 
-DataType check_variable(
-    char *name,
-    DataType data_type,
-    bool show_error_if_undefined)
+DataType check_variable(char *name, DataType data_type)
 {
 
     node *n = get_by_name(name);
 
     if (n == NULL)
     {
-        if (show_error_if_undefined)
-        {
-            printf("variable '%s' is not defined\n", name);
-        }
         return D_UNDEFINED;
     }
 
