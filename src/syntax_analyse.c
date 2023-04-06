@@ -307,7 +307,7 @@ void call_args(node **a, node *arg)
 
     (*a)->left = a1;
 
-    node *suite_arg;
+    node *suite_arg = NULL;
     if (arg->left == NULL)
     {
         if (get_lexeme().nature != PARF)
@@ -703,10 +703,10 @@ void facteur(node **a1, DataType data_type)
     case NUMBER:
         if (data_type != D_INT)
         {
-            printf("besoin du type %s: %s\n",
+            sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse("");
+            exit_analyse(log_buffer_syntax);
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
         next_lexeme_or_quit();
@@ -715,10 +715,10 @@ void facteur(node **a1, DataType data_type)
     case STRING:
         if (data_type != D_CHAR)
         {
-            printf("besoin du type %s: %s\n",
+            sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse("");
+            exit_analyse(log_buffer_syntax);
         }
         *a1 = creer_string(get_lexeme().char_tab);
         next_lexeme_or_quit();
