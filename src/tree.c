@@ -4,16 +4,6 @@
 #include <string.h>
 
 
-void free_tree(tree t)
-{
-    if (t == NULL)
-    {
-        return;
-    }
-    free_tree(t->left);
-    free_tree(t->right);
-    free_node(t);
-}
 
 
 

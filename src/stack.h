@@ -7,6 +7,8 @@
 
 
 void start_stack();
+
+
 void free_stack();
 
 /*
@@ -31,6 +33,8 @@ void down_scope();
 
 
 void add_stack(node *n);
+
+void add_fun(node *n);
 
 
 char *get_char(char *name);

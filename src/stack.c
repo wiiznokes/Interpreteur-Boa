@@ -11,6 +11,9 @@ int stack_count;
 int scope_count[MAX_STACK];
 list *stack[MAX_STACK][MAX_STACK];
 
+
+list *stack_fun;
+
 /* ****************
     private
 */
@@ -21,12 +24,16 @@ int *get_scope_count() { return &scope_count[stack_count - 1]; }
 
 list **get_last_scope() { return &stack[stack_count - 1][*get_scope_count() - 1]; }
 
+node *find_name_in_list(list *vars, char *name);
+
 /* ************** */
 
 void start_stack()
 {
     stack_count = 0;
     up_stack();
+
+    stack_fun = new_list();
 }
 
 void free_stack()
@@ -38,6 +45,8 @@ void free_stack()
 
     stack_count = 0;
     *get_scope_count() = 0;
+
+    free(stack_fun);
 }
 
 bool up_stack()
@@ -111,6 +120,21 @@ void add_stack(node *n)
     }
 }
 
+
+void add_fun(node *n) {
+    if (n == NULL)
+    {
+        printf("internal error: add_fun\n");
+        exit(1);
+    }
+
+    if (!add_tail(stack_fun, n))
+    {
+        printf("internal error: add_stack\n");
+        exit(1);
+    }
+}
+
 char *get_char(char *name)
 {
     node *n = get_by_name(name);
@@ -157,7 +181,8 @@ void set_int(char *name, int value)
 
 node *get_fun(char *name, DataType data_type)
 {
-    node *n = get_by_name(name);
+    node *n = find_name_in_list(stack_fun, name);
+
     if (n == NULL || n->type != N_FUN)
     {
         printf("function '%s' is not defined\n", name);
@@ -239,11 +264,6 @@ node *find_name_in_list(list *vars, char *name)
     return NULL;
 }
 
-node *get_by_name_global(char *name)
-{
-    list *l = stack[0][0];
-    return find_name_in_list(l, name);
-}
 
 node *get_by_name(char *name)
 {

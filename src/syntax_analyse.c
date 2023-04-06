@@ -257,7 +257,7 @@ bool call(node **a, DataType data_type) {
     up_scope();
 
     next_lexeme_or_quit();
-
+    
     if (fun->left == NULL) {
         if (get_lexeme().nature != PARF) {
             exit_analyse("");
@@ -384,13 +384,14 @@ void function(node **a) {
 
     (*a)->right = a2;
 
-    
+    add_stack(*a);
 
     if (get_lexeme().nature != BRACE_CLOSE) {
         exit_analyse("symbole } attendu\n");
     }
 
     down_scope();
+
 }
 
 /*
