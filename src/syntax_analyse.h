@@ -63,10 +63,10 @@ void stop_analyse();
 
     fonction: fun name ( args ) : type { instructions }
 
-    args: arg arg_suite
+    args: arg
     args:
 
-    arg: type name
+    arg: type name arg_suite
 
     arg_suite: , arg
     arg_suite:

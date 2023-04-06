@@ -132,6 +132,7 @@ void instruction(node **a, DataType return_type)
 {
     show_debug_syntax("instruction");
     *a = new_node(N_INSTRUCTION);
+    (*a)->data_type = return_type;
     node *a1;
     bool need_semi_colon = true;
 
@@ -357,7 +358,7 @@ void function(node **a) {
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARF)
     {
-        args(&a1);
+        arg(&a1);
     }
 
     (*a)->left = a1;
@@ -402,19 +403,13 @@ void function(node **a) {
 
 }
 
+
+
 /*
     met chaque argument dans n->left sous
     forme de variable, et ajoute celle ci sur la
     stack
 */
-void args(node **a) {
-
-    node *a1;
-    arg(&a1);
-
-    *a = a1;
-}
-
 void arg(node **a) {
 
     DataType data_type = nature_to_data_type(get_lexeme().nature);
@@ -423,16 +418,12 @@ void arg(node **a) {
         exit_analyse("");
     }
 
-
-
     next_lexeme_or_quit();
 
 
     if (get_lexeme().nature != NAME) {
         exit_analyse("");
     }
-
-
 
 
     if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
@@ -445,8 +436,11 @@ void arg(node **a) {
 
     *a = creer_variable(get_lexeme().char_tab, data_type);
 
-    arg_suite(&(*a)->left);
-    
+    node *a1;
+
+    arg_suite(&a1);
+
+    (*a)->left = a1;
 }
 
 void arg_suite(node **a) {
