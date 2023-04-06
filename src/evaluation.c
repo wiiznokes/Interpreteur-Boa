@@ -172,10 +172,12 @@ int evaluate_int(node *a)
     switch (a->type)
     {
     case N_CALL:
+        up_stack();
         evaluate(a->left, NULL, NULL);
         int res1;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, &res1, NULL);
+        down_stack();
         return res1;
 
     case N_VARIABLE:
@@ -233,10 +235,12 @@ char *evaluate_char(node *a) {
     switch (a->type)
     {
     case N_CALL:
+        up_stack();
         evaluate(a->left, NULL, NULL);
         char *res2;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, NULL, &res2);
+        down_stack();
         return res2;
 
     case N_VARIABLE:
