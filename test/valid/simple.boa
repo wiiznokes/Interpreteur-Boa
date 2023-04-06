@@ -1,13 +1,11 @@
 
 
-int c <- 8;
 
-c;
+fun f(): int {
 
-fun t() {
-
-    return;
+    return 10;
 
 }
 
-t();
+
+f();

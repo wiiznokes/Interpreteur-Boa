@@ -15,13 +15,13 @@ node *new_node(NodeType type)
 
 void free_node(node *n)
 {
-    if (n == NULL)
+    if (!n)
     {
         return;
     }
     free_node(n->left);
     free_node(n->right);
-    free_node(n);
+    free(n);
 }
 
 char *node_type_to_text(NodeType type)

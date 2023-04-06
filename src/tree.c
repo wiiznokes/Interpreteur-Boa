@@ -45,6 +45,8 @@ static void print_tree_helper(node *n, int depth, int type)
     switch (n->type)
     {
     case N_VARIABLE:
+    case N_CALL:
+    case N_FUN:
         sprintf(log, "%s %s", data_type_to_text(n->data_type), n->name);
         break;
     case N_OPERATION:

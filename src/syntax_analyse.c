@@ -238,11 +238,15 @@ bool call(node **a, DataType data_type) {
         exit_analyse("");
     }
 
+    strcpy((*a)->name, get_lexeme().char_tab);
+
     node *fun = get_fun(get_lexeme().char_tab, data_type);
 
     if (!fun) {
         return false;
     }
+
+    (*a)->data_type = fun->data_type;
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
@@ -329,12 +333,15 @@ void function(node **a) {
         exit_analyse("");
     }
 
-    if (check_variable(get_lexeme().char_tab, D_UNDEFINED, false) != D_UNDEFINED)
+    if (get_fun(get_lexeme().char_tab, D_UNDEFINED))
     {
         char log[300];
         sprintf(log, "'%s' déjà dénini.", get_lexeme().char_tab);
         exit_analyse(log);
     }
+    
+    strcpy((*a)->name, get_lexeme().char_tab);
+
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
@@ -384,7 +391,7 @@ void function(node **a) {
 
     (*a)->right = a2;
 
-    add_stack(*a);
+    add_fun(*a);
 
     if (get_lexeme().nature != BRACE_CLOSE) {
         exit_analyse("symbole } attendu\n");

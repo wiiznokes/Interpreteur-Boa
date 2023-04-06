@@ -16,12 +16,9 @@ list *new_list(void)
 
 void clear_list(list *l)
 {
-    while (l->head != NULL)
-    {
-        node *tmp = l->head;
-        l->head = l->head->right;
-        free_node(tmp);
-    }
+    free_node(l->head);
+
+    l->head = NULL;
     l->tail = NULL;
     
     l->size = 0;
