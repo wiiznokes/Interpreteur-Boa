@@ -182,6 +182,9 @@ void instruction(node **a, DataType return_type)
         need_semi_colon = false;
         break;
     case FUN:
+        if (return_type != D_UNDEFINED) {
+            exit_analyse("you can't imbricate function");
+        }
         function(&a1);
         need_semi_colon = false;
         break;
@@ -351,7 +354,6 @@ void function(node **a)
 
     // args bloc
     node *a1 = NULL;
-    up_scope();
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARF)
@@ -392,8 +394,13 @@ void function(node **a)
 
     // add fun before instruction for recursion
     add_fun(*a);
+
+    // up scope after args
+    up_scope();
+
     instructions(&a2, (*a)->data_type);
 
+    down_scope();
     
     (*a)->right = a2;
 
@@ -402,7 +409,6 @@ void function(node **a)
         exit_analyse("symbole } attendu\n");
     }
 
-    down_scope();
 }
 
 /*
