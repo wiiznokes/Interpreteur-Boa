@@ -9,11 +9,7 @@
 #include "node.h"
 #include "ast_construction.h"
 
-
-
 bool DEBUG_SYNTAX = true;
-
-
 
 /* *********************
     private
@@ -27,13 +23,12 @@ void assignation(node **a, DataType data_type);
 void condition(node **a);
 
 // function
-void function(node **a) ;
+void function(node **a);
 void args(node **a);
 void arg(node **a);
 void arg_suite(node **a);
 bool call(node **a, DataType data_type);
 void call_args(node **a, node *arg);
-
 
 // from calculette
 
@@ -54,9 +49,11 @@ DataType nature_to_data_type(NatureLexeme nature);
 void next_lexeme_or_quit();
 void exit_analyse(char *msg);
 
-
-
-void show_debug_syntax(char *txt) { if (DEBUG_SYNTAX) printf("%s\n", txt); }
+void show_debug_syntax(char *txt)
+{
+    if (DEBUG_SYNTAX)
+        printf("%s\n", txt);
+}
 
 char log_buffer_syntax[300];
 
@@ -77,11 +74,13 @@ void fill_ast(char *fileName, bool show_log)
 
     instructions(get_ast(), D_UNDEFINED);
 
-    if (get_lexeme().nature != END_FILE) {
+    if (get_lexeme().nature != END_FILE)
+    {
         exit_analyse("");
     }
 
-    if (show_log) {
+    if (show_log)
+    {
         printf("\n\n");
         print_tree(*get_ast());
         printf("\n\n");
@@ -127,7 +126,6 @@ void instructions(node **a, DataType return_type)
     }
 }
 
-
 void instruction(node **a, DataType return_type)
 {
     show_debug_syntax("instruction");
@@ -154,7 +152,8 @@ void instruction(node **a, DataType return_type)
             node *n = get_fun(get_lexeme().char_tab, D_UNDEFINED);
             if (n == NULL)
             {
-                exit_analyse("");
+                sprintf(log_buffer_syntax, "function '%s' not exist.", get_lexeme().char_tab);
+                exit_analyse(log_buffer_syntax);
             }
             eag(&a1, n->data_type);
             break;
@@ -162,7 +161,7 @@ void instruction(node **a, DataType return_type)
             data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
             assignation(&a1, data_type);
             break;
-        
+
         default:
             data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
             if (data_type == D_UNDEFINED)
@@ -191,19 +190,22 @@ void instruction(node **a, DataType return_type)
         need_semi_colon = false;
         break;
     case RETURN:
-        if (return_type == D_UNDEFINED) {
+        if (return_type == D_UNDEFINED)
+        {
             exit_analyse("");
         }
 
         next_lexeme_or_quit();
         node *a2 = NULL;
-        if (get_lexeme().nature == END_INSTRUCTION) {
-            if (return_type != D_UNIT) {
+        if (get_lexeme().nature == END_INSTRUCTION)
+        {
+            if (return_type != D_UNIT)
+            {
                 sprintf(log_buffer_syntax, "need %s return type", data_type_to_text(return_type));
                 exit_analyse(log_buffer_syntax);
             }
         }
-        else 
+        else
             eag(&a2, return_type);
 
         a1 = new_node(N_RETURN);
@@ -215,23 +217,23 @@ void instruction(node **a, DataType return_type)
         exit_analyse("");
     }
 
-    if (need_semi_colon) {
-        if (get_lexeme().nature != END_INSTRUCTION) 
+    if (need_semi_colon)
+    {
+        if (get_lexeme().nature != END_INSTRUCTION)
             exit_analyse("une instruction doit finir par ';'");
     }
-    
+
     next_lexeme_or_quit();
 
     (*a)->left = a1;
-
 }
-
 
 /*
     return false if there is no fun with
     the current name
 */
-bool call(node **a, DataType data_type) {
+bool call(node **a, DataType data_type)
+{
     show_debug_syntax("call");
 
     *a = new_node(N_CALL);
@@ -245,7 +247,8 @@ bool call(node **a, DataType data_type) {
 
     node *fun = get_fun(get_lexeme().char_tab, data_type);
 
-    if (!fun) {
+    if (!fun)
+    {
         return false;
     }
 
@@ -264,41 +267,42 @@ bool call(node **a, DataType data_type) {
     up_scope();
 
     next_lexeme_or_quit();
-    
-    if (fun->left == NULL) {
-        if (get_lexeme().nature != PARF) {
+
+    if (fun->left == NULL)
+    {
+        if (get_lexeme().nature != PARF)
+        {
             exit_analyse("");
         }
     }
-    else {
+    else
+    {
         call_args(&a1, fun->left);
     }
 
     (*a)->left = a1;
-    
+
     return true;
 }
 
 /*
-    condition: arg != NULL 
+    condition: arg != NULL
     (can't have more arg than the function definition)
 */
-void call_args(node **a, node *arg) {
+void call_args(node **a, node *arg)
+{
     show_debug_syntax("call_args");
 
-    if (arg == NULL) {
+    if (arg == NULL)
+    {
         exit_analyse("");
     }
 
     *a = new_node(N_INSTRUCTION);
 
-
-
     node *a1 = new_node(N_INITIALISATION);
 
     a1->left = creer_variable(arg->name, arg->data_type);
-
-
 
     node *a2;
     eag(&a2, arg->data_type);
@@ -308,24 +312,23 @@ void call_args(node **a, node *arg) {
     (*a)->left = a1;
 
     node *suite_arg;
-    if (arg->left == NULL) {
-        if (get_lexeme().nature != PARF) {
+    if (arg->left == NULL)
+    {
+        if (get_lexeme().nature != PARF)
+        {
             exit_analyse("");
         }
     }
-    else {
+    else
+    {
         call_args(&suite_arg, arg->left);
     }
 
     (*a)->right = suite_arg;
-
-
 }
 
-
-
-void function(node **a) {
-
+void function(node **a)
+{
     show_debug_syntax("function");
 
     *a = new_node(N_FUN);
@@ -341,9 +344,8 @@ void function(node **a) {
         sprintf(log_buffer_syntax, "'%s' déjà dénini.", get_lexeme().char_tab);
         exit_analyse(log_buffer_syntax);
     }
-    
-    strcpy((*a)->name, get_lexeme().char_tab);
 
+    strcpy((*a)->name, get_lexeme().char_tab);
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
@@ -362,69 +364,72 @@ void function(node **a) {
     }
 
     (*a)->left = a1;
-    
+
     next_lexeme_or_quit();
 
-    if (get_lexeme().nature == COLON) {
+    if (get_lexeme().nature == COLON)
+    {
         next_lexeme_or_quit();
 
         DataType data_type = nature_to_data_type(get_lexeme().nature);
 
-        if (data_type == D_UNDEFINED) {
+        if (data_type == D_UNDEFINED)
+        {
             exit_analyse("need a return type with a colon\n");
         }
         (*a)->data_type = data_type;
 
         next_lexeme_or_quit();
     }
-    else {
+    else
+    {
         (*a)->data_type = D_UNIT;
     }
 
-    if (get_lexeme().nature != BRACE_OPEN) {
+    if (get_lexeme().nature != BRACE_OPEN)
+    {
         exit_analyse("symbole { attendu\n");
     }
 
-
-
     node *a2;
     next_lexeme_or_quit();
+
+    // add fun before instruction for recursion
+    add_fun(*a);
     instructions(&a2, (*a)->data_type);
 
     (*a)->right = a2;
 
-    add_fun(*a);
-
-    if (get_lexeme().nature != BRACE_CLOSE) {
+    if (get_lexeme().nature != BRACE_CLOSE)
+    {
         exit_analyse("symbole } attendu\n");
     }
 
     down_scope();
-
 }
-
-
 
 /*
     met chaque argument dans n->left sous
     forme de variable, et ajoute celle ci sur la
     stack
 */
-void arg(node **a) {
+void arg(node **a)
+{
+    show_debug_syntax("arg");
 
     DataType data_type = nature_to_data_type(get_lexeme().nature);
 
-    if (data_type == D_UNDEFINED) {
+    if (data_type == D_UNDEFINED)
+    {
         exit_analyse("");
     }
 
     next_lexeme_or_quit();
 
-
-    if (get_lexeme().nature != NAME) {
+    if (get_lexeme().nature != NAME)
+    {
         exit_analyse("");
     }
-
 
     if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
     {
@@ -443,7 +448,9 @@ void arg(node **a) {
     (*a)->left = a1;
 }
 
-void arg_suite(node **a) {
+void arg_suite(node **a)
+{
+    show_debug_syntax("arg_suite");
 
     next_lexeme_or_quit();
 
@@ -464,7 +471,6 @@ void arg_suite(node **a) {
     }
 }
 
-
 void initialisation(node **a, DataType data_type)
 {
     show_debug_syntax("initialisation");
@@ -484,7 +490,6 @@ void initialisation(node **a, DataType data_type)
         exit_analyse(log_buffer_syntax);
     }
 
-
     node *n = creer_variable(get_lexeme().char_tab, data_type);
     add_stack(n);
 
@@ -503,7 +508,6 @@ void initialisation(node **a, DataType data_type)
     eag(&a1, data_type);
 
     (*a)->right = a1;
-
 }
 
 void assignation(node **a, DataType data_type)
@@ -514,24 +518,21 @@ void assignation(node **a, DataType data_type)
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
-
     next_lexeme_or_quit();
     if (get_lexeme().nature != ASSIGN)
     {
         exit_analyse("besoin du signe \"=\"");
     }
 
-
     next_lexeme_or_quit();
     node *a1;
     eag(&a1, data_type);
 
     (*a)->right = a1;
-
 }
 
-
-void condition(node **a) {
+void condition(node **a)
+{
     show_debug_syntax("condition");
 
     *a = new_node(N_CONDITION);
@@ -575,7 +576,6 @@ void condition(node **a) {
 
     Lexeme *next_lexeme = silent_get_next_lexeme();
 
-    
     if (next_lexeme->nature != ELSE)
     {
         return;
@@ -588,7 +588,6 @@ void condition(node **a) {
         exit_analyse("besoin de '{' après else");
     }
 
-
     next_lexeme_or_quit();
     node *a4;
     up_scope();
@@ -596,12 +595,10 @@ void condition(node **a) {
     down_scope();
     a2->right = a4;
 
-
     if (get_lexeme().nature != BRACE_CLOSE)
     {
         exit_analyse("besoin de '}' après else");
     }
-
 }
 
 /* from calculette */
@@ -693,12 +690,12 @@ void facteur(node **a1, DataType data_type)
         {
             *a1 = creer_variable(get_lexeme().char_tab, data_type);
         }
-        else 
+        else
         {
-            if(!call(a1, data_type))
+            if (!call(a1, data_type))
             {
-                sprintf(log_buffer_syntax, "variable '%s' is not defined\n", 
-                    get_lexeme().char_tab);
+                sprintf(log_buffer_syntax, "variable '%s' is not defined\n",
+                        get_lexeme().char_tab);
                 exit_analyse(log_buffer_syntax);
             }
         }
@@ -749,7 +746,7 @@ void facteur(node **a1, DataType data_type)
     case MINUS:
         next_lexeme_or_quit();
         facteur(&a2, data_type);
-        
+
         node *zero_factice = creer_number(0);
         *a1 = creer_operation(O_MINUS, zero_factice, a2);
         break;
@@ -757,9 +754,7 @@ void facteur(node **a1, DataType data_type)
 
         exit_analyse("");
     }
-
 }
-
 
 int op1(Operateur *op, DataType data_type)
 {
@@ -783,7 +778,7 @@ int op1(Operateur *op, DataType data_type)
         }
         *op = nature_lex_to_op(get_lexeme().nature);
         next_lexeme_or_quit();
-        
+
         return 1;
     default:
         return 0;
@@ -873,7 +868,8 @@ Operateur nature_lex_to_op(NatureLexeme nature)
     }
 }
 
-DataType nature_to_data_type(NatureLexeme nature) {
+DataType nature_to_data_type(NatureLexeme nature)
+{
 
     switch (nature)
     {
@@ -881,11 +877,10 @@ DataType nature_to_data_type(NatureLexeme nature) {
         return D_INT;
     case CHAR:
         return D_CHAR;
-    
+
     default:
         return D_UNDEFINED;
     }
-
 }
 
 void next_lexeme_or_quit()

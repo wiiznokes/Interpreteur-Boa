@@ -107,7 +107,7 @@ void down_scope()
 
 void add_stack(node *n)
 {
-    if (n == NULL)
+    if (n == NULL || n->type != N_VARIABLE)
     {
         printf("internal error: add_stack\n");
         exit(1);
@@ -122,7 +122,7 @@ void add_stack(node *n)
 
 
 void add_fun(node *n) {
-    if (n == NULL)
+    if (n == NULL || n->type != N_FUN)
     {
         printf("internal error: add_fun\n");
         exit(1);
@@ -185,7 +185,6 @@ node *get_fun(char *name, DataType data_type)
 
     if (n == NULL || n->type != N_FUN)
     {
-        printf("function '%s' is not defined\n", name);
         return NULL;
     }
 
