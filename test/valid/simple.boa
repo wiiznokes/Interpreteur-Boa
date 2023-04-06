@@ -1,11 +1,11 @@
 
 
 
-fun f(): int {
+fun double(int a): int {
 
-    return 10;
+    return a * 2;
 
 }
 
 
-f();
+double(4);

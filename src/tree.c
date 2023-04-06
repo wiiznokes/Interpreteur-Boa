@@ -7,6 +7,10 @@
 
 
 
+char log_buffer_tree[500] = "";
+
+
+
 /*
     Helper function to recursively print a tree
 
@@ -40,26 +44,25 @@ static void print_tree_helper(node *n, int depth, int type)
         exit(1);
     }
 
-    char log[500] = "";
 
     switch (n->type)
     {
     case N_VARIABLE:
     case N_CALL:
     case N_FUN:
-        sprintf(log, "%s %s", data_type_to_text(n->data_type), n->name);
+        sprintf(log_buffer_tree, "%s %s", data_type_to_text(n->data_type), n->name);
         break;
     case N_OPERATION:
-        strcpy(log, operateur_to_text(n->op));
+        strcpy(log_buffer_tree, operateur_to_text(n->op));
         break;
     case N_VALUE:
         switch (n->data_type)
         {
         case D_CHAR:
-            strcpy(log, n->string);
+            strcpy(log_buffer_tree, n->string);
             break;
         case D_INT:
-            sprintf(log, "%d", n->number);
+            sprintf(log_buffer_tree, "%d", n->number);
         default:
             break;
         }
@@ -67,7 +70,7 @@ static void print_tree_helper(node *n, int depth, int type)
         break;
     }
     
-    printf("%s: %s\n", node_type_to_text(n->type), log);
+    printf("%s: %s\n", node_type_to_text(n->type), log_buffer_tree);
     print_tree_helper(n->left, depth + 1, 2);
 }
 

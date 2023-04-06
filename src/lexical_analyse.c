@@ -5,13 +5,19 @@
 #include "lexical_analyse.h"
 #include "lecture_caracteres.h"
 
+
+bool DEBUG_LEXICAL = true;
+
+
+
 /*
     private
 */
 
 #define MAX_LEXEME_SIZE 250
 
-bool DEBUG_LEXICAL = true;
+char log_buffer_lexical[300];
+
 
 typedef enum
 {
@@ -197,10 +203,9 @@ void next_lexeme()
     {
         if (counter >= MAX_LEXEME_SIZE)
         {
-            char log_message[200];
-            snprintf(log_message, 200, "Erreur lexical: un lexeme ne peut pas faire plus de %d caractère.\n",
+            sprintf(log_buffer_lexical, "Erreur lexical: un lexeme ne peut pas faire plus de %d caractère.\n",
                      MAX_LEXEME_SIZE);
-            handle_error(log_message);
+            handle_error(log_buffer_lexical);
             return;
         }
         add_char(current_lexeme.char_tab, caractere_courant());
