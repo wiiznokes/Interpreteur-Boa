@@ -192,7 +192,7 @@ void instruction(node **a, DataType return_type)
         }
 
         next_lexeme_or_quit();
-        node *a1 = NULL;
+        node *a2 = NULL;
         if (get_lexeme().nature == END_INSTRUCTION) {
             if (return_type != D_UNIT) {
                 char log[300];
@@ -201,11 +201,11 @@ void instruction(node **a, DataType return_type)
             }
         }
         else 
-            eag(&a1, return_type);
+            eag(&a2, return_type);
 
-        node *n = new_node(N_RETURN);
-        n->left = a1;
-        n->data_type = return_type;
+        a1 = new_node(N_RETURN);
+        a1->left = a2;
+        a1->data_type = return_type;
         break;
 
     default:

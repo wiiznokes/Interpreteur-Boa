@@ -43,6 +43,8 @@ char *node_type_to_text(NodeType type)
         return "N_CONDITION";
     case N_FUN:
         return "N_FUN";
+    case N_RETURN:
+        return "N_RETURN";
 
     default:
         printf("internal error: node_type_to_text\n");

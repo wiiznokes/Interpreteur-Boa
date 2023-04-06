@@ -4,8 +4,10 @@ int c <- 8;
 
 c;
 
-fun t(int e, int d): char {
-    return "";
+fun t() {
+
+    return;
+
 }
 
 
