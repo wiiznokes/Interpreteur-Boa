@@ -30,6 +30,8 @@ void function(node **a) ;
 void args(node **a);
 void arg(node **a);
 void arg_suite(node **a);
+bool call(node **a, DataType data_type);
+void call_args(node **a, node *arg);
 
 
 // from calculette
@@ -141,17 +143,31 @@ void instruction(node **a, DataType return_type)
         break;
     case NAME:
         Lexeme *next_lexeme = silent_get_next_lexeme();
-        DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
-        if (data_type == D_UNDEFINED)
+        DataType data_type;
+        switch (next_lexeme->nature)
         {
-            exit_analyse("");
-        }
-
-        if (next_lexeme->nature == ASSIGN) 
+        case PARO:
+            node *n = get_fun(get_lexeme().char_tab, D_UNDEFINED);
+            if (n == NULL)
+            {
+                exit_analyse("");
+            }
+            eag(&a1, n->data_type);
+            break;
+        case ASSIGN:
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
             assignation(&a1, data_type);
-        else 
+            break;
+        
+        default:
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
+            if (data_type == D_UNDEFINED)
+            {
+                exit_analyse("");
+            }
             eag(&a1, data_type);
-
+            break;
+        }
         break;
     case NOT:
     case PARO:
@@ -208,7 +224,11 @@ void instruction(node **a, DataType return_type)
 }
 
 
-void call(node **a, DataType data_type) {
+/*
+    return false if there is no fun with
+    the current name
+*/
+bool call(node **a, DataType data_type) {
     show_debug_syntax("call");
 
     *a = new_node(N_CALL);
@@ -221,7 +241,7 @@ void call(node **a, DataType data_type) {
     node *fun = get_fun(get_lexeme().char_tab, data_type);
 
     if (!fun) {
-        exit_analyse("");
+        return false;
     }
 
     next_lexeme_or_quit();
@@ -237,23 +257,65 @@ void call(node **a, DataType data_type) {
     up_scope();
 
     next_lexeme_or_quit();
-    if (get_lexeme().nature != PARF)
-    {
-        call_args(&a1);
+
+    if (fun->left == NULL) {
+        if (get_lexeme().nature != PARF) {
+            exit_analyse("");
+        }
+    }
+    else {
+        call_args(&a1, fun->left);
     }
 
     (*a)->left = a1;
     
-    next_lexeme_or_quit();
+    return true;
 }
 
-void call_args(node **a, DataType data_type) {
+/*
+    condition: arg != NULL 
+    (can't have more arg than the function definition)
+*/
+void call_args(node **a, node *arg) {
     show_debug_syntax("call_args");
+
+    if (arg == NULL) {
+        exit_analyse("");
+    }
+
+    *a = new_node(N_INSTRUCTION);
+
+
+
+    node *a1 = new_node(N_INITIALISATION);
+
+    a1->left = creer_variable(arg->name, arg->data_type);
+
+
+
+    node *a2;
+    eag(&a2, arg->data_type);
+
+    a1->right = a2;
+
+    (*a)->left = a1;
+
+    node *suite_arg;
+    if (arg->left == NULL) {
+        if (get_lexeme().nature != PARF) {
+            exit_analyse("");
+        }
+    }
+    else {
+        call_args(&suite_arg, arg->left);
+    }
+
+    (*a)->right = suite_arg;
+
+
 }
 
-void suite_call_args(node **a, DataType data_type) {
-    show_debug_syntax("suite_call_args");
-}
+
 
 void function(node **a) {
 
@@ -322,7 +384,7 @@ void function(node **a) {
 
     (*a)->right = a2;
 
-    add_stack(*a);
+    
 
     if (get_lexeme().nature != BRACE_CLOSE) {
         exit_analyse("symbole } attendu\n");
@@ -626,11 +688,19 @@ void facteur(node **a1, DataType data_type)
     switch (get_lexeme().nature)
     {
     case NAME:
-        if (check_variable(get_lexeme().char_tab, data_type, true) == D_UNDEFINED)
+        if (check_variable(get_lexeme().char_tab, data_type, true) != D_UNDEFINED)
         {
-            exit_analyse("");
+            *a1 = creer_variable(get_lexeme().char_tab, data_type);
         }
-        *a1 = creer_variable(get_lexeme().char_tab, data_type);
+        else 
+        {
+            if(!call(a1, data_type))
+            {
+                printf("variable '%s' is not defined\n", get_lexeme().char_tab);
+                exit_analyse("");
+            }
+        }
+
         next_lexeme_or_quit();
         break;
 

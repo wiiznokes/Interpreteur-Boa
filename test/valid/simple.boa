@@ -2,7 +2,10 @@
 
 int c <- 8;
 
-fun t(int c, int d): char {
+c;
+
+fun t(int e, int d): char {
     return "";
 }
+
 
