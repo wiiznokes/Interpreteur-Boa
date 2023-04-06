@@ -359,6 +359,7 @@ void function(node **a)
         arg(&a1);
     }
 
+    
     (*a)->left = a1;
 
     next_lexeme_or_quit();
@@ -386,7 +387,6 @@ void function(node **a)
     {
         exit_analyse("symbole { attendu\n");
     }
-
     node *a2;
     next_lexeme_or_quit();
 
@@ -394,6 +394,7 @@ void function(node **a)
     add_fun(*a);
     instructions(&a2, (*a)->data_type);
 
+    
     (*a)->right = a2;
 
     if (get_lexeme().nature != BRACE_CLOSE)

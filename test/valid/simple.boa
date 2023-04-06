@@ -1,7 +1,7 @@
 
 
 
-b = 9;
+
 
 fun double(int a): int {
 
@@ -10,4 +10,5 @@ fun double(int a): int {
 }
 
 
+double(2);
 

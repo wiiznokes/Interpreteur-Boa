@@ -12,7 +12,8 @@ int scope_count[MAX_STACK];
 list *stack[MAX_STACK][MAX_STACK];
 
 
-list *stack_fun;
+int stack_fun_count;
+node *stack_fun[MAX_STACK];
 
 /* ****************
     private
@@ -28,12 +29,16 @@ node *find_name_in_list(list *vars, char *name);
 
 /* ************** */
 
+bool has_be_start_before = false;
 void start_stack()
 {
     stack_count = 0;
     up_stack();
 
-    stack_fun = new_list();
+    if (!has_be_start_before)
+        stack_fun_count = 0;
+    
+    has_be_start_before = true;
 }
 
 void free_stack()
@@ -46,7 +51,6 @@ void free_stack()
     stack_count = 0;
     *get_scope_count() = 0;
 
-    free(stack_fun);
 }
 
 bool up_stack()
@@ -128,11 +132,14 @@ void add_fun(node *n) {
         exit(1);
     }
 
-    if (!add_tail(stack_fun, n))
-    {
-        printf("internal error: add_stack\n");
+    if (stack_fun_count > MAX_STACK) {
+        printf("well this can't actually happend right\n");
         exit(1);
     }
+
+    stack_fun_count++;
+    stack_fun[stack_fun_count - 1] = n;
+
 }
 
 char *get_char(char *name)
@@ -181,9 +188,22 @@ void set_int(char *name, int value)
 
 node *get_fun(char *name, DataType data_type)
 {
-    node *n = find_name_in_list(stack_fun, name);
+    node *n;
+    int i;
+    bool found = false;
+    for (i = 0; i < stack_fun_count; i++)
+    {
+        n = stack_fun[i];
+        if (!strcmp(n->name, name)) {
+            found = true;
+            break;
+        }
+    }
 
-    if (n == NULL || n->type != N_FUN)
+
+
+
+    if (!found || n->type != N_FUN)
     {
         return NULL;
     }

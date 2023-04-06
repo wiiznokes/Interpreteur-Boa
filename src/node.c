@@ -107,7 +107,7 @@ char *operateur_to_text(Operateur op)
     case O_NOT:
         return "O_NOT";
     default:
-        printf("internal error: data_type_to_text\n");
+        printf("internal error: operateur_to_text\n");
         exit(1);
     }
 }
