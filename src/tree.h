@@ -5,7 +5,7 @@
 
 typedef struct node *tree;
 
-void free_tree(tree t);
+
 
 void print_tree(tree t);
 

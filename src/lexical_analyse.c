@@ -5,13 +5,19 @@
 #include "lexical_analyse.h"
 #include "lecture_caracteres.h"
 
+
+bool DEBUG_LEXICAL = true;
+
+
+
 /*
     private
 */
 
 #define MAX_LEXEME_SIZE 250
 
-bool DEBUG_LEXICAL = true;
+char log_buffer_lexical[300];
+
 
 typedef enum
 {
@@ -79,6 +85,7 @@ typedef enum
     S_F,
     S_FU,
     S_FUN,
+    S_COMMA, // ,
     S_COLON, // :
     S_R,
     S_RE,
@@ -159,9 +166,6 @@ void next_lexeme()
     if(silent_was_called) {
         copy_lexeme(&current_lexeme, &next_lexeme_cached);
         silent_was_called = false;
-
-        printf("Lexeme de nature %s = \"%s\"\n",
-            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
         return;
     }
     
@@ -199,10 +203,9 @@ void next_lexeme()
     {
         if (counter >= MAX_LEXEME_SIZE)
         {
-            char log_message[200];
-            snprintf(log_message, 200, "Erreur lexical: un lexeme ne peut pas faire plus de %d caractère.\n",
+            sprintf(log_buffer_lexical, "Erreur lexical: un lexeme ne peut pas faire plus de %d caractère.\n",
                      MAX_LEXEME_SIZE);
-            handle_error(log_message);
+            handle_error(log_buffer_lexical);
             return;
         }
         add_char(current_lexeme.char_tab, caractere_courant());
@@ -213,10 +216,9 @@ void next_lexeme()
     proccess_end();
 
     if (DEBUG_LEXICAL) {
-        if (!silent_was_called) {
-            printf("Lexeme de nature %s = \"%s\"\n",
-                nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
-        }
+        printf("Lexeme de nature %s = \"%s\"\n",
+            nature_to_text(current_lexeme.nature), current_lexeme.char_tab);
+        
     }
 }
 
@@ -294,6 +296,8 @@ char *nature_to_text(NatureLexeme nature)
         return "FUN";
     case COLON:
         return "COLON";
+    case COMMA:
+        return "COMMA";
     case RETURN:
         return "RETURN";
 
@@ -382,6 +386,9 @@ bool transition(char c)
             return true;
         case ':':
             current_state = S_COLON;
+            return true;
+        case ',':
+            current_state = S_COMMA;
             return true;
         case 'r':
             current_state = S_R;
@@ -552,16 +559,6 @@ bool transition(char c)
         default:
             return false;
         }
-    case S_NOT_EQUAL:
-        return false;
-
-    case S_PARO:
-    case S_PARF:
-    case S_PLUS:
-    case S_MINUS:
-    case S_MUL:
-    case S_DIV:
-        return false;
 
     case S_IF:
         return set_name_if_needed(c);
@@ -595,10 +592,6 @@ bool transition(char c)
         }
     case S_ELSE:
         return set_name_if_needed(c);
-    case S_BRACE_OPEN:
-        return false;
-    case S_BRACE_CLOSE:
-        return false;
     case S_F:
         switch (c)
         {
@@ -620,8 +613,6 @@ bool transition(char c)
     case S_FUN:
         return set_name_if_needed(c);
 
-    case S_COLON:
-        return false;
 
     case S_R:
         switch (c)
@@ -670,7 +661,19 @@ bool transition(char c)
         }
     case S_RETURN:
         return set_name_if_needed(c);
-    
+
+        
+    case S_NOT_EQUAL:
+    case S_PARO:
+    case S_PARF:
+    case S_PLUS:
+    case S_MINUS:
+    case S_MUL:
+    case S_DIV:
+    case S_BRACE_OPEN:
+    case S_BRACE_CLOSE:
+    case S_COMMA:
+    case S_COLON:
     case S_END_INSTRUCTION:
         return false;
 
@@ -770,6 +773,9 @@ void proccess_end()
     case S_COLON:
         current_lexeme.nature = COLON;
         break;
+    case S_COMMA:
+        current_lexeme.nature = COMMA;
+        break;
     case S_RETURN:
         current_lexeme.nature = RETURN;
         break;
@@ -833,3 +839,4 @@ void add_char(char *s, char c)
     s[l] = c;
     s[l + 1] = '\0';
 };
+

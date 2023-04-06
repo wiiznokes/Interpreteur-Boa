@@ -13,7 +13,7 @@ tree *get_ast() {
 }
 
 void free_ast() {
-      free_tree(ast);
+      free_node(ast);
 }
 
 

@@ -15,6 +15,12 @@ node *new_node(NodeType type)
 
 void free_node(node *n)
 {
+    if (!n)
+    {
+        return;
+    }
+    free_node(n->left);
+    free_node(n->right);
     free(n);
 }
 
@@ -31,6 +37,8 @@ char *node_type_to_text(NodeType type)
         return "N_ASSIGNATION";
     case N_VARIABLE:
         return "N_VARIABLE";
+    case N_CALL:
+        return "N_CALL";
 
     case N_OPERATION:
         return "N_OPERATION";
@@ -41,6 +49,8 @@ char *node_type_to_text(NodeType type)
         return "N_CONDITION";
     case N_FUN:
         return "N_FUN";
+    case N_RETURN:
+        return "N_RETURN";
 
     default:
         printf("internal error: node_type_to_text\n");
@@ -97,7 +107,7 @@ char *operateur_to_text(Operateur op)
     case O_NOT:
         return "O_NOT";
     default:
-        printf("internal error: data_type_to_text\n");
+        printf("internal error: operateur_to_text\n");
         exit(1);
     }
 }

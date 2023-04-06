@@ -10,13 +10,15 @@ typedef enum
     N_INITIALISATION,
     N_ASSIGNATION,
     N_VARIABLE,
+    N_CALL,
 
 
     N_OPERATION,
     N_VALUE,
 
     N_CONDITION,
-    N_FUN
+    N_FUN,
+    N_RETURN
 
 } NodeType;
 

@@ -27,7 +27,10 @@ void stop_analyse();
     instruction: assignation ;
     instruction: fonction
     instruction: condition
-    instruction: while_loop
+    instruction: return ;
+
+    return: RETURN
+    return: RETURN eag
 
 
     initialisation: type name <- eag
@@ -43,7 +46,7 @@ void stop_analyse();
     seq_facteur: facteur suite_seq_facteur
     suite_seq_facteur: op2 facteur suite_seq_facteur
     suite_seq_facteur:
-    facteur: NAME
+    facteur: VARIABLE
     facteur: call
     facteur: INTEGER
     facteur: CHAR
@@ -60,10 +63,10 @@ void stop_analyse();
 
     fonction: fun name ( args ) : type { instructions }
 
-    args: arg arg_suite
+    args: arg
     args:
 
-    arg: type name
+    arg: type name arg_suite
 
     arg_suite: , arg
     arg_suite:

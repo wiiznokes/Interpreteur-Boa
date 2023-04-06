@@ -7,6 +7,8 @@
 
 
 void start_stack();
+
+
 void free_stack();
 
 /*
@@ -32,10 +34,12 @@ void down_scope();
 
 void add_stack(node *n);
 
+void add_fun(node *n);
+
 
 char *get_char(char *name);
 int get_int(char *name);
-node *get_fun(char *name);
+node *get_fun(char *name, DataType data_type);
 
 void set_char(char *name, char *value);
 void set_int(char *name, int value);
@@ -48,10 +52,7 @@ void set_int(char *name, int value);
     return value == D_UNDEFINED meens the variable was 
     not found (with the same name and type)
 */
-DataType check_variable(
-    char *name,
-    DataType data_type,
-    bool show_error_if_undefined);
+DataType check_variable(char *name, DataType data_type);
 
 
 node *get_by_name(char *name);

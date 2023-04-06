@@ -9,21 +9,27 @@
 #include "node.h"
 #include "ast_construction.h"
 
-
-
 bool DEBUG_SYNTAX = true;
-
 
 /* *********************
     private
 
 */
 
-void instructions(node **a);
-void instruction(node **a);
+void instructions(node **a, DataType return_type);
+void instruction(node **a, DataType return_type);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a, DataType data_type);
 void condition(node **a);
+
+// function
+void function(node **a);
+void args(node **a);
+void arg(node **a);
+void arg_suite(node **a);
+bool call(node **a, DataType data_type);
+void call_args(node **a, node *arg);
+
 // from calculette
 
 void eag(node **a1, DataType data_type);
@@ -39,12 +45,17 @@ int op2(Operateur *op, DataType data_type);
 // helper functions
 
 Operateur nature_lex_to_op(NatureLexeme nature);
+DataType nature_to_data_type(NatureLexeme nature);
 void next_lexeme_or_quit();
 void exit_analyse(char *msg);
 
+void show_debug_syntax(char *txt)
+{
+    if (DEBUG_SYNTAX)
+        printf("%s\n", txt);
+}
 
-
-void show_debug_syntax(char *txt) { if (DEBUG_SYNTAX) printf("%s\n", txt); }
+char log_buffer_syntax[300];
 
 /* *************** */
 
@@ -61,13 +72,15 @@ void fill_ast(char *fileName, bool show_log)
 
     next_lexeme_or_quit();
 
-    instructions(get_ast());
+    instructions(get_ast(), D_UNDEFINED);
 
-    if (get_lexeme().nature != END_FILE) {
+    if (get_lexeme().nature != END_FILE)
+    {
         exit_analyse("");
     }
 
-    if (show_log) {
+    if (show_log)
+    {
         printf("\n\n");
         print_tree(*get_ast());
         printf("\n\n");
@@ -82,7 +95,7 @@ void stop_analyse()
 
 /* *************** */
 
-void instructions(node **a)
+void instructions(node **a, DataType return_type)
 {
     show_debug_syntax("instructions");
 
@@ -101,10 +114,11 @@ void instructions(node **a)
     case NUMBER:
     case MINUS:
     case STRING:
+    case RETURN:
         node *a1;
-        instruction(&a1);
+        instruction(&a1, return_type);
         *a = a1;
-        instructions(&(a1->right));
+        instructions(&(a1->right), return_type);
         break;
     default:
         *a = NULL;
@@ -112,11 +126,11 @@ void instructions(node **a)
     }
 }
 
-
-void instruction(node **a)
+void instruction(node **a, DataType return_type)
 {
     show_debug_syntax("instruction");
     *a = new_node(N_INSTRUCTION);
+    (*a)->data_type = return_type;
     node *a1;
     bool need_semi_colon = true;
 
@@ -131,17 +145,28 @@ void instruction(node **a)
         break;
     case NAME:
         Lexeme *next_lexeme = silent_get_next_lexeme();
-        DataType data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED, true);
-        if (data_type == D_UNDEFINED)
+        DataType data_type;
+        sprintf(log_buffer_syntax, "'%s' not exist.", get_lexeme().char_tab);
+        switch (next_lexeme->nature)
         {
-            exit_analyse("");
-        }
-
-        if (next_lexeme->nature == ASSIGN) 
+        case PARO:
+            node *n = get_fun(get_lexeme().char_tab, D_UNDEFINED);
+            if (n == NULL) exit_analyse(log_buffer_syntax);
+            eag(&a1, n->data_type);
+            break;
+            
+        case ASSIGN:
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
             assignation(&a1, data_type);
-        else 
-            eag(&a1, data_type);
+            break;
 
+        default:
+            data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
+            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
+            eag(&a1, data_type);
+            break;
+        }
         break;
     case NOT:
     case PARO:
@@ -157,22 +182,290 @@ void instruction(node **a)
         need_semi_colon = false;
         break;
     case FUN:
-        //function(&a1);
+        function(&a1);
+        need_semi_colon = false;
         break;
-        
+    case RETURN:
+        if (return_type == D_UNDEFINED)
+        {
+            exit_analyse("");
+        }
+
+        next_lexeme_or_quit();
+        node *a2 = NULL;
+        if (get_lexeme().nature == END_INSTRUCTION)
+        {
+            if (return_type != D_UNIT)
+            {
+                sprintf(log_buffer_syntax, "need %s return type", data_type_to_text(return_type));
+                exit_analyse(log_buffer_syntax);
+            }
+        }
+        else
+            eag(&a2, return_type);
+
+        a1 = new_node(N_RETURN);
+        a1->left = a2;
+        a1->data_type = return_type;
+        break;
+
     default:
         exit_analyse("");
     }
 
-    if (need_semi_colon) {
-        if (get_lexeme().nature != END_INSTRUCTION) 
+    if (need_semi_colon)
+    {
+        if (get_lexeme().nature != END_INSTRUCTION)
             exit_analyse("une instruction doit finir par ';'");
     }
-    
+
     next_lexeme_or_quit();
 
     (*a)->left = a1;
+}
 
+/*
+    return false if there is no fun with
+    the current name
+*/
+bool call(node **a, DataType data_type)
+{
+    show_debug_syntax("call");
+
+    *a = new_node(N_CALL);
+
+    if (get_lexeme().nature != NAME)
+    {
+        exit_analyse("");
+    }
+
+    strcpy((*a)->name, get_lexeme().char_tab);
+
+    node *fun = get_fun(get_lexeme().char_tab, data_type);
+
+    if (!fun)
+    {
+        return false;
+    }
+
+    (*a)->data_type = fun->data_type;
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARO)
+    {
+        exit_analyse("");
+    }
+
+    // verifier que fun.left est bien null (est bien le bon compte d'args)
+
+    // args bloc
+    node *a1 = NULL;
+    up_scope();
+
+    next_lexeme_or_quit();
+
+    if (fun->left == NULL)
+    {
+        if (get_lexeme().nature != PARF)
+        {
+            exit_analyse("");
+        }
+    }
+    else
+    {
+        call_args(&a1, fun->left);
+    }
+
+    (*a)->left = a1;
+
+    return true;
+}
+
+/*
+    condition: arg != NULL
+    (can't have more arg than the function definition)
+*/
+void call_args(node **a, node *arg)
+{
+    show_debug_syntax("call_args");
+
+    if (arg == NULL)
+    {
+        exit_analyse("");
+    }
+
+    *a = new_node(N_INSTRUCTION);
+
+    node *a1 = new_node(N_INITIALISATION);
+
+    a1->left = creer_variable(arg->name, arg->data_type);
+
+    node *a2;
+    eag(&a2, arg->data_type);
+
+    a1->right = a2;
+
+    (*a)->left = a1;
+
+    node *suite_arg = NULL;
+    if (arg->left == NULL)
+    {
+        if (get_lexeme().nature != PARF)
+        {
+            exit_analyse("");
+        }
+    }
+    else
+    {
+        call_args(&suite_arg, arg->left);
+    }
+
+    (*a)->right = suite_arg;
+}
+
+void function(node **a)
+{
+    show_debug_syntax("function");
+
+    *a = new_node(N_FUN);
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != NAME)
+    {
+        exit_analyse("");
+    }
+
+    if (get_fun(get_lexeme().char_tab, D_UNDEFINED))
+    {
+        sprintf(log_buffer_syntax, "'%s' déjà dénini.", get_lexeme().char_tab);
+        exit_analyse(log_buffer_syntax);
+    }
+
+    strcpy((*a)->name, get_lexeme().char_tab);
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARO)
+    {
+        exit_analyse("");
+    }
+
+    // args bloc
+    node *a1 = NULL;
+    up_scope();
+
+    next_lexeme_or_quit();
+    if (get_lexeme().nature != PARF)
+    {
+        arg(&a1);
+    }
+
+    
+    (*a)->left = a1;
+
+    next_lexeme_or_quit();
+
+    if (get_lexeme().nature == COLON)
+    {
+        next_lexeme_or_quit();
+
+        DataType data_type = nature_to_data_type(get_lexeme().nature);
+
+        if (data_type == D_UNDEFINED)
+        {
+            exit_analyse("need a return type with a colon\n");
+        }
+        (*a)->data_type = data_type;
+
+        next_lexeme_or_quit();
+    }
+    else
+    {
+        (*a)->data_type = D_UNIT;
+    }
+
+    if (get_lexeme().nature != BRACE_OPEN)
+    {
+        exit_analyse("symbole { attendu\n");
+    }
+    node *a2;
+    next_lexeme_or_quit();
+
+    // add fun before instruction for recursion
+    add_fun(*a);
+    instructions(&a2, (*a)->data_type);
+
+    
+    (*a)->right = a2;
+
+    if (get_lexeme().nature != BRACE_CLOSE)
+    {
+        exit_analyse("symbole } attendu\n");
+    }
+
+    down_scope();
+}
+
+/*
+    met chaque argument dans n->left sous
+    forme de variable, et ajoute celle ci sur la
+    stack
+*/
+void arg(node **a)
+{
+    show_debug_syntax("arg");
+
+    DataType data_type = nature_to_data_type(get_lexeme().nature);
+
+    if (data_type == D_UNDEFINED)
+    {
+        exit_analyse("");
+    }
+
+    next_lexeme_or_quit();
+
+    if (get_lexeme().nature != NAME)
+    {
+        exit_analyse("");
+    }
+
+    if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
+    {
+        sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
+        exit_analyse(log_buffer_syntax);
+    }
+    node *n = creer_variable(get_lexeme().char_tab, data_type);
+    add_stack(n);
+
+    *a = creer_variable(get_lexeme().char_tab, data_type);
+
+    node *a1;
+
+    arg_suite(&a1);
+
+    (*a)->left = a1;
+}
+
+void arg_suite(node **a)
+{
+    show_debug_syntax("arg_suite");
+
+    next_lexeme_or_quit();
+
+    switch (get_lexeme().nature)
+    {
+    case COMMA:
+        next_lexeme_or_quit();
+        arg(a);
+        break;
+    case PARF:
+        // no more args
+        *a = NULL;
+        break;
+
+    default:
+        exit_analyse("");
+        break;
+    }
 }
 
 void initialisation(node **a, DataType data_type)
@@ -188,13 +481,11 @@ void initialisation(node **a, DataType data_type)
         exit_analyse("");
     }
 
-    if (check_variable(get_lexeme().char_tab, data_type, false) != D_UNDEFINED)
+    if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
     {
-        char log[300];
-        sprintf(log, "variable '%s' déjà déninie.", get_lexeme().char_tab);
-        exit_analyse(log);
+        sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
+        exit_analyse(log_buffer_syntax);
     }
-
 
     node *n = creer_variable(get_lexeme().char_tab, data_type);
     add_stack(n);
@@ -214,7 +505,6 @@ void initialisation(node **a, DataType data_type)
     eag(&a1, data_type);
 
     (*a)->right = a1;
-
 }
 
 void assignation(node **a, DataType data_type)
@@ -225,24 +515,21 @@ void assignation(node **a, DataType data_type)
 
     (*a)->left = creer_variable(get_lexeme().char_tab, data_type);
 
-
     next_lexeme_or_quit();
     if (get_lexeme().nature != ASSIGN)
     {
         exit_analyse("besoin du signe \"=\"");
     }
 
-
     next_lexeme_or_quit();
     node *a1;
     eag(&a1, data_type);
 
     (*a)->right = a1;
-
 }
 
-
-void condition(node **a) {
+void condition(node **a)
+{
     show_debug_syntax("condition");
 
     *a = new_node(N_CONDITION);
@@ -273,7 +560,7 @@ void condition(node **a) {
     node *a2 = new_node(N_CONDITION);
     node *a3;
     up_scope();
-    instructions(&a3);
+    instructions(&a3, D_UNDEFINED);
     down_scope();
     a2->left = a3;
 
@@ -286,7 +573,6 @@ void condition(node **a) {
 
     Lexeme *next_lexeme = silent_get_next_lexeme();
 
-    
     if (next_lexeme->nature != ELSE)
     {
         return;
@@ -299,20 +585,17 @@ void condition(node **a) {
         exit_analyse("besoin de '{' après else");
     }
 
-
     next_lexeme_or_quit();
     node *a4;
     up_scope();
-    instructions(&a4);
+    instructions(&a4, D_UNDEFINED);
     down_scope();
     a2->right = a4;
-
 
     if (get_lexeme().nature != BRACE_CLOSE)
     {
         exit_analyse("besoin de '}' après else");
     }
-
 }
 
 /* from calculette */
@@ -400,21 +683,30 @@ void facteur(node **a1, DataType data_type)
     switch (get_lexeme().nature)
     {
     case NAME:
-        if (check_variable(get_lexeme().char_tab, data_type, true) == D_UNDEFINED)
+        if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
         {
-            exit_analyse("");
+            *a1 = creer_variable(get_lexeme().char_tab, data_type);
         }
-        *a1 = creer_variable(get_lexeme().char_tab, data_type);
+        else
+        {
+            if (!call(a1, data_type))
+            {
+                sprintf(log_buffer_syntax, "variable '%s' is not defined\n",
+                        get_lexeme().char_tab);
+                exit_analyse(log_buffer_syntax);
+            }
+        }
+
         next_lexeme_or_quit();
         break;
 
     case NUMBER:
         if (data_type != D_INT)
         {
-            printf("besoin du type %s: %s\n",
+            sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse("");
+            exit_analyse(log_buffer_syntax);
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
         next_lexeme_or_quit();
@@ -423,10 +715,10 @@ void facteur(node **a1, DataType data_type)
     case STRING:
         if (data_type != D_CHAR)
         {
-            printf("besoin du type %s: %s\n",
+            sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse("");
+            exit_analyse(log_buffer_syntax);
         }
         *a1 = creer_string(get_lexeme().char_tab);
         next_lexeme_or_quit();
@@ -451,16 +743,15 @@ void facteur(node **a1, DataType data_type)
     case MINUS:
         next_lexeme_or_quit();
         facteur(&a2, data_type);
-        
+
         node *zero_factice = creer_number(0);
         *a1 = creer_operation(O_MINUS, zero_factice, a2);
         break;
     default:
+
         exit_analyse("");
     }
-
 }
-
 
 int op1(Operateur *op, DataType data_type)
 {
@@ -484,7 +775,7 @@ int op1(Operateur *op, DataType data_type)
         }
         *op = nature_lex_to_op(get_lexeme().nature);
         next_lexeme_or_quit();
-        
+
         return 1;
     default:
         return 0;
@@ -571,6 +862,21 @@ Operateur nature_lex_to_op(NatureLexeme nature)
     default:
         printf("internal error: nature_lex_to_op\n");
         exit(1);
+    }
+}
+
+DataType nature_to_data_type(NatureLexeme nature)
+{
+
+    switch (nature)
+    {
+    case INT:
+        return D_INT;
+    case CHAR:
+        return D_CHAR;
+
+    default:
+        return D_UNDEFINED;
     }
 }
 
