@@ -6,7 +6,7 @@
 #include "lecture_caracteres.h"
 
 
-bool DEBUG_LEXICAL = true;
+bool DEBUG_LEXICAL = false;
 
 
 

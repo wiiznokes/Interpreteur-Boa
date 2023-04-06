@@ -1,0 +1,17 @@
+
+
+
+fun test(int a, int b) {
+
+    if (a == b) {
+        return;
+    }
+
+    b;
+
+    test(a, b + 1);
+
+}
+
+
+test(15, 0);

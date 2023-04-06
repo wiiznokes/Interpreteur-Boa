@@ -9,5 +9,5 @@ fun double(int a): int {
 
 }
 
-double(4);
+double(4 * double(6));
 

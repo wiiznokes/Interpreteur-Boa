@@ -8,17 +8,26 @@
 #include "ast_construction.h"
 
 
+bool DEBUG_EVAL = true;
+
 
 /* *********************
     private
 */
 
-void evaluate(node *a);
+void evaluate(node *a, int *res1, char **res2);
 void evaluate_eag(node *a, DataType data_type, int *res1, char **res2);
 int evaluate_int(node *a);
 char *evaluate_char(node *a);
 
 void exit_evaluation(char *msg);
+
+void show_debug_eval(char *txt, node *a)
+{
+    if (DEBUG_EVAL)
+        printf("%s: %s\n", txt, node_type_to_text(a->type));
+}
+
 /* ******************** */
 
 
@@ -29,7 +38,7 @@ void exit_evaluation(char *msg);
 void start_evaluation()
 {
     start_stack();
-    evaluate(*get_ast());
+    evaluate(*get_ast(), NULL, NULL);
 }
 
 
@@ -42,18 +51,21 @@ void stop_evaluation() {
 /* ******************** */
 
 
-int x1;
-char *x2;
 
-void evaluate(node *a)
+
+void evaluate(node *a, int *res1, char **res2)
 {
+    show_debug_eval("evaluate", a);
+    int x1;
+    char *x2;
+
     if (a == NULL) return;
     switch (a->type)
     {
     case N_INSTRUCTION:
-        evaluate(a->left);
+        evaluate(a->left, res1, res2);
         if (a->right) {
-            evaluate(a->right);
+            evaluate(a->right, res1, res2);
         }
         break;
     case N_INITIALISATION:
@@ -68,7 +80,7 @@ void evaluate(node *a)
             strcpy(n1->string, x2);
             break;
         default:
-            printf("internal error: evaluate\n");
+            printf("internal error: evaluate. %s\n", node_type_to_text(a->type));
             exit(1);
             break;
         }
@@ -86,7 +98,7 @@ void evaluate(node *a)
             set_char(a->left->name, x2);
             break;
         default:
-            printf("internal error: evaluate\n");
+            printf("internal error: evaluate. %s\n", node_type_to_text(a->type));
             exit(1);
             break;
         }
@@ -95,15 +107,16 @@ void evaluate(node *a)
         evaluate_eag(a->left, D_INT, &x1, &x2);
         up_scope();
         if (x1)
-            evaluate(a->right->left);
+            evaluate(a->right->left, res1, res2);
         else 
-            evaluate(a->right->right);
+            evaluate(a->right->right, res1, res2);
         down_scope();
         break;
 
     case N_VARIABLE:
     case N_VALUE:
     case N_OPERATION:
+    case N_CALL:
         evaluate_eag(a, a->data_type, &x1, &x2);
         switch (a->data_type)
         {
@@ -117,8 +130,13 @@ void evaluate(node *a)
             break;
         }
         break;
+    case N_FUN:
+        break;
+    case N_RETURN:
+        evaluate_eag(a->left, a->data_type, res1, res2);
+        break;
     default:
-        printf("internal error: evaluate\n");
+        printf("internal error: evaluate. %s\n", node_type_to_text(a->type));
         exit(1);
         break;
     }
@@ -127,8 +145,10 @@ void evaluate(node *a)
 
 
 
-void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
 
+
+void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
+    show_debug_eval("evaluate_eag", a);
     
     switch (data_type)
     {
@@ -148,9 +168,16 @@ void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
 
 int evaluate_int(node *a)
 {
-    
+    show_debug_eval("evaluate_int", a);
     switch (a->type)
     {
+    case N_CALL:
+        evaluate(a->left, NULL, NULL);
+        int res1;
+        node *n = get_fun(a->name, a->data_type);
+        evaluate(n->right, &res1, NULL);
+        return res1;
+
     case N_VARIABLE:
         return get_int(a->name);
     case N_OPERATION:
@@ -188,13 +215,13 @@ int evaluate_int(node *a)
         case O_NOT:
             return !evaluate_int(a->right);
         default:
-            printf("internal error: evaluate_int\n");
+            printf("internal error: evaluate_int. %s\n", node_type_to_text(a->type));
             exit(1);
         }
         case N_VALUE:
             return a->number;
     default:
-        printf("internal error: evaluate_int\n");
+        printf("internal error: evaluate_int. %s\n", node_type_to_text(a->type));
         exit(1);
         break;
     }
@@ -202,15 +229,23 @@ int evaluate_int(node *a)
 
 
 char *evaluate_char(node *a) {
- switch (a->type)
+    show_debug_eval("evaluate_char", a);
+    switch (a->type)
     {
+    case N_CALL:
+        evaluate(a->left, NULL, NULL);
+        char *res2;
+        node *n = get_fun(a->name, a->data_type);
+        evaluate(n->right, NULL, &res2);
+        return res2;
+
     case N_VARIABLE:
         return get_char(a->name);
     case N_VALUE:
         return a->string;
         
     default:
-        printf("internal error: evaluate_char\n");
+        printf("internal error: evaluate_char. %s\n", node_type_to_text(a->type));
         exit(1);
         break;
     }
