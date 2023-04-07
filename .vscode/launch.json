@@ -7,7 +7,7 @@
             "program": "${workspaceFolder}/src/Boa",
             "args": [
                 "-log",
-                "test/valid/simple.boa"
+                "test/valid/test.boa"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

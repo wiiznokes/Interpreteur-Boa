@@ -19,7 +19,7 @@ list *new_list(void);
 void clear_list(list *l);
 void free_list(list *l);
 
-bool remove_head(list *l);
+node *pop_head(list *l);
 bool remove_tail(list *l);
 bool remove_index(list *l, int index);
 

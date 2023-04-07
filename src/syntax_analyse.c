@@ -9,7 +9,7 @@
 #include "node.h"
 #include "ast_construction.h"
 
-bool DEBUG_SYNTAX = true;
+bool DEBUG_SYNTAX = false;
 
 /* *********************
     private
@@ -20,7 +20,7 @@ void instructions(node **a, DataType return_type);
 void instruction(node **a, DataType return_type);
 void initialisation(node **a, DataType data_type);
 void assignation(node **a, DataType data_type);
-void condition(node **a);
+void condition(node **a, DataType data_type);
 
 // function
 void function(node **a);
@@ -178,10 +178,13 @@ void instruction(node **a, DataType return_type)
         eag(&a1, D_CHAR);
         break;
     case IF:
-        condition(&a1);
+        condition(&a1, return_type);
         need_semi_colon = false;
         break;
     case FUN:
+        if (return_type != D_UNDEFINED) {
+            exit_analyse("you can't imbricate function");
+        }
         function(&a1);
         need_semi_colon = false;
         break;
@@ -260,7 +263,6 @@ bool call(node **a, DataType data_type)
 
     // args bloc
     node *a1 = NULL;
-    up_scope();
 
     next_lexeme_or_quit();
 
@@ -305,6 +307,7 @@ void call_args(node **a, node *arg)
 
     a1->right = a2;
 
+    // add initialisation
     (*a)->left = a1;
 
     node *suite_arg = NULL;
@@ -317,6 +320,11 @@ void call_args(node **a, node *arg)
     }
     else
     {
+        if (get_lexeme().nature != COMMA)
+        {
+            exit_analyse("besoin d'une virgule entre chaque arguments");
+        }
+        next_lexeme_or_quit();
         call_args(&suite_arg, arg->left);
     }
 
@@ -351,7 +359,6 @@ void function(node **a)
 
     // args bloc
     node *a1 = NULL;
-    up_scope();
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARF)
@@ -392,8 +399,13 @@ void function(node **a)
 
     // add fun before instruction for recursion
     add_fun(*a);
+
+    // up scope after args
+    up_scope();
+
     instructions(&a2, (*a)->data_type);
 
+    down_scope();
     
     (*a)->right = a2;
 
@@ -402,7 +414,6 @@ void function(node **a)
         exit_analyse("symbole } attendu\n");
     }
 
-    down_scope();
 }
 
 /*
@@ -528,7 +539,7 @@ void assignation(node **a, DataType data_type)
     (*a)->right = a1;
 }
 
-void condition(node **a)
+void condition(node **a, DataType data_type)
 {
     show_debug_syntax("condition");
 
@@ -560,7 +571,7 @@ void condition(node **a)
     node *a2 = new_node(N_CONDITION);
     node *a3;
     up_scope();
-    instructions(&a3, D_UNDEFINED);
+    instructions(&a3, data_type);
     down_scope();
     a2->left = a3;
 
@@ -588,7 +599,7 @@ void condition(node **a)
     next_lexeme_or_quit();
     node *a4;
     up_scope();
-    instructions(&a4, D_UNDEFINED);
+    instructions(&a4, data_type);
     down_scope();
     a2->right = a4;
 

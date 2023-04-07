@@ -11,6 +11,17 @@ char log_buffer_tree[500] = "";
 
 
 
+
+void free_tree(tree t) {
+    if (t == NULL)
+    {
+        return;
+    }
+    free_tree(t->left);
+    free_tree(t->right);
+    free_node(t);
+}
+
 /*
     Helper function to recursively print a tree
 

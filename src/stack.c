@@ -5,11 +5,16 @@
 #include "stack.h"
 #include "list.h"
 
-#define MAX_STACK 1000
+
+bool DEBUG_STACK = false;
+
+
+#define MAX_STACK 500
 
 int stack_count;
 int scope_count[MAX_STACK];
-list *stack[MAX_STACK][MAX_STACK];
+int nb_var[MAX_STACK][MAX_STACK];
+node *stack[MAX_STACK][MAX_STACK][MAX_STACK];
 
 
 int stack_fun_count;
@@ -19,13 +24,44 @@ node *stack_fun[MAX_STACK];
     private
 */
 
+void show_debug_stack(char *txt)
+{
+    if (DEBUG_STACK)
+        printf("%s\n", txt);
+}
+
+
+char log_buffer_stack[500] = "";
+
+void print_stack() 
+{
+    if (!DEBUG_STACK) return;
+    int i, j, k;
+    for (i = 0; i < stack_count; i++) {
+        printf("STACK %d:\n", i+1);
+        for (j = 0; j < scope_count[i]; j++) {
+            printf("    SCOPE %d:\n", j+1);
+            for (k = 0; k < nb_var[i][j]; k++) {
+                printf("        ");
+                node *n = stack[i][j][k];
+                printf("%s -> %d\n", n->name, n->number);
+            }
+        }
+    }
+}
+
+
 node *get_by_name(char *name);
 
 int *get_scope_count() { return &scope_count[stack_count - 1]; }
 
-list **get_last_scope() { return &stack[stack_count - 1][*get_scope_count() - 1]; }
+int *get_nb_var() { return &nb_var[stack_count - 1][*get_scope_count() - 1]; }
 
-node *find_name_in_list(list *vars, char *name);
+
+
+node *get_var_in_last_scope(int index) {
+    return stack[stack_count - 1][*get_scope_count() - 1][index];
+}
 
 /* ************** */
 
@@ -43,6 +79,7 @@ void start_stack()
 
 void free_stack()
 {
+    show_debug_stack("free_stack");
     while (stack_count > 0)
     {
         down_stack();
@@ -55,6 +92,7 @@ void free_stack()
 
 bool up_stack()
 {
+    show_debug_stack("up_stack");
     if (stack_count >= MAX_STACK)
     {
         printf("error: stack overflow, you reatch the limit of %d\n", MAX_STACK);
@@ -64,12 +102,12 @@ bool up_stack()
     stack_count++;
     *get_scope_count() = 0;
     up_scope();
-
     return true;
 }
 
 void down_stack()
 {
+    show_debug_stack("down_stack");
     if (stack_count < 1)
     {
         printf("internal error: down stack, size < 1\n");
@@ -85,6 +123,7 @@ void down_stack()
 
 bool up_scope()
 {
+    show_debug_stack("up_scope");
     if (*get_scope_count() >= MAX_STACK)
     {
         printf("error: stack overflow, you reatch the limit of %d\n", MAX_STACK);
@@ -92,40 +131,50 @@ bool up_scope()
     }
 
     *get_scope_count() = *get_scope_count() + 1;
-    *get_last_scope() = new_list();
+    *get_nb_var() = 0;
+    print_stack();
 
     return true;
 }
 
 void down_scope()
 {
+    show_debug_stack("down_scope");
     if (*get_scope_count() < 1)
     {
         printf("internal error: down_scope, size < 1\n");
         exit(1);
     }
+    int i;
+   // printf("%d:%d:%d\n", stack_count, *get_scope_count(), *get_nb_var());
 
-    free_list(*get_last_scope());
+
+
+    for (i = 0; i < *get_nb_var(); i++) {
+        free_node(get_var_in_last_scope(i));
+    }
+    *get_nb_var() = 0;
     *get_scope_count() = *get_scope_count() - 1;
+    print_stack();
 }
 
 void add_stack(node *n)
 {
+    show_debug_stack("add_stack");
     if (n == NULL || n->type != N_VARIABLE)
     {
         printf("internal error: add_stack\n");
         exit(1);
     }
 
-    if (!add_tail(*get_last_scope(), n))
-    {
-        printf("internal error: add_stack\n");
-        exit(1);
-    }
+    *get_nb_var() = *get_nb_var() + 1;
+    stack[stack_count - 1][*get_scope_count() - 1][*get_nb_var() - 1] = n;
+    print_stack();
 }
 
 
-void add_fun(node *n) {
+void add_fun(node *n) 
+{
     if (n == NULL || n->type != N_FUN)
     {
         printf("internal error: add_fun\n");
@@ -158,7 +207,7 @@ int get_int(char *name)
     node *n = get_by_name(name);
     if (n == NULL || n->type != N_VARIABLE || n->data_type != D_INT)
     {
-        printf("internal error: set_int\n");
+        printf("internal error: get_int\n");
         exit(1);
     }
     return n->number;
@@ -255,46 +304,41 @@ DataType check_variable(char *name, DataType data_type)
     }
 }
 
-node *find_name_in_list(list *vars, char *name)
-{
-
-    if (vars == NULL)
-    {
-        printf("internal error: get_by_name\n");
-        exit(1);
-    }
-
-    node *tmp = vars->head;
-
-    while (tmp)
-    {
-        if (!strcmp(tmp->name, name))
-            return tmp;
-        tmp = tmp->right;
-    }
-
-    return NULL;
-}
 
 
 node *get_by_name(char *name)
 {
     node *tmp;
-    list *l;
 
     // check globals variables
     if (stack_count > 1)
     {
-        l = stack[0][0];
-        tmp = find_name_in_list(l, name);
-        if (tmp) return tmp;
+        int nb_var_global = nb_var[0][0];
+        for (int i = 0; i < nb_var_global; i++) {
+            tmp = stack[stack_count - 1][*get_scope_count() - 1][i];
+            if (tmp == NULL)
+            {
+                printf("internal error: get_by_name\n");
+                exit(1);
+            }
+            if (!strcmp(tmp->name, name)) return tmp;
+        }
     }
+
+
 
     for (int scope = 0; scope < *get_scope_count(); scope++)
     {
-        l = stack[stack_count - 1][scope];
-        tmp = find_name_in_list(l, name);
-        if (tmp) return tmp;
+        for (int i = 0; i < nb_var[stack_count - 1][scope]; i++)
+        {
+            tmp = stack[stack_count - 1][scope][i];
+            if (tmp == NULL)
+            {
+                printf("internal error: get_by_name\n");
+                exit(1);
+            }
+            if (!strcmp(tmp->name, name)) return tmp;    
+        }
     }
 
     return NULL;
