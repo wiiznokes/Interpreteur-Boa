@@ -1,0 +1,34 @@
+
+
+
+
+fun mod2(int n): int {
+    if (n == 0) {
+        return 0;
+    }
+    
+    if (n == 1) {
+        return 1;
+    } else {
+        return mod2(n-2);
+    }
+}
+
+
+
+fun syra(int n1): int {
+    n1;
+    if (n1 == 1) {
+        "Le total d'appel recursif est:";
+        return 0;
+    }
+    if (mod2(n1) == 0) {
+        return syra(n1 / 2) + 1;
+    }
+    else {
+        return syra(3 * n1 + 1) + 1;
+    }
+}
+
+
+syra(40);
