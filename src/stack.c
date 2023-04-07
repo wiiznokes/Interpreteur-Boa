@@ -110,6 +110,10 @@ void down_scope()
         exit(1);
     }
     int i;
+   // printf("%d:%d:%d\n", stack_count, *get_scope_count(), *get_nb_var());
+
+
+
     for (i = 0; i < *get_nb_var(); i++) {
         free_node(get_var_in_last_scope(i));
     }

@@ -1,17 +1,16 @@
 
 
 
-fun test(int a, int b) {
+fun test(int a, int b): int {
 
-    if (a > b) {
-        return;
+    if (a < b) {
+        return a + 100;
     }
 
     b;
 
-    a > b;
 
-    test(a, b + 1);
+    return test(a, b + 1);
 
 }
 
