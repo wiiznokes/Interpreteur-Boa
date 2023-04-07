@@ -5,6 +5,10 @@
 #include "stack.h"
 #include "list.h"
 
+
+bool DEBUG_STACK = true;
+
+
 #define MAX_STACK 500
 
 int stack_count;
@@ -19,6 +23,32 @@ node *stack_fun[MAX_STACK];
 /* ****************
     private
 */
+
+void show_debug_stack(char *txt)
+{
+    if (DEBUG_STACK)
+        printf("%s\n", txt);
+}
+
+
+char log_buffer_stack[500] = "";
+
+void print_stack() 
+{
+    int i, j, k;
+    for (i = 0; i < stack_count; i++) {
+        printf("STACK %d:\n", i+1);
+        for (j = 0; j < scope_count[i]; j++) {
+            printf("    SCOPE %d:\n", j+1);
+            for (k = 0; k < nb_var[i][j]; k++) {
+                printf("        ");
+                node *n = stack[i][j][k];
+                printf("%s -> %d\n", n->name, n->number);
+            }
+        }
+    }
+}
+
 
 node *get_by_name(char *name);
 
@@ -48,6 +78,7 @@ void start_stack()
 
 void free_stack()
 {
+    show_debug_stack("free_stack");
     while (stack_count > 0)
     {
         down_stack();
@@ -60,6 +91,7 @@ void free_stack()
 
 bool up_stack()
 {
+    show_debug_stack("up_stack");
     if (stack_count >= MAX_STACK)
     {
         printf("error: stack overflow, you reatch the limit of %d\n", MAX_STACK);
@@ -69,12 +101,12 @@ bool up_stack()
     stack_count++;
     *get_scope_count() = 0;
     up_scope();
-    *get_nb_var() = 0;
     return true;
 }
 
 void down_stack()
 {
+    show_debug_stack("down_stack");
     if (stack_count < 1)
     {
         printf("internal error: down stack, size < 1\n");
@@ -90,6 +122,7 @@ void down_stack()
 
 bool up_scope()
 {
+    show_debug_stack("up_scope");
     if (*get_scope_count() >= MAX_STACK)
     {
         printf("error: stack overflow, you reatch the limit of %d\n", MAX_STACK);
@@ -98,12 +131,14 @@ bool up_scope()
 
     *get_scope_count() = *get_scope_count() + 1;
     *get_nb_var() = 0;
+    print_stack();
 
     return true;
 }
 
 void down_scope()
 {
+    show_debug_stack("down_scope");
     if (*get_scope_count() < 1)
     {
         printf("internal error: down_scope, size < 1\n");
@@ -119,10 +154,12 @@ void down_scope()
     }
     *get_nb_var() = 0;
     *get_scope_count() = *get_scope_count() - 1;
+    print_stack();
 }
 
 void add_stack(node *n)
 {
+    show_debug_stack("add_stack");
     if (n == NULL || n->type != N_VARIABLE)
     {
         printf("internal error: add_stack\n");
@@ -131,10 +168,12 @@ void add_stack(node *n)
 
     *get_nb_var() = *get_nb_var() + 1;
     stack[stack_count - 1][*get_scope_count() - 1][*get_nb_var() - 1] = n;
+    print_stack();
 }
 
 
-void add_fun(node *n) {
+void add_fun(node *n) 
+{
     if (n == NULL || n->type != N_FUN)
     {
         printf("internal error: add_fun\n");

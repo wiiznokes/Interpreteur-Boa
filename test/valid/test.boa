@@ -4,6 +4,7 @@
 fun test(int a, int b): int {
 
     if (a < b) {
+        int c <- 0;
         return a + 100;
     }
 

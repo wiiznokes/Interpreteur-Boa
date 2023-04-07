@@ -15,7 +15,7 @@ node *new_node(NodeType type)
 
 void free_node(node *n)
 {   
-    //free(n);
+    free(n);
 }
 
 char *node_type_to_text(NodeType type)
