@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "stack.h"
-#include "list.h"
 
 
 bool DEBUG_STACK = false;
@@ -130,7 +129,8 @@ bool up_scope()
         return false;
     }
 
-    *get_scope_count() = *get_scope_count() + 1;
+    (*get_scope_count())++;
+
     *get_nb_var() = 0;
     print_stack();
 
@@ -154,7 +154,7 @@ void down_scope()
         free_node(get_var_in_last_scope(i));
     }
     *get_nb_var() = 0;
-    *get_scope_count() = *get_scope_count() - 1;
+    (*get_scope_count())--;
     print_stack();
 }
 
@@ -167,7 +167,7 @@ void add_stack(node *n)
         exit(1);
     }
 
-    *get_nb_var() = *get_nb_var() + 1;
+    (*get_nb_var())++;
     stack[stack_count - 1][*get_scope_count() - 1][*get_nb_var() - 1] = n;
     print_stack();
 }

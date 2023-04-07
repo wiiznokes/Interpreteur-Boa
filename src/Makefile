@@ -8,7 +8,7 @@ build: clean clear build_boa
 
 
 build_boa: interprete.o syntax_analyse.o lexical_analyse.o \
-	lecture_caracteres.o node.o tree.o list.o \
+	lecture_caracteres.o node.o tree.o \
 	ast_construction.o stack.o evaluation.o
 	$(CC) $(FLAGS) $^ -o $(EXE)
 
