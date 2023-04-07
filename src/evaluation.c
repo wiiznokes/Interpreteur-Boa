@@ -16,7 +16,7 @@ bool DEBUG_EVAL = true;
     private
 */
 
-void evaluate(node *a, int *res1, char **res2);
+bool evaluate(node *a, int *res1, char **res2);
 void evaluate_eag(node *a, DataType data_type, int *res1, char **res2);
 int evaluate_int(node *a);
 char *evaluate_char(node *a);
@@ -54,18 +54,18 @@ void stop_evaluation() {
 
 
 
-void evaluate(node *a, int *res1, char **res2)
+bool evaluate(node *a, int *res1, char **res2)
 {
     show_debug_eval("evaluate", a);
     int x1;
     char *x2;
 
-    if (a == NULL) return;
+    if (a == NULL) return false;
     switch (a->type)
     {
     case N_INSTRUCTION:
-        evaluate(a->left, res1, res2);
-        if (a->right) {
+        bool has_returns = evaluate(a->left, res1, res2);
+        if (!has_returns && a->right) {
             evaluate(a->right, res1, res2);
         }
         break;
@@ -137,13 +137,17 @@ void evaluate(node *a, int *res1, char **res2)
     case N_FUN:
         break;
     case N_RETURN:
-        evaluate_eag(a->left, a->data_type, res1, res2);
+        // check if there is something to return (Unit)
+        if (a->left)
+            evaluate_eag(a->left, a->data_type, res1, res2);
+        return true;
         break;
     default:
         printf("internal error: evaluate. %s\n", node_type_to_text(a->type));
         exit(1);
         break;
     }
+    return false;
 }
 
 

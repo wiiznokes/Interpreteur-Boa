@@ -3,11 +3,13 @@
 
 fun test(int a, int b) {
 
-    if (a == b) {
+    if (a > b) {
         return;
     }
 
     b;
+
+    a > b;
 
     test(a, b + 1);
 
