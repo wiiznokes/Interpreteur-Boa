@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "ast_construction.h"
+#include "list.h"
 
 
 bool DEBUG_EVAL = true;
@@ -108,8 +109,11 @@ void evaluate(node *a, int *res1, char **res2)
         up_scope();
         if (x1)
             evaluate(a->right->left, res1, res2);
-        else 
-            evaluate(a->right->right, res1, res2);
+        else {
+            if (a->right->right) {
+                evaluate(a->right->right, res1, res2);
+            }
+        }
         down_scope();
         break;
 
@@ -157,7 +161,13 @@ void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
         break;
     case D_CHAR:
         *res2 = evaluate_char(a);
+        break;
+    case D_UNIT:
+        evaluate_int(a);
+        break;
     default:
+        printf("internal error: evaluate_eag. %s\n", node_type_to_text(a->type));
+        exit(1);
         break;
     }
 
@@ -165,6 +175,47 @@ void evaluate_eag(node *a, DataType data_type, int *res1, char **res2) {
 }
 
 
+void evalutate_args(node *a, list *args)
+{
+    show_debug_eval("evalutate_args", a);
+
+    int x1;
+    char *x2;
+
+    if (a == NULL) return;
+    switch (a->type)
+    {
+    case N_INSTRUCTION:
+        evalutate_args(a->left, args);
+        if (a->right) {
+            evalutate_args(a->right, args);
+        }
+        break;
+    case N_INITIALISATION:
+        evaluate_eag(a->right, a->left->data_type, &x1, &x2);
+        node *n1 = creer_variable(a->left->name, a->left->data_type);
+        switch (a->left->data_type)
+        {
+        case D_INT:
+            n1->number = x1;
+            break;
+        case D_CHAR:
+            strcpy(n1->string, x2);
+            break;
+        default:
+            printf("internal error: evalutate_args. %s\n", node_type_to_text(a->type));
+            exit(1);
+            break;
+        }
+        add_head(args, n1);
+        break;
+
+    default:
+        printf("internal error: evalutate_args. %s\n", node_type_to_text(a->type));
+        exit(1);
+    }
+
+}
 
 int evaluate_int(node *a)
 {
@@ -172,8 +223,22 @@ int evaluate_int(node *a)
     switch (a->type)
     {
     case N_CALL:
+        // args (can't up stack directly because we need the current stack
+        // in order to calcul arguments)
+        list *args = new_list();
+        evalutate_args(a->left, args);
         up_stack();
-        evaluate(a->left, NULL, NULL);
+        while (args->size > 0)
+        {
+            add_stack(get_node(args, 0));
+            node *tmp = get_node(args, 0);
+            node *n1 = creer_variable(tmp->name, tmp->data_type);
+            n1->number = tmp->number;
+            add_stack(n1);
+            remove_head(args);
+        }
+        free_list(args);
+
         int res1;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, &res1, NULL);

@@ -158,7 +158,7 @@ int get_int(char *name)
     node *n = get_by_name(name);
     if (n == NULL || n->type != N_VARIABLE || n->data_type != D_INT)
     {
-        printf("internal error: set_int\n");
+        printf("internal error: get_int\n");
         exit(1);
     }
     return n->number;
