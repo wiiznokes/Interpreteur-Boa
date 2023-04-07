@@ -18,9 +18,6 @@ run: build
 	./Boa -log ./../test/valid/test.boa
 
 
-test: test.o list.o node.o tree.o
-	$(CC) $(FLAGS) $^ -o test.bin
-
 
 %.o:%.c
 	$(CC) $(FLAGS) -c $<
