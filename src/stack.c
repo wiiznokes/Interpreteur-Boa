@@ -12,9 +12,9 @@ bool DEBUG_STACK = false;
 #define MAX_STACK 500
 
 int stack_count;
-int scope_count[MAX_STACK];
-int nb_var[MAX_STACK][MAX_STACK];
-node *stack[MAX_STACK][MAX_STACK][MAX_STACK];
+int scope_count[1000];
+int nb_var[1000][100];
+node *stack[1000][100][1000];
 
 
 int stack_fun_count;
