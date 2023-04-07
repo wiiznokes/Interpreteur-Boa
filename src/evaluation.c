@@ -228,13 +228,10 @@ int evaluate_int(node *a)
         up_stack();
         while (args->size > 0)
         {
-            add_stack(get_node(args, 0));
-            node *tmp = get_node(args, 0);
-            node *n1 = creer_variable(tmp->name, tmp->data_type);
-            n1->number = tmp->number;
-            add_stack(n1);
-            remove_head(args);
+            node *tmp = pop_head(args);
+            add_stack(tmp);
         }
+        
         free_list(args);
 
         int res1;

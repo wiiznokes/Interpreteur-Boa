@@ -6,7 +6,7 @@
 #include "list.h"
 
 
-bool DEBUG_STACK = true;
+bool DEBUG_STACK = false;
 
 
 #define MAX_STACK 500
@@ -35,6 +35,7 @@ char log_buffer_stack[500] = "";
 
 void print_stack() 
 {
+    if (!DEBUG_STACK) return;
     int i, j, k;
     for (i = 0; i < stack_count; i++) {
         printf("STACK %d:\n", i+1);

@@ -9,7 +9,7 @@
 #include "node.h"
 #include "ast_construction.h"
 
-bool DEBUG_SYNTAX = true;
+bool DEBUG_SYNTAX = false;
 
 /* *********************
     private
