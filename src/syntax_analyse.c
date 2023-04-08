@@ -47,7 +47,7 @@ int op2(Operateur *op, DataType data_type);
 Operateur nature_lex_to_op(NatureLexeme nature);
 DataType nature_to_data_type(NatureLexeme nature);
 void next_lexeme_or_quit();
-void exit_analyse(char *msg);
+void exit_syntax(char *msg);
 
 void show_debug_syntax(char *txt)
 {
@@ -76,7 +76,7 @@ void fill_ast(char *fileName, bool show_log)
 
     if (get_lexeme().nature != END_FILE)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     if (show_log)
@@ -151,19 +151,19 @@ void instruction(node **a, DataType return_type)
         {
         case PARO:
             node *n = get_fun(get_lexeme().char_tab, D_UNDEFINED);
-            if (n == NULL) exit_analyse(log_buffer_syntax);
+            if (n == NULL) exit_syntax(log_buffer_syntax);
             eag(&a1, n->data_type);
             break;
             
         case ASSIGN:
             data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
-            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
+            if (data_type == D_UNDEFINED) exit_syntax(log_buffer_syntax);
             assignation(&a1, data_type);
             break;
 
         default:
             data_type = check_variable(get_lexeme().char_tab, D_UNDEFINED);
-            if (data_type == D_UNDEFINED) exit_analyse(log_buffer_syntax);
+            if (data_type == D_UNDEFINED) exit_syntax(log_buffer_syntax);
             eag(&a1, data_type);
             break;
         }
@@ -183,7 +183,7 @@ void instruction(node **a, DataType return_type)
         break;
     case FUN:
         if (return_type != D_UNDEFINED) {
-            exit_analyse("you can't imbricate function");
+            exit_syntax("you can't imbricate function");
         }
         function(&a1);
         need_semi_colon = false;
@@ -191,7 +191,7 @@ void instruction(node **a, DataType return_type)
     case RETURN:
         if (return_type == D_UNDEFINED)
         {
-            exit_analyse("");
+            exit_syntax("");
         }
 
         next_lexeme_or_quit();
@@ -201,7 +201,7 @@ void instruction(node **a, DataType return_type)
             if (return_type != D_UNIT)
             {
                 sprintf(log_buffer_syntax, "need %s return type", data_type_to_text(return_type));
-                exit_analyse(log_buffer_syntax);
+                exit_syntax(log_buffer_syntax);
             }
         }
         else
@@ -213,13 +213,13 @@ void instruction(node **a, DataType return_type)
         break;
 
     default:
-        exit_analyse("");
+        exit_syntax("");
     }
 
     if (need_semi_colon)
     {
         if (get_lexeme().nature != END_INSTRUCTION)
-            exit_analyse("une instruction doit finir par ';'");
+            exit_syntax("une instruction doit finir par ';'");
     }
 
     next_lexeme_or_quit();
@@ -239,7 +239,7 @@ bool call(node **a, DataType data_type)
 
     if (get_lexeme().nature != NAME)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     strcpy((*a)->name, get_lexeme().char_tab);
@@ -256,7 +256,7 @@ bool call(node **a, DataType data_type)
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     // verifier que fun.left est bien null (est bien le bon compte d'args)
@@ -270,7 +270,7 @@ bool call(node **a, DataType data_type)
     {
         if (get_lexeme().nature != PARF)
         {
-            exit_analyse("");
+            exit_syntax("");
         }
     }
     else
@@ -293,7 +293,7 @@ void call_args(node **a, node *arg)
 
     if (arg == NULL)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     *a = new_node(N_INSTRUCTION);
@@ -315,14 +315,14 @@ void call_args(node **a, node *arg)
     {
         if (get_lexeme().nature != PARF)
         {
-            exit_analyse("");
+            exit_syntax("");
         }
     }
     else
     {
         if (get_lexeme().nature != COMMA)
         {
-            exit_analyse("besoin d'une virgule entre chaque arguments");
+            exit_syntax("besoin d'une virgule entre chaque arguments");
         }
         next_lexeme_or_quit();
         call_args(&suite_arg, arg->left);
@@ -340,13 +340,13 @@ void function(node **a)
     next_lexeme_or_quit();
     if (get_lexeme().nature != NAME)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     if (get_fun(get_lexeme().char_tab, D_UNDEFINED))
     {
         sprintf(log_buffer_syntax, "'%s' déjà dénini.", get_lexeme().char_tab);
-        exit_analyse(log_buffer_syntax);
+        exit_syntax(log_buffer_syntax);
     }
 
     strcpy((*a)->name, get_lexeme().char_tab);
@@ -354,7 +354,7 @@ void function(node **a)
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     // args bloc
@@ -379,7 +379,7 @@ void function(node **a)
 
         if (data_type == D_UNDEFINED)
         {
-            exit_analyse("need a return type with a colon\n");
+            exit_syntax("need a return type with a colon\n");
         }
         (*a)->data_type = data_type;
 
@@ -392,7 +392,7 @@ void function(node **a)
 
     if (get_lexeme().nature != BRACE_OPEN)
     {
-        exit_analyse("symbole { attendu\n");
+        exit_syntax("symbole { attendu\n");
     }
     node *a2;
     next_lexeme_or_quit();
@@ -401,7 +401,9 @@ void function(node **a)
     add_fun(*a);
 
     // up scope after args
-    up_scope();
+    if(!up_scope()) {
+        exit_syntax("");
+    }
 
     instructions(&a2, (*a)->data_type);
 
@@ -411,7 +413,7 @@ void function(node **a)
 
     if (get_lexeme().nature != BRACE_CLOSE)
     {
-        exit_analyse("symbole } attendu\n");
+        exit_syntax("symbole } attendu\n");
     }
 
 }
@@ -429,20 +431,20 @@ void arg(node **a)
 
     if (data_type == D_UNDEFINED)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     next_lexeme_or_quit();
 
     if (get_lexeme().nature != NAME)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
     {
         sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
-        exit_analyse(log_buffer_syntax);
+        exit_syntax(log_buffer_syntax);
     }
     node *n = creer_variable(get_lexeme().char_tab, data_type);
     add_stack(n);
@@ -474,7 +476,7 @@ void arg_suite(node **a)
         break;
 
     default:
-        exit_analyse("");
+        exit_syntax("");
         break;
     }
 }
@@ -489,13 +491,13 @@ void initialisation(node **a, DataType data_type)
 
     if (get_lexeme().nature != NAME)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     if (check_variable(get_lexeme().char_tab, data_type) != D_UNDEFINED)
     {
         sprintf(log_buffer_syntax, "variable '%s' déjà déninie.", get_lexeme().char_tab);
-        exit_analyse(log_buffer_syntax);
+        exit_syntax(log_buffer_syntax);
     }
 
     node *n = creer_variable(get_lexeme().char_tab, data_type);
@@ -507,7 +509,7 @@ void initialisation(node **a, DataType data_type)
 
     if (get_lexeme().nature != INIT)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 
     next_lexeme_or_quit();
@@ -529,7 +531,7 @@ void assignation(node **a, DataType data_type)
     next_lexeme_or_quit();
     if (get_lexeme().nature != ASSIGN)
     {
-        exit_analyse("besoin du signe \"=\"");
+        exit_syntax("besoin du signe \"=\"");
     }
 
     next_lexeme_or_quit();
@@ -548,7 +550,7 @@ void condition(node **a, DataType data_type)
     next_lexeme_or_quit();
     if (get_lexeme().nature != PARO)
     {
-        exit_analyse("besoin de '(' après if");
+        exit_syntax("besoin de '(' après if");
     }
 
     next_lexeme_or_quit();
@@ -558,19 +560,21 @@ void condition(node **a, DataType data_type)
 
     if (get_lexeme().nature != PARF)
     {
-        exit_analyse("besoin de ')' après if");
+        exit_syntax("besoin de ')' après if");
     }
 
     next_lexeme_or_quit();
     if (get_lexeme().nature != BRACE_OPEN)
     {
-        exit_analyse("besoin de '{' après if");
+        exit_syntax("besoin de '{' après if");
     }
 
     next_lexeme_or_quit();
     node *a2 = new_node(N_CONDITION);
     node *a3;
-    up_scope();
+    if(!up_scope()) exit_syntax("");
+    
+
     instructions(&a3, data_type);
     down_scope();
     a2->left = a3;
@@ -579,7 +583,7 @@ void condition(node **a, DataType data_type)
 
     if (get_lexeme().nature != BRACE_CLOSE)
     {
-        exit_analyse("besoin de '}' après if");
+        exit_syntax("besoin de '}' après if");
     }
 
     Lexeme *next_lexeme = silent_get_next_lexeme();
@@ -593,19 +597,19 @@ void condition(node **a, DataType data_type)
     next_lexeme_or_quit();
     if (get_lexeme().nature != BRACE_OPEN)
     {
-        exit_analyse("besoin de '{' après else");
+        exit_syntax("besoin de '{' après else");
     }
 
     next_lexeme_or_quit();
     node *a4;
-    up_scope();
+    if(!up_scope()) exit_syntax("");
     instructions(&a4, data_type);
     down_scope();
     a2->right = a4;
 
     if (get_lexeme().nature != BRACE_CLOSE)
     {
-        exit_analyse("besoin de '}' après else");
+        exit_syntax("besoin de '}' après else");
     }
 }
 
@@ -673,7 +677,7 @@ void suite_seq_facteur(node *a1, node **a2, DataType data_type)
     case 2:
         if (atoi(get_lexeme().char_tab) == 0)
         {
-            exit_analyse("division par 0 impossible");
+            exit_syntax("division par 0 impossible");
         }
         facteur(&a3, data_type);
         a4 = creer_operation(op, a1, a3);
@@ -704,7 +708,7 @@ void facteur(node **a1, DataType data_type)
             {
                 sprintf(log_buffer_syntax, "variable '%s' is not defined\n",
                         get_lexeme().char_tab);
-                exit_analyse(log_buffer_syntax);
+                exit_syntax(log_buffer_syntax);
             }
         }
 
@@ -717,7 +721,7 @@ void facteur(node **a1, DataType data_type)
             sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse(log_buffer_syntax);
+            exit_syntax(log_buffer_syntax);
         }
         *a1 = creer_number(atoi(get_lexeme().char_tab));
         next_lexeme_or_quit();
@@ -729,7 +733,7 @@ void facteur(node **a1, DataType data_type)
             sprintf(log_buffer_syntax, "besoin du type %s: %s\n",
                    data_type_to_text(data_type),
                    get_lexeme().char_tab);
-            exit_analyse(log_buffer_syntax);
+            exit_syntax(log_buffer_syntax);
         }
         *a1 = creer_string(get_lexeme().char_tab);
         next_lexeme_or_quit();
@@ -740,7 +744,7 @@ void facteur(node **a1, DataType data_type)
         eag(a1, data_type);
         if (get_lexeme().nature != PARF)
         {
-            exit_analyse("erreur: besoin parenthèse fermante");
+            exit_syntax("erreur: besoin parenthèse fermante");
         }
         next_lexeme_or_quit();
         break;
@@ -760,7 +764,7 @@ void facteur(node **a1, DataType data_type)
         break;
     default:
 
-        exit_analyse("");
+        exit_syntax("");
     }
 }
 
@@ -782,7 +786,7 @@ int op1(Operateur *op, DataType data_type)
 
         if (data_type == D_CHAR)
         {
-            exit_analyse("Pas compatible avec char");
+            exit_syntax("Pas compatible avec char");
         }
         *op = nature_lex_to_op(get_lexeme().nature);
         next_lexeme_or_quit();
@@ -811,7 +815,7 @@ int op2(Operateur *op, DataType data_type)
 
     if (data_type == D_CHAR)
     {
-        exit_analyse("can't use '/' or '*' with a string\n");
+        exit_syntax("can't use '/' or '*' with a string\n");
     }
     *op = nature_lex_to_op(get_lexeme().nature);
     next_lexeme_or_quit();
@@ -821,7 +825,7 @@ int op2(Operateur *op, DataType data_type)
 
 // helper functions
 
-void exit_analyse(char *msg)
+void exit_syntax(char *msg)
 {
 
     if (get_lexeme().nature != ERROR)
@@ -897,6 +901,6 @@ void next_lexeme_or_quit()
 
     if (get_lexeme().nature == ERROR)
     {
-        exit_analyse("");
+        exit_syntax("");
     }
 }

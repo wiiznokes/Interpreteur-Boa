@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 #include "ast_construction.h"
-#include "list.h"
 
 bool DEBUG_EVAL = false;
 
@@ -26,6 +25,8 @@ void show_debug_eval(char *txt, node *a)
     if (DEBUG_EVAL)
         printf("%s: %s\n", txt, node_type_to_text(a->type));
 }
+
+
 
 /* ******************** */
 
@@ -102,7 +103,8 @@ bool evaluate(node *a, int *res1, char **res2)
         break;
     case N_CONDITION:
         evaluate_eag(a->left, D_INT, &x1, &x2);
-        up_scope();
+        if(!up_scope()) exit_evaluation("");
+        
         if (x1)
         {
             res = evaluate(a->right->left, res1, res2);
@@ -172,7 +174,11 @@ void evaluate_eag(node *a, DataType data_type, int *res1, char **res2)
     }
 }
 
-void evalutate_args(node *a, list *args)
+
+#define MAX_ARGS 100
+
+
+void evalutate_args(node *a, node **args, int *arg_count)
 {
     show_debug_eval("evalutate_args", a);
 
@@ -184,10 +190,10 @@ void evalutate_args(node *a, list *args)
     switch (a->type)
     {
     case N_INSTRUCTION:
-        evalutate_args(a->left, args);
+        evalutate_args(a->left, args, arg_count);
         if (a->right)
         {
-            evalutate_args(a->right, args);
+            evalutate_args(a->right, args, arg_count);
         }
         break;
     case N_INITIALISATION:
@@ -206,7 +212,13 @@ void evalutate_args(node *a, list *args)
             exit(1);
             break;
         }
-        add_head(args, n1);
+
+        if (*arg_count >= MAX_ARGS) {
+            exit_evaluation("100 args max");
+        }
+        
+        args[*arg_count] = n1;
+        (*arg_count)++;
         break;
 
     default:
@@ -223,17 +235,16 @@ int evaluate_int(node *a)
     case N_CALL:
         // args (can't up stack directly because we need the current stack
         // in order to calcul arguments)
-        list *args = new_list();
-        evalutate_args(a->left, args);
-        up_stack();
-        while (args->size > 0)
-        {
-            node *tmp = pop_head(args);
-            add_stack(tmp);
-        }
+        node *args[MAX_ARGS];
+        int arg_count = 0;
+        evalutate_args(a->left, args, &arg_count);
+        if(!up_stack()) exit_evaluation("");
         
-        free_list(args);
+        for (int i = 0; i < arg_count; i++) {
+            add_stack(args[i]);
+        }
 
+        // function
         int res1;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, &res1, NULL);
@@ -296,8 +307,18 @@ char *evaluate_char(node *a)
     switch (a->type)
     {
     case N_CALL:
-        up_stack();
-        evaluate(a->left, NULL, NULL);
+        // args (can't up stack directly because we need the current stack
+        // in order to calcul arguments)
+        node *args[MAX_ARGS];
+        int arg_count = 0;
+        evalutate_args(a->left, args, &arg_count);
+        if(!up_stack()) exit_evaluation("");
+        
+        for (int i = 0; i < arg_count; i++) {
+            add_stack(args[i]);
+        }
+
+        // function
         char *res2;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, NULL, &res2);

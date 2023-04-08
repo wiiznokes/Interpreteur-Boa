@@ -1,0 +1,57 @@
+
+
+fun mod_x(int x, int mod): int {
+    if (x == 0) {
+        return 0;
+    }
+    
+    if (x < mod) {
+        return 1;
+    } else {
+        return mod_x(x - mod, mod);
+    }
+}
+
+
+
+
+
+fun est_premier(int n, int state): int {
+
+   if (state == 1) {
+        return 1;
+   }
+
+    if (!mod_x(n, state)) {
+        return 0;
+    }
+
+    return est_premier(n, state - 1);
+
+}
+
+
+
+
+
+
+fun n_premier(int nb) {
+
+    if (nb < 1) {
+        "nombres négatif interdit";
+    }
+
+    if (nb == 1) {
+        return;
+    }
+
+    if (est_premier(nb, nb - 1)) {
+        nb;
+    }
+
+    n_premier(nb - 1);
+
+}
+
+
+n_premier(40);
