@@ -103,7 +103,8 @@ bool evaluate(node *a, int *res1, char **res2)
         break;
     case N_CONDITION:
         evaluate_eag(a->left, D_INT, &x1, &x2);
-        up_scope();
+        if(!up_scope()) exit_evaluation("");
+        
         if (x1)
         {
             res = evaluate(a->right->left, res1, res2);
@@ -237,7 +238,8 @@ int evaluate_int(node *a)
         node *args[MAX_ARGS];
         int arg_count = 0;
         evalutate_args(a->left, args, &arg_count);
-        up_stack();
+        if(!up_stack()) exit_evaluation("");
+        
         for (int i = 0; i < arg_count; i++) {
             add_stack(args[i]);
         }
@@ -305,8 +307,18 @@ char *evaluate_char(node *a)
     switch (a->type)
     {
     case N_CALL:
-        up_stack();
-        evaluate(a->left, NULL, NULL);
+        // args (can't up stack directly because we need the current stack
+        // in order to calcul arguments)
+        node *args[MAX_ARGS];
+        int arg_count = 0;
+        evalutate_args(a->left, args, &arg_count);
+        if(!up_stack()) exit_evaluation("");
+        
+        for (int i = 0; i < arg_count; i++) {
+            add_stack(args[i]);
+        }
+
+        // function
         char *res2;
         node *n = get_fun(a->name, a->data_type);
         evaluate(n->right, NULL, &res2);
