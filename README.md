@@ -10,7 +10,6 @@
 
 ## Note
 - Une option `-log` est disponible pour afficher l'ast de façon lisible sur le terminal.
-- La version shell fonctionne peut-être
 
 # Principale fonctionnalités
 
@@ -21,6 +20,13 @@
 - imbrication (if dans des if, mélanger fonction, variables et valeur au sain d'une même eag)
 - détection d'erreur
 
+
+# Limites
+
+- La stack pourrait utliser un hash table pour rechercher plus éfficacement les noms de variables.
+- Il aurait fallu isoler les proccess d'analyse syntaxique et d'evaluation. Dans ma version, ils partagent la même interface stack.h pour gerer les variables, ce qui pose probleme pour une version intéractive.
+- Pour faciliter l'ajout de fonctionnalités, un automate capable de reconnaître automatiquement les mots-clés qui lui sont donnés serait utile.
+- Idem pour reconnaitre une grammaire.
 
 # Détection d'erreur
 
