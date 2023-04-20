@@ -25,8 +25,8 @@
 
 - La stack pourrait utliser un hash table pour rechercher plus éfficacement les noms de variables.
 - Il aurait fallu isoler les proccess d'analyse syntaxique et d'evaluation. Dans ma version, ils partagent la même interface stack.h pour gerer les variables, ce qui pose probleme pour une version intéractive.
-- Pour faciliter l'ajout de fonctionnalités, un automate capable de reconnaître automatiquement les mots-clés qui lui sont donnés serait utile.
-- Idem pour reconnaitre une grammaire.
+- Pour faciliter l'ajout de fonctionnalités, un automate capable de reconnaître automatiquement les mots-clés et la grammaire qui lui sont donnés serait utile.
+- La stack pourrait être déclarée comme un tableau à une dimension, pour l'utiliser à 100%
 
 # Détection d'erreur
 
